@@ -5,6 +5,7 @@
 #ifndef CHAT_SERVICE_PDU_HELPER_H
 #define CHAT_SERVICE_PDU_HELPER_H
 #include <stdlib.h>
+#include <string.h>
 
 typedef __uint8_t op_code;
 
