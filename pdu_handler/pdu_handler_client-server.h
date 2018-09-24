@@ -13,25 +13,25 @@
 #define OP_PLEAVE 17
 #define OP_PARTICIPANTS 19
 
-typedef struct join{
+typedef struct pdu_join{
     op_code op;
     __uint8_t identity_length;
     __uint16_t padding;
     __uint32_t identity;
-} join;
+} pdu_join;
 
-typedef struct  participants{
+typedef struct  pdu_participants{
     op_code op;
     __uint8_t  num_identities;
     __uint16_t length;
     __uint32_t participant_array[];
-} participants;
+} pdu_participants;
 
-typedef struct quit{
+typedef struct pdu_quit{
     op_code op;
-} quit;
+} pdu_quit;
 
-typedef struct mess{
+typedef struct pdu_mess{
     op_code op;
     __uint8_t padding_op;
     __uint8_t identity_length;
@@ -41,24 +41,37 @@ typedef struct mess{
     __uint32_t timestamp;
     __uint32_t message;
     __uint32_t client_identity;
-} mess;
+} pdu_mess;
 
-typedef struct pleave{
+typedef struct pdu_pleave{
     op_code op;
     __uint8_t identity_length;
     __uint16_t padding_identity_length;
     __uint32_t timestamp;
     __uint32_t client_identity;
 
-} pleave;
+} pdu_pleave;
 
-typedef struct pjoin{
+typedef struct pdu_pjoin{
     op_code op;
     __uint8_t identity_length;
     __uint16_t padding_identity_length;
     __uint32_t timestamp;
     __uint32_t client_identity;
 
-} pjoin;
+} pdu_pjoin;
+
+pdu_quit* pdu_quit_create(){
+    pdu_quit* pdu = calloc(1, sizeof(pdu_quit));
+    pdu->op = OP_QUIT;
+    return pdu;
+}
+
+pdu_join* pdu_join_create(char* identity){
+    pdu_join* pdu = calloc(1, sizeof(pdu_join));
+    pdu->op = OP_JOIN;
+    pdu->identity_length = strlen(identity)
+
+}
 
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H
