@@ -13,6 +13,8 @@
 #define OP_PLEAVE 17
 #define OP_PARTICIPANTS 19
 
+#define MAX_IDENTITY_LENGTH 255
+
 typedef struct pdu_join{
     op_code op;
     __uint8_t identity_length;
@@ -70,7 +72,10 @@ pdu_quit* pdu_quit_create(){
 pdu_join* pdu_join_create(char* identity){
     pdu_join* pdu = calloc(1, sizeof(pdu_join));
     pdu->op = OP_JOIN;
-    pdu->identity_length = strlen(identity)
+    if(strlen(identity) > MAX_IDENTITY_LENGTH){
+
+    }
+    pdu->identity_length = strlen(identity);
 
 }
 
