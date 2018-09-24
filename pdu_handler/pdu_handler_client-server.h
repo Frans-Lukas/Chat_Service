@@ -4,6 +4,8 @@
 
 #ifndef CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H
 #define CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H
+#include "pdu_helper.h"
+
 #define OP_MESS 10
 #define OP_QUIT 11
 #define OP_JOIN 12

@@ -4,7 +4,7 @@
 
 #ifndef CHAT_SERVICE_PDU_HANDLER_CLIENT_NAMESERVER_H
 #define CHAT_SERVICE_PDU_HANDLER_CLIENT_NAMESERVER_H
-
+#include "pdu_helper.h"
 
 #define OP_GETLIST 3
 #define OP_SLIST 4
