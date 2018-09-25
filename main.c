@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "pdu_handler/pdu_handler_server-nameserver.h"
+#include "pdu_handler/pdu_helper.h"
 
 int main() {
     char *test_string = "abcdefgh";

@@ -3,11 +3,6 @@
 #include "pdu_handler_server-nameserver.h"
 
 
-uint32_t *build_words(char* input_string, int bytes){
-    int string_len = (int) strlen(input_string);
-    int number_of_words = string_len < bytes ? 1 : (string_len/bytes) + (string_len % bytes > 0 ? 1 : 0);
-    return memcpy(calloc((size_t) number_of_words, sizeof(uint32_t)), input_string, (size_t) string_len);
-}
 
 reg* create_REG(char* server_name, int tcp_port){
     reg *pdu_reg = (reg*)calloc(1, sizeof(reg));

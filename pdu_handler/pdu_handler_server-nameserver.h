@@ -15,7 +15,7 @@ typedef struct reg{
     uint8_t code;
     uint8_t server_name_length;
     uint16_t tcp_port;
-    uint32_t *server_name;
+    uint32_t* server_name;
 } reg;
 uint32_t *build_words(char* input_string, int bytes);
 reg* create_REG(char* server_name, int tcp_port);
