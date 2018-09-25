@@ -6,6 +6,7 @@
 #define CHAT_SERVICE_PDU_HELPER_H
 #include <stdlib.h>
 #include <string.h>
+#include "../error_handling.h"
 
 typedef __uint8_t op_code;
 

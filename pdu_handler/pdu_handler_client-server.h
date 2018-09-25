@@ -63,20 +63,7 @@ typedef struct pdu_pjoin{
 
 } pdu_pjoin;
 
-pdu_quit* pdu_quit_create(){
-    pdu_quit* pdu = calloc(1, sizeof(pdu_quit));
-    pdu->op = OP_QUIT;
-    return pdu;
-}
-
-pdu_join* pdu_join_create(char* identity){
-    pdu_join* pdu = calloc(1, sizeof(pdu_join));
-    pdu->op = OP_JOIN;
-    if(strlen(identity) > MAX_IDENTITY_LENGTH){
-
-    }
-    pdu->identity_length = strlen(identity);
-
-}
+pdu_quit* pdu_quit_create();
+pdu_join* pdu_join_create(char* identity);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H
