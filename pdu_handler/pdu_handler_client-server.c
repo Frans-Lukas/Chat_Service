@@ -25,9 +25,9 @@ pdu_participants* pdu_participants_create(char* participants[], int num_particip
     pdu_participants* pdu = calloc(1, sizeof(pdu_participants));
     pdu->op = OP_PARTICIPANTS;
     pdu->num_identities = (uint8_t) num_participants;
-    char* participants_string = array_to_string(participants);
-    pdu->length = (uint16_t) strlen(participants_string);
-    pdu->participant_names = build_words(participants_string, 4);
+//    char* participants_string = array_to_string(participants);
+//    pdu->length = (uint16_t) strlen(participants_string);
+//    pdu->participant_names = build_words(participants_string, 4);
 }
 
 pdu_mess* pdu_mess_create(char* identity, char* message){
