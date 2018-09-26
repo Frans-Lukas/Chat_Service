@@ -22,6 +22,9 @@ pdu_join* pdu_join_create(char* identity){
 }
 
 pdu_join* pdu_join_deserialize(PDU* pdu_join){
+    pdu_join* pdu = (pdu_join*)pdu_join;
+
+    return pdu;
 
 }
 
