@@ -22,5 +22,7 @@ uint8_t create_checksum(char *message);
 
 uint16_t add_padding(int i);
 uint8_t create_checksum(char *message);
+char *array_to_string(char *pString[], int list_length);
+
 
 #endif //CHAT_SERVICE_PDU_HELPER_H
