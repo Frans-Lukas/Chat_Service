@@ -26,5 +26,7 @@ uint8_t create_checksum(char *message);
 char *array_to_string(char *pString[], int list_length);
 bool data_is_divisible_by_four(char* data);
 
+uint32_t * string_to_words(char *string, int size);
+
 
 #endif //CHAT_SERVICE_PDU_HELPER_H

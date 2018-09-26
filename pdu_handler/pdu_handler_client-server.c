@@ -1,10 +1,24 @@
 #include "pdu_handler_client-server.h"
+#include "pdu_tests.h"
 
 
 pdu_quit* pdu_quit_create(){
     pdu_quit* pdu = calloc(1, sizeof(pdu_quit));
     pdu->op = OP_QUIT;
     return pdu;
+}
+
+pdu_quit* pdu_quit_deserialize(void* quit_pdu){
+    pdu_quit* pdu_to_return = calloc(1, sizeof(pdu_quit));
+    pdu_to_return->op = ((uint8_t*)quit_pdu)[0];
+    return pdu_to_return;
+}
+
+void* pdu_quit_serialize(PDU* join_pdu){
+    pdu_quit* pdu = (pdu_quit*) join_pdu;
+    char* data_to_send = calloc(1, 1);
+    memcpy(data_to_send, &pdu->op, 1);
+    return data_to_send;
 }
 
 pdu_join* pdu_join_create(char* identity){
@@ -17,23 +31,15 @@ pdu_join* pdu_join_create(char* identity){
     pdu->identity_length = (uint8_t)strlen(identity);
     pdu->identity = build_words(identity, 4);
 }
-
-bool pdu_join_is_valid(pdu_join* join){
-    if(join->op == OP_JOIN){
-        return true;
-    }
-    return false;
-}
-
 pdu_join* pdu_join_deserialize(void* join_pdu){
     uint8_t* pdu = join_pdu;
     pdu_join* pdu_to_return = calloc(1, sizeof(pdu_join));
     pdu_to_return->op = OP_JOIN;
     pdu_to_return->identity_length = pdu[1];
-    pdu_to_return->identity = build_words((char *) &pdu[4], 4);
+    uint8_t length = pdu[1];
+    pdu_to_return->identity = string_to_words((char *) &pdu[4], length);
     return pdu_to_return;
 }
-
 
 void* pdu_join_serialize(PDU* join_pdu){
     pdu_join* pdu = (pdu_join*) join_pdu;
@@ -52,7 +58,6 @@ pdu_participants* pdu_participants_create(char* participants[], int num_particip
     char* participants_string = array_to_string(participants, num_participants);
     pdu->length = (uint16_t) strlen(participants_string);
     pdu->participant_names = build_words(participants_string, 4);
-
 }
 
 //pdu_mess* pdu_mess_create(char* identity, char* message){
