@@ -40,6 +40,7 @@ pdu_participants* pdu_participants_create(char* participants[], int num_particip
     char* participants_string = array_to_string(participants, num_participants);
     pdu->length = (uint16_t) strlen(participants_string);
     pdu->participant_names = build_words(participants_string, 4);
+
 }
 
 pdu_mess* pdu_mess_create(char* identity, char* message){
