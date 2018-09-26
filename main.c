@@ -10,6 +10,6 @@ int main() {
     uint32_t *test_word = build_words(test_string, 4);
     printf("%s" "\n", (char*)&test_word[0]);
     printf("%s" "\n",(char*)&test_word[1]);
-    test_creating_reg();
+    test_creating_reg_with_valid_arguments();
     return 0;
 }
