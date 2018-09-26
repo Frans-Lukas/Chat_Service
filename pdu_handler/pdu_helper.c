@@ -12,3 +12,16 @@ __uint16_t add_padding(int i) {
 __uint8_t create_checksum(char *message) {
     return NULL;
 }
+
+char *array_to_string(char *pString[], int list_length) {
+    size_t size_to_allocate = 0;
+    for (int j = 0; j < list_length; ++j) {
+        size_to_allocate += strlen(pString[j]);
+    }
+    size_to_allocate += list_length + 1;
+    char* string = calloc(1, size_to_allocate);
+    for (int i = 0; i < list_length; ++i) {
+        strcat(string,pString[i]);
+    }
+    return NULL;
+}
