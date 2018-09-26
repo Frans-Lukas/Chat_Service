@@ -11,5 +11,6 @@ int main() {
     printf("%s" "\n", (char*)&test_word[0]);
     printf("%s" "\n",(char*)&test_word[1]);
     test_creating_reg_with_valid_arguments();
+    test_deserialize();
     return 0;
 }
