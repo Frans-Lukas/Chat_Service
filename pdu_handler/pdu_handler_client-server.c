@@ -15,20 +15,23 @@ pdu_join* pdu_join_create(char* identity){
         return NULL;
     }
     pdu->identity_length = (uint8_t)strlen(identity);
-    pdu->padding = add_padding(2);
     pdu->identity = build_words(identity, 4);
 }
 
-bool pdu_join_is_valid(PDU* pdu){
-    pdu_join* join = (pdu_join*)pdu;
-    if(join->op == OP_JOIN && join->identity_length < 255 && join->identity_length > 0){
+bool pdu_join_is_valid(pdu_join* join){
+    if(join->op == OP_JOIN){
         return true;
     }
     return false;
 }
 
-pdu_join* pdu_join_deserialize(PDU* join_pdu){
-    return (pdu_join*) join_pdu;
+pdu_join* pdu_join_deserialize(void* join_pdu){
+    uint8_t* pdu = join_pdu;
+    pdu_join* pdu_to_return = calloc(1, sizeof(pdu_join));
+    pdu_to_return->op = OP_JOIN;
+    pdu_to_return->identity_length = pdu[1];
+    pdu_to_return->identity = build_words((char *) &pdu[4], 4);
+    return pdu_to_return;
 }
 
 
@@ -36,21 +39,11 @@ void* pdu_join_serialize(PDU* join_pdu){
     pdu_join* pdu = (pdu_join*) join_pdu;
     char* data_to_send = calloc(1, (size_t) (4 + pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4)));
     memcpy(data_to_send, &pdu->op, 1);
-
-
-    data_to_send[0] = pdu->op;
-    data_to_send[1] = pdu->identity_length;
-    data_to_send[2] = pdu->padding;
-    data_to_send[4] = pdu->identity;
+    memcpy(data_to_send + 1, &pdu->identity_length, 1);
+    add_padding(data_to_send + 2, 2);
+    memcpy(data_to_send + 4, pdu->identity, (size_t) pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4));
     return data_to_send;
 }
-
-
-
-
-
-
-
 
 pdu_participants* pdu_participants_create(char* participants[], int num_participants){
     pdu_participants* pdu = calloc(1, sizeof(pdu_participants));
