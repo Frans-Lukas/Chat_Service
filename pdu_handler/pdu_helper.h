@@ -1,6 +1,3 @@
-//
-// Created by c16fld on 2018-09-24.
-//
 
 #ifndef CHAT_SERVICE_PDU_HELPER_H
 #define CHAT_SERVICE_PDU_HELPER_H
@@ -11,6 +8,10 @@
 #include "../error_handling.h"
 
 typedef uint8_t op_code;
+
+typedef struct PDU{
+    op_code op;
+} PDU;
 
 
 uint32_t *build_words(char* input_string, int bytes);

@@ -10,9 +10,8 @@
 #define OP_ALIVE 2
 #define OP_NOTREG 100
 
-
 typedef struct reg{
-    uint8_t code;
+    PDU pdu;
     uint8_t server_name_length;
     uint16_t tcp_port;
     uint32_t* server_name;
