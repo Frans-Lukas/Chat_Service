@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <time.h>
+#include <stdbool.h>
 #include "../error_handling.h"
 
 typedef uint8_t op_code;

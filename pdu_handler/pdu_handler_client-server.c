@@ -19,13 +19,31 @@ pdu_join* pdu_join_create(char* identity){
     pdu->identity = build_words(identity, 4);
 }
 
-pdu_join* pdu_join_deserialize(PDU* pdu_join){
-    pdu_join* pdu = (pdu_join*)pdu_join;
-
-    return pdu;
-
+bool pdu_join_is_valid(PDU* pdu){
+    pdu_join* join = (pdu_join*)pdu;
+    if(join->op == OP_JOIN && join->identity_length < 255 && join->identity_length > 0){
+        return true;
+    }
+    return false;
 }
 
+pdu_join* pdu_join_deserialize(PDU* join_pdu){
+    return (pdu_join*) join_pdu;
+}
+
+
+void* pdu_join_serialize(PDU* join_pdu){
+    pdu_join* pdu = (pdu_join*) join_pdu;
+    char* data_to_send = calloc(1, (size_t) (4 + pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4)));
+    memcpy(data_to_send, &pdu->op, 1);
+
+
+    data_to_send[0] = pdu->op;
+    data_to_send[1] = pdu->identity_length;
+    data_to_send[2] = pdu->padding;
+    data_to_send[4] = pdu->identity;
+    return data_to_send;
+}
 
 
 
