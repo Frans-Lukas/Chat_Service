@@ -25,6 +25,7 @@ uint16_t add_padding(void*, int);
 uint8_t create_checksum(char *message);
 char *array_to_string(char *pString[], int list_length);
 bool data_is_divisible_by_four(char* data);
+char** string_to_string_array(char*, int, char*[]);
 
 uint32_t * string_to_words(char *string, int size);
 

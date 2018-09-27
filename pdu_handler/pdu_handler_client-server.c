@@ -2,6 +2,8 @@
 #include "pdu_tests.h"
 
 
+uint32_t *build_participant_words(char *participants, int num_participants);
+
 pdu_quit* pdu_quit_create(){
     pdu_quit* pdu = calloc(1, sizeof(pdu_quit));
     pdu->op = OP_QUIT;
@@ -51,13 +53,26 @@ void* pdu_join_serialize(PDU* join_pdu){
     return data_to_send;
 }
 
-pdu_participants* pdu_participants_create(char* participants[], int num_participants){
+pdu_participants* pdu_participants_create(char* participants, int num_participants){
     pdu_participants* pdu = calloc(1, sizeof(pdu_participants));
     pdu->op = OP_PARTICIPANTS;
     pdu->num_identities = (uint8_t) num_participants;
-    char* participants_string = array_to_string(participants, num_participants);
-    pdu->length = (uint16_t) strlen(participants_string);
-    pdu->participant_names = build_words(participants_string, 4);
+    pdu->length = (uint16_t) strlen(participants);
+    pdu->participant_names = build_participant_words(participants, num_participants);
+}
+
+uint32_t *build_participant_words(char *participants, int num_participants) {
+    size_t size = 0;
+    char* currpos = participants;
+    for (int i = 0; i < num_participants; ++i) {
+        size += strlen(currpos);
+        currpos += size + 1;
+    }
+    uint32_t* words = calloc(sizeof(uint32_t), (size_t) get_num_words((int) size, 4));
+    for (int i = 0; i < num_participants; ++i) {
+
+    }
+    return words;
 }
 
 //pdu_mess* pdu_mess_create(char* identity, char* message){

@@ -36,14 +36,30 @@ uint32_t * string_to_words(char *string, int size){
 char *array_to_string(char *pString[], int list_length) {
     size_t size_to_allocate = 0;
     for (int j = 0; j < list_length; ++j) {
-        size_to_allocate += strlen(pString[j]) + 1;
+        size_to_allocate += strlen(pString[j]);
     }
     size_to_allocate += list_length + 1;
-    char* string = calloc(1, size_to_allocate);
+    char* string = calloc(sizeof(char), size_to_allocate);
+
+    size_t position_to_memcpy_to = 0;
     for (int i = 0; i < list_length; ++i) {
-        strcat(string, pString[i]);
-        strcat(string, "\0");
+        memcpy(string + position_to_memcpy_to, pString[i], strlen(pString[i]) + 1);
+        position_to_memcpy_to += strlen(pString[i]) + 1;
     }
+
     return string;
+}
+
+
+char** string_to_string_array(char *string, int num_strings, char* dest[]) {
+    char* current_pointer_position = string;
+    for (int i = 0; i < num_strings; ++i) {
+        dest[i] = current_pointer_position;
+        while(*current_pointer_position != '\0'){
+            current_pointer_position++;
+        }
+        current_pointer_position++;
+    }
+    return dest;
 }
 

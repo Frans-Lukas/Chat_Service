@@ -71,7 +71,7 @@ pdu_quit* pdu_quit_deserialize(void* quit_pdu);
 void* pdu_quit_serialize(PDU* join_pdu);
 pdu_join* pdu_join_create(char* identity);
 pdu_mess* pdu_mess_create(char* identity, char* message);
-pdu_participants* pdu_participants_create(char* participants[], int num_participants);
+pdu_participants* pdu_participants_create(char* participants, int num_participants);
 pdu_pleave* pdu_pleave_create(char* identity);
 pdu_pjoin* pdu_pjoin_create(char* identity);
 pdu_join* pdu_join_deserialize(void* join_pdu);

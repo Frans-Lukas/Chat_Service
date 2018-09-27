@@ -7,17 +7,16 @@ void run_pdu_participants_tests() {
 }
 
 void assert_pdu_participants_create_works() {
-    char* names[] = {
-            "Anna",
-            "Petter",
-            "Lisa"
-    };
+    char* names = "Anna\0Petter\0Lisa";
     pdu_participants* pdu = pdu_participants_create(names, 3);
+    char* participant_names = (char*) pdu->participant_names;
     assert(pdu->op == OP_PARTICIPANTS);
     assert(pdu->num_identities == 3);
-    fprintf(stderr, "%s\n", (char*)(pdu->participant_names));
-    assert(strcmp((char*)pdu->participant_names, "Anna") == 0);
-    assert(strcmp((char*)(&pdu->participant_names[5]), "Petter") == 0);
+    fprintf(stderr, "%s\n", participant_names);
+    assert(strcmp(participant_names, "Anna") == 0);
+    fprintf(stderr, "%s\n", &participant_names[5]);
+    assert(strcmp(&participant_names[5], "Petter") == 0);
+
     free(pdu);
 }
 
