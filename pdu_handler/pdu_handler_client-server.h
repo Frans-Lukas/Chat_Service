@@ -70,5 +70,8 @@ pdu_mess* pdu_mess_create(char* identity, char* message);
 pdu_participants* pdu_participants_create(char* participants[], int num_participants);
 pdu_pleave* pdu_pleave_create(char* identity);
 pdu_pjoin* pdu_pjoin_create(char* identity);
+pdu_join* pdu_join_deserialize(void* join_pdu);
+void* pdu_join_serialize(PDU* join_pdu);
+bool pdu_join_is_valid(pdu_join* join);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H
