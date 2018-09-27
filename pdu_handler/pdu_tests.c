@@ -1,9 +1,7 @@
-//
-// Created by c16fld on 2018-09-26.
-//
 
-
+#include "test_pdu_handler_server-nameserver.h"
 #include "pdu_tests.h"
+#include "pdu_handler_server-nameserver.h"
 
 void run_all_tests(){
     fprintf(stderr, "Starting tests...\n");
@@ -13,6 +11,7 @@ void run_all_tests(){
     assert_valid_pdu_join_is_valid();
     assert_data_validation_is_valid_on_data_divisible_by_four();
     assert_data_validation_is_invalid_on_data_not_divisible_by_four();
+    run_all_reg_test();
     fprintf(stderr, "All tests successful!\n");
 }
 

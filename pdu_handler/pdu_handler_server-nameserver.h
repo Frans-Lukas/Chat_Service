@@ -19,5 +19,6 @@ typedef struct reg{
 uint32_t *build_words(char* input_string, int bytes);
 reg* create_REG(char* server_name, int server_name_length, int tcp_port);
 reg* reg_deserialize(void *ptr);
+void* reg_serialize(reg* pdu);
 #endif //CHAT_SERVICE_PDU_HANDLER_SERVER_NAMESERVER_H
 

@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <netinet/in.h>
 #include "pdu_handler_server-nameserver.h"
 
 
@@ -23,17 +24,17 @@ reg* create_REG(char* server_name,int server_name_length, int tcp_port){
 
 
 void* reg_serialize(reg* pdu){
-
+    
 }
 
+
 reg* reg_deserialize(void *ptr){
-    uint8_t * tmp_ptr = ptr;
+    uint8_t* tmp_ptr = ptr;
     reg *pdu_reg = (reg*)calloc(1, sizeof(reg));
     pdu_reg->pdu.op = OP_REG;
     memcpy(&pdu_reg->server_name_length, &tmp_ptr[1], sizeof(uint8_t));
     memcpy(&pdu_reg->tcp_port, &tmp_ptr[2], sizeof(uint16_t));
-    //memcpy(&pdu_reg->server_name, &tmp_ptr[4], pdu_reg->server_name_length);
-    pdu_reg->server_name = build_words((char *) &tmp_ptr[4], 4);
+    memcpy(&pdu_reg->server_name, &tmp_ptr[4], pdu_reg->server_name_length);
     return pdu_reg;
 }
 
