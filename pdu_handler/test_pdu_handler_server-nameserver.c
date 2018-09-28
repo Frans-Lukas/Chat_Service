@@ -61,7 +61,7 @@ void test_deserialize_ack() {
     data[1] = 42;
     *(uint16_t *) (data + 2) = 1337;
 
-    ack *pdu = ack_deserilize(data);
+    ack *pdu = ack_deserialize(data);
 
     assert(pdu->pdu.op == OP_ACK);
     assert(pdu->pad == 42);

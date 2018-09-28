@@ -29,7 +29,7 @@ void *ack_serialize(ack *pdu) {
     return data;
 }
 
-ack *ack_deserilize(void *ptr) {
+ack *ack_deserialize(void *ptr) {
     uint8_t *tmp_ptr = ptr;
     ack *pdu = calloc(1, sizeof(ack));
     pdu->pdu.op = OP_ACK;
