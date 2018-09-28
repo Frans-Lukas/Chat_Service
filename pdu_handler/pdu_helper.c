@@ -63,3 +63,7 @@ char** string_to_string_array(char *string, int num_strings, char* dest[]) {
     return dest;
 }
 
+void pdu_cpy_chars(void *dest, void *src, int index, size_t num_bytes) {
+    memcpy(dest, ((char*)src) + index, num_bytes);
+}
+

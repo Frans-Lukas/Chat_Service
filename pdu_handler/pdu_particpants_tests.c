@@ -12,11 +12,10 @@ void assert_pdu_participants_create_works() {
     char* participant_names = (char*) pdu->participant_names;
     assert(pdu->op == OP_PARTICIPANTS);
     assert(pdu->num_identities == 3);
-    fprintf(stderr, "%s\n", participant_names);
     assert(strcmp(participant_names, "Anna") == 0);
-    fprintf(stderr, "%s\n", &participant_names[5]);
     assert(strcmp(&participant_names[5], "Petter") == 0);
-
+    assert(strcmp(&participant_names[12], "Lisa") == 0);
+    free(pdu->participant_names);
     free(pdu);
 }
 
