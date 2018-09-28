@@ -71,11 +71,15 @@ pdu_quit* pdu_quit_deserialize(void* quit_pdu);
 void* pdu_quit_serialize(PDU* join_pdu);
 pdu_join* pdu_join_create(char* identity);
 pdu_mess* pdu_mess_create(char* identity, char* message);
-pdu_participants* pdu_participants_create(char* participants[], int num_participants);
+pdu_participants* pdu_participants_create(char* participants, int num_participants);
 pdu_pleave* pdu_pleave_create(char* identity);
 pdu_pjoin* pdu_pjoin_create(char* identity);
 pdu_join* pdu_join_deserialize(void* join_pdu);
 void* pdu_join_serialize(PDU* join_pdu);
 bool pdu_join_is_valid(pdu_join* join);
+uint32_t *build_participant_words(char *participants, int num_participants);
+size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants);
+void *pdu_particiapants_serialize(PDU *pdu);
+pdu_participants *pdu_participants_deserialize(void *participants_data);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H
