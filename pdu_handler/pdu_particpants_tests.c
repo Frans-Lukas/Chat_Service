@@ -4,8 +4,6 @@ void run_pdu_participants_tests() {
     assert_pdu_participants_create_works();
     assert_serialize_pdu_participants_works();
     assert_deserialize_pdu_participants_works();
-    //assert_serialize_pdu_participants_works();
-    //assert_deserialize_pdu_participants_works();
 }
 
 void assert_pdu_participants_create_works() {
@@ -23,13 +21,13 @@ void assert_pdu_participants_create_works() {
 
 void assert_serialize_pdu_participants_works() {
     char* string = "pe\0pe\0";
-    char* real_serialized_pdu = pdu_particiapants_serialize((PDU*)pdu_participants_create(string, 2));
+    char* real_serialized_pdu = pdu_participants_serialize((PDU *) pdu_participants_create(string, 2));
     assert(real_serialized_pdu[0] == OP_PARTICIPANTS);
     assert(real_serialized_pdu[1] == 2);
     assert(((uint16_t*)real_serialized_pdu)[1] == 6);
-    fprintf(stderr, "%s\n", real_serialized_pdu+4);
     assert(strncmp(real_serialized_pdu + 4, string, 2) == 0);
     assert(strncmp(real_serialized_pdu + 7, string, 2) == 0);
+    free(real_serialized_pdu);
 }
 
 void assert_deserialize_pdu_participants_works() {
@@ -51,7 +49,6 @@ void assert_deserialize_pdu_participants_works() {
     mock_serialized_pdu[14] = 'r';
     mock_serialized_pdu[15] = '\0';
     pdu_participants* deserialized_pdu = pdu_participants_deserialize(mock_serialized_pdu);
-    fprintf(stderr, "%s\n", (char*)deserialized_pdu->participant_names);
     assert(deserialized_pdu->op == OP_PARTICIPANTS);
     assert(deserialized_pdu->num_identities == 2);
     assert(deserialized_pdu->length == 12);

@@ -30,7 +30,6 @@ void assert_deserialize_pdu_join_works(){
     mock_serialized_pdu[10] = 'o';
     mock_serialized_pdu[11] = 'o';
     pdu_join* deserialized_pdu = pdu_join_deserialize(mock_serialized_pdu);
-    fprintf(stderr, "%s\n", (char*)deserialized_pdu->identity);
     assert(strcmp((char*)deserialized_pdu->identity, string) == 0);
     free(mock_serialized_pdu);
     free(deserialized_pdu);
