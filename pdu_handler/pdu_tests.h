@@ -8,8 +8,8 @@
 #include "pdu_quit_tests.h"
 #include "pdu_mess_tests.h"
 #include "pdu_particpants_tests.h"
-//#include "server-nameserver/pdu_handler_server-nameserver.h"
-//#include "server-nameserver/test_pdu_handler_server-nameserver.h"
+#include "server-nameserver/pdu_handler_server-nameserver.h"
+#include "server-nameserver/test_pdu_handler_server-nameserver.h"
 
 
 void run_all_tests();
