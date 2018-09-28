@@ -65,6 +65,10 @@ typedef struct pdu_pjoin{
 } pdu_pjoin;
 
 pdu_quit* pdu_quit_create();
+
+
+pdu_quit* pdu_quit_deserialize(void* quit_pdu);
+void* pdu_quit_serialize(PDU* join_pdu);
 pdu_join* pdu_join_create(char* identity);
 pdu_mess* pdu_mess_create(char* identity, char* message);
 pdu_participants* pdu_participants_create(char* participants[], int num_participants);
