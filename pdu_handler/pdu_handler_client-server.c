@@ -2,9 +2,6 @@
 #include "pdu_tests.h"
 
 
-uint32_t *build_participant_words(char *participants, int num_participants);
-
-size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants);
 
 pdu_quit *pdu_quit_create() {
     pdu_quit *pdu = calloc(1, sizeof(pdu_quit));
@@ -72,24 +69,27 @@ pdu_participants *pdu_participants_create(char *participants, int num_participan
     pdu->length = (uint16_t) get_size_of_participants(pdu->participant_names, pdu->num_identities);
 }
 
+
 void *pdu_particiapants_serialize(PDU *pdu) {
     pdu_participants *pdu_partici = (pdu_participants *) pdu;
     char *data_to_send = calloc(sizeof(char), (1 + 1 + 2 + ((size_t) get_num_words(pdu_partici->length, 4)) * 4));
     memcpy(data_to_send, &pdu_partici->op, 1);
-    memcpy(data_to_send, &pdu_partici->num_identities, 1);
-    memcpy(data_to_send, &pdu_partici->length, 2);
-    memcpy(data_to_send, &pdu_partici->participant_names, (size_t) get_num_words(pdu_partici->length, 4) * 4);
+    memcpy(data_to_send + 1, &pdu_partici->num_identities, 1);
+    memcpy(data_to_send + 2, &pdu_partici->length, 2);
+    memcpy(data_to_send + 4, pdu_partici->participant_names, (size_t) get_num_words(pdu_partici->length, 4) * 4);
     return data_to_send;
 }
 
-pdu_participants pdu_participants_deserialize(void *participants_data) {
+pdu_participants *pdu_participants_deserialize(void *participants_data) {
     uint8_t *pdu = participants_data;
     pdu_participants *pdu_to_return = calloc(1, sizeof(pdu_participants));
     pdu_to_return->op = OP_PARTICIPANTS;
     pdu_cpy_chars(&pdu_to_return->num_identities, pdu, 1, 1);
     pdu_cpy_chars(&pdu_to_return->length, pdu, 2, 2);
-    pdu_cpy_chars(&pdu_to_return->participant_names, pdu, 4,
-                  (size_t) get_num_words(pdu_to_return->num_identities, 4) * 4);
+    pdu_to_return->participant_names = calloc(sizeof(uint32_t), (size_t)get_num_words(pdu_to_return->length, 4));
+    pdu_cpy_chars(pdu_to_return->participant_names, pdu, 4,
+                  (size_t) get_num_words(pdu_to_return->length, 4) * 4);
+    return pdu_to_return;
 }
 
 size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants) {
