@@ -2,7 +2,6 @@
 #include "pdu_tests.h"
 
 
-
 pdu_quit *pdu_quit_create() {
     pdu_quit *pdu = calloc(1, sizeof(pdu_quit));
     pdu->op = OP_QUIT;
@@ -69,13 +68,10 @@ pdu_participants *pdu_participants_create(char *participants, int num_participan
     pdu->length = (uint16_t) get_size_of_participants(pdu->participant_names, pdu->num_identities);
 }
 
-
-void *pdu_particiapants_serialize(PDU *pdu) {
+void *pdu_participants_serialize(PDU *pdu) {
     pdu_participants *pdu_partici = (pdu_participants *) pdu;
     char *data_to_send = calloc(sizeof(char), (1 + 1 + 2 + ((size_t) get_num_words(pdu_partici->length, 4)) * 4));
-    memcpy(data_to_send, &pdu_partici->op, 1);
-    memcpy(data_to_send + 1, &pdu_partici->num_identities, 1);
-    memcpy(data_to_send + 2, &pdu_partici->length, 2);
+    pdu_cpy_chars(data_to_send, pdu_partici, 0, 4);
     memcpy(data_to_send + 4, pdu_partici->participant_names, (size_t) get_num_words(pdu_partici->length, 4) * 4);
     return data_to_send;
 }
@@ -86,11 +82,76 @@ pdu_participants *pdu_participants_deserialize(void *participants_data) {
     pdu_to_return->op = OP_PARTICIPANTS;
     pdu_cpy_chars(&pdu_to_return->num_identities, pdu, 1, 1);
     pdu_cpy_chars(&pdu_to_return->length, pdu, 2, 2);
-    pdu_to_return->participant_names = calloc(sizeof(uint32_t), (size_t)get_num_words(pdu_to_return->length, 4));
+    pdu_to_return->participant_names = calloc(sizeof(uint32_t), (size_t) get_num_words(pdu_to_return->length, 4));
     pdu_cpy_chars(pdu_to_return->participant_names, pdu, 4,
                   (size_t) get_num_words(pdu_to_return->length, 4) * 4);
     return pdu_to_return;
 }
+
+pdu_mess *pdu_mess_create(char *identity, char *message) {
+    pdu_mess *pdu = calloc(1, sizeof(pdu_mess));
+    pdu->op = OP_MESS;
+    pdu->identity_length = (uint8_t) strlen(identity);
+    pdu->checksum = create_checksum(message);
+    pdu->message_length = (uint16_t) strlen(message);
+    pdu->timestamp = (uint32_t) time;
+    pdu->message = build_words(message, 4);
+    pdu->client_identity = build_words(identity, 4);
+}
+
+size_t pdu_mess_size(pdu_mess *mess) {
+    return sizeof(pdu_mess) + get_num_words(mess->message_length, 4) * 4 + get_num_words(mess->identity_length, 4) * 4 - 2 * sizeof(uint32_t);
+}
+
+void *pdu_mess_serialize(PDU *pdu) {
+    pdu_mess *pdu_message = (pdu_mess *) pdu;
+    char *data_to_send = calloc(sizeof(char), pdu_mess_size(pdu_message));
+    pdu_cpy_chars(data_to_send, pdu_message, 0, 12);
+    pdu_cpy_chars(data_to_send + 12, pdu_message->message, 0,
+                  (size_t) get_num_words(pdu_message->message_length, 4) * 4);
+    pdu_cpy_chars(data_to_send + 12 + get_num_words(pdu_message->message_length, 4) * 4, pdu_message->client_identity, 0,
+                  (size_t) get_num_words(pdu_message->identity_length, 4) * 4);
+    return data_to_send;
+}
+
+pdu_mess* pdu_mess_deserialize(void* mess_data){
+    uint8_t *pdu = mess_data;
+    pdu_mess *pdu_to_return = calloc(1, sizeof(pdu_mess));
+    pdu_to_return->op = OP_MESS;
+    pdu_cpy_chars(&pdu_to_return->num_identities, pdu, 1, 1);
+    pdu_cpy_chars(&pdu_to_return->length, pdu, 2, 2);
+    pdu_to_return->participant_names = calloc(sizeof(uint32_t), (size_t) get_num_words(pdu_to_return->length, 4));
+    pdu_cpy_chars(pdu_to_return->participant_names, pdu, 4,
+                  (size_t) get_num_words(pdu_to_return->length, 4) * 4);
+    return pdu_to_return;
+}
+
+bool pdu_mess_validate(PDU *pdu) {
+    pdu_mess *real_pdu = (pdu_mess *) pdu;
+    if (create_checksum((char *) real_pdu->message) == real_pdu->checksum) {
+        return true;
+    }
+    return false;
+}
+
+//
+//pdu_pleave* pdu_pleave_create(char* identity){
+//    pdu_pleave* pdu = calloc(1, sizeof(pdu_pleave));
+//    pdu->op = OP_PLEAVE;
+//    pdu->identity_length = (uint8_t) strlen(identity);
+//    pdu->padding_identity_length = add_padding(2);
+//    pdu->timestamp = (uint32_t) time;
+//    pdu->client_identity = build_words(identity, 4);
+//}
+//
+//pdu_pjoin* pdu_pjoin_create(char* identity){
+//    pdu_pjoin* pdu = calloc(1, sizeof(pdu_pjoin));
+//    pdu->op = OP_PLEAVE;
+//    pdu->identity_length = (uint8_t) strlen(identity);
+//    pdu->padding_identity_length = add_padding(2);
+//    pdu->timestamp = (uint32_t) time;
+//    pdu->client_identity = build_words(identity, 4);
+//}
 
 size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants) {
     size_t size = 0;
@@ -116,33 +177,3 @@ uint32_t *build_participant_words(char *participants, int num_participants) {
     }
     return words;
 }
-
-//pdu_mess* pdu_mess_create(char* identity, char* message){
-//    pdu_mess* pdu = calloc(1, sizeof(pdu_mess));
-//    pdu->op = OP_MESS;
-//    pdu->padding_op = (uint8_t) add_padding(1);
-//    pdu->identity_length = (uint8_t) strlen(identity);
-//    pdu->checksum = create_checksum(message);
-//    pdu->message_length = (uint16_t) strlen(message);
-//    pdu->timestamp = (uint32_t) time;
-//    pdu->message = build_words(message, 4);
-//    pdu->client_identity = build_words(identity, 4);
-//}
-//
-//pdu_pleave* pdu_pleave_create(char* identity){
-//    pdu_pleave* pdu = calloc(1, sizeof(pdu_pleave));
-//    pdu->op = OP_PLEAVE;
-//    pdu->identity_length = (uint8_t) strlen(identity);
-//    pdu->padding_identity_length = add_padding(2);
-//    pdu->timestamp = (uint32_t) time;
-//    pdu->client_identity = build_words(identity, 4);
-//}
-//
-//pdu_pjoin* pdu_pjoin_create(char* identity){
-//    pdu_pjoin* pdu = calloc(1, sizeof(pdu_pjoin));
-//    pdu->op = OP_PLEAVE;
-//    pdu->identity_length = (uint8_t) strlen(identity);
-//    pdu->padding_identity_length = add_padding(2);
-//    pdu->timestamp = (uint32_t) time;
-//    pdu->client_identity = build_words(identity, 4);
-//}

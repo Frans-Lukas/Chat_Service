@@ -8,6 +8,7 @@
 #include "pdu_handler_client-server.h"
 #include "pdu_join_tests.h"
 #include "pdu_quit_tests.h"
+#include "pdu_mess_tests.h"
 #include "pdu_particpants_tests.h"
 
 void run_all_tests();
