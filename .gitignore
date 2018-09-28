@@ -5,3 +5,5 @@
 !.gitignore
 !*.txt
 !pdu_handler
+!client-nameserver
+!server-nameserver
