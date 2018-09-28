@@ -4,52 +4,121 @@
 #include "pdu_handler_server-nameserver.h"
 #include <string.h>
 
+void run_all_reg_test() {
+    test_deserialize_reg();
+    test_serialize_reg();
 
-static char* server_name = "ab";
-static int server_name_length = 2;
-static int port = 1337;
+    test_serialize_alive();
+    test_deserialize_alive();
 
-void run_all_reg_test(){
-    test_deserialize();
-    test_creating_reg_with_valid_arguments();
+    test_serialize_ack();
+    test_deserialize_ack();
+
+    test_serialize_not_reg();
+    test_deserialize_not_reg();
 }
 
-void test_creating_reg_with_valid_arguments(){
-    reg* r = create_REG(server_name, server_name_length, port);
+void test_serialize_not_reg() {
+    not_reg *pdu = calloc(1, sizeof(not_reg));
+    pdu->pdu.op = OP_NOTREG;
+    pdu->pad = 42;
+    pdu->id_number = 1337;
 
-    assert(r !=  NULL);
-    assert(strcmp((char*)r->server_name, server_name) == 0);
+    uint8_t *data = not_reg_serialize(pdu);
+    assert(data[0] == OP_NOTREG);
+    assert(data[1] == 42);
+    assert(*(uint16_t *) (data + 2) == 1337);
+}
+
+void test_deserialize_not_reg() {
+    uint8_t *data = calloc(4, sizeof(uint8_t));
+    data[0] = OP_NOTREG;
+    data[1] = 42;
+    *(uint16_t *) (data + 2) = 1337;
+
+    not_reg *pdu = not_reg_deserialize(data);
+
+    assert(pdu->pdu.op == OP_NOTREG);
+    assert(pdu->pad == 42);
+    assert(pdu->id_number == 1337);
+}
+
+void test_serialize_ack() {
+    ack *pdu = calloc(1, sizeof(ack));
+    pdu->pdu.op = OP_ACK;
+    pdu->pad = 42;
+    pdu->id_number = 1337;
+
+    uint8_t *data = ack_serialize(pdu);
+    assert(data[0] == OP_ACK);
+    assert(data[1] == 42);
+    assert(*(uint16_t *) (data + 2) == 1337);
+}
+
+void test_deserialize_ack() {
+    uint8_t *data = calloc(4, sizeof(uint8_t));
+    data[0] = OP_ACK;
+    data[1] = 42;
+    *(uint16_t *) (data + 2) = 1337;
+
+    ack *pdu = ack_deserilize(data);
+
+    assert(pdu->pdu.op == OP_ACK);
+    assert(pdu->pad == 42);
+    assert(pdu->id_number == 1337);
+}
+
+void test_serialize_alive() {
+    alive *pdu = calloc(1, sizeof(alive));
+    pdu->pdu.op = OP_ALIVE;
+    pdu->id_number = (uint16_t) 1337;
+    pdu->nr_of_clients = (uint8_t) 6;
+    uint8_t *data = alive_serialize(pdu);
+
+    assert(data[0] == OP_ALIVE);
+    assert(data[1] == 6);
+    assert(*(uint16_t *) (data + 2) == 1337);
+}
+
+void test_deserialize_alive() {
+    uint8_t *data = calloc(4, sizeof(uint8_t));
+    data[0] = OP_ALIVE;
+    data[1] = 6;
+    *((uint16_t *) (data + 2)) = 1337;
+
+    alive *pdu = alive_deserialize(data);
+    assert(pdu != NULL);
+    assert(pdu->pdu.op == OP_ALIVE);
+    assert(pdu->nr_of_clients == 6);
+    assert(pdu->id_number == 1337);
+}
+
+void test_serialize_reg() {
+    reg *pdu = calloc(1, sizeof(reg));
+    pdu->pdu.op = OP_REG;
+    pdu->server_name_length = 2;
+    pdu->tcp_port = (uint16_t) 1337;
+    pdu->server_name = calloc(1, sizeof(uint32_t));
+    strncpy((char *) pdu->server_name, "ab", 2);
+
+    uint8_t *data = reg_serialize(pdu);
+
+    assert(data[0] == OP_REG);
+    assert(data[1] == 2);
+    assert(*((uint16_t *) (data + 2)) == 1337);
+    assert(strncmp((char *) ((data + 4)), "ab", 2) == 0);
+}
+
+void test_deserialize_reg() {
+    uint8_t *data = calloc(10, sizeof(uint8_t));
+    data[0] = OP_REG;
+    data[1] = 2;
+    *((uint16_t *) (data + 2)) = 1337;
+    strncpy((char *) &data[4], "ab", 2);
+
+    reg *r = reg_deserialize(data);
+    assert(r != NULL);
     assert(r->tcp_port == 1337);
-    assert(r->server_name_length == 6);
-}
-
-void test_serialize(){
-    //void *ptr = reg_serialize();
-}
-
-void test_deserialize(){
-//    char source[12];
-//    FILE *fp = fopen("/home/dv16/dv16jjo/edu/DOD_OU2/Chat_Service/pdu_handler/data.pdu", "r");
-//    if (fp != NULL) {
-//        size_t newLen = fread(source, sizeof(char), 12, fp);
-//        if ( ferror( fp ) != 0 ) {
-//            fputs("Error reading file", stderr);
-//        } else {
-//            source[newLen++] = '\0'; /* Just to be safe. */
-//        }
-//        fclose(fp);
-//    }
-//
-    char* pdu2 = calloc(10, 1);
-    pdu2[0] = 0;
-    pdu2[1] = 2;
-    pdu2[2] = 57;
-    pdu2[3] = 5;
-    pdu2[4] = 'a';
-    pdu2[5] = 'b';
-    reg* r = reg_deserialize(&pdu2);
-    assert(r !=  NULL);
-    assert(r->tcp_port == port);
-    assert(r->server_name_length == server_name_length);
-    assert(strcmp((char*)r->server_name, server_name) == 0);
+    assert(r->server_name_length == 2);
+    assert(strcmp((char *) r->server_name, "ab") == 0);
 }

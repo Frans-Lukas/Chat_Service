@@ -16,9 +16,37 @@ typedef struct reg{
     uint16_t tcp_port;
     uint32_t* server_name;
 } reg;
+
+typedef struct alive{
+    PDU pdu;
+    uint8_t nr_of_clients;
+    uint16_t id_number;
+} alive;
+
+typedef struct ack{
+    PDU pdu;
+    uint8_t pad;
+    uint16_t id_number;
+}ack;
+
+typedef struct not_reg{
+    PDU pdu;
+    uint8_t pad;
+    uint16_t id_number;
+} not_reg;
+
 uint32_t *build_words(char* input_string, int bytes);
-reg* create_REG(char* server_name, int server_name_length, int tcp_port);
-reg* reg_deserialize(void *ptr);
+
 void* reg_serialize(reg* pdu);
+reg* reg_deserialize(void *ptr);
+
+void* alive_serialize(alive *pdu);
+alive* alive_deserialize(void *ptr);
+
+void* ack_serialize(ack* pdu);
+ack* ack_deserilize(void* ptr);
+
+void* not_reg_serialize(not_reg* pdu);
+not_reg* not_reg_deserialize(void* ptr);
 #endif //CHAT_SERVICE_PDU_HANDLER_SERVER_NAMESERVER_H
 
