@@ -67,6 +67,8 @@ typedef struct pdu_pjoin{
 pdu_quit* pdu_quit_create();
 
 
+void *pdu_mess_serialize(PDU *pdu);
+pdu_mess* pdu_mess_deserialize(void* mess_data);
 pdu_quit* pdu_quit_deserialize(void* quit_pdu);
 void* pdu_quit_serialize(PDU* join_pdu);
 pdu_join* pdu_join_create(char* identity);
