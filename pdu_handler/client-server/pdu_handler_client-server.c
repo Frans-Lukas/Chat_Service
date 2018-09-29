@@ -114,22 +114,19 @@ void *pdu_mess_serialize(PDU *pdu) {
     return data_to_send;
 }
 
-//pdu_mess* pdu_mess_deserialize(void* mess_data){
-//    uint8_t *pdu = mess_data;
-//    pdu_mess *pdu_to_return = calloc(1, sizeof(pdu_mess));
-//    pdu_to_return->op = OP_MESS;
-//    pdu_cpy_chars(&pdu_to_return->identity_length, pdu, 2, 1);
-//    pdu_cpy_chars(&pdu_to_return->checksum, pdu, 3, 1);
-//    pdu_cpy_chars(&pdu_to_return->message_length, pdu, 4, 2);
-//    pdu_cpy_chars(&pdu_to_return->timestamp, pdu, 8, 4);
-//    size_t message_size = (size_t) (get_num_words(pdu_to_return->message_length, 4) * 4);
-//    pdu_cpy_chars(pdu_to_return->message, pdu, 12, message_size);
-//    pdu_cpy_chars(pdu_to_return->client_identity, pdu, (int) (12 + message_size), (size_t) get_num_words(pdu_to_return->message_length, 4) * 4);
-//    pdu_to_return->participant_names = calloc(sizeof(uint32_t), (size_t) get_num_words(pdu_to_return->length, 4));
-//    pdu_cpy_chars(pdu_to_return->participant_names, pdu, 4,
-//                  (size_t) get_num_words(pdu_to_return->length, 4) * 4);
-//    return pdu_to_return;
-//}
+pdu_mess* pdu_mess_deserialize(void* mess_data){
+    uint8_t *pdu = mess_data;
+    pdu_mess *pdu_to_return = calloc(1, sizeof(pdu_mess));
+    pdu_to_return->op = OP_MESS;
+    pdu_cpy_chars(&pdu_to_return->identity_length, pdu, 2, 1);
+    pdu_cpy_chars(&pdu_to_return->checksum, pdu, 3, 1);
+    pdu_cpy_chars(&pdu_to_return->message_length, pdu, 4, 2);
+    pdu_cpy_chars(&pdu_to_return->timestamp, pdu, 8, 4);
+    size_t message_size = (size_t) (get_num_words(pdu_to_return->message_length, 4) * 4);
+    pdu_cpy_chars(pdu_to_return->message, pdu, 12, message_size);
+    pdu_cpy_chars(pdu_to_return->client_identity, pdu, (int) (12 + message_size), (size_t) get_num_words(pdu_to_return->client_identity, 4) * 4);
+    return pdu_to_return;
+}
 
 bool pdu_mess_validate(PDU *pdu) {
     pdu_mess *real_pdu = (pdu_mess *) pdu;
