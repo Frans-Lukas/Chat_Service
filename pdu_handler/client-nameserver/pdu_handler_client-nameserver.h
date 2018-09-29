@@ -9,7 +9,7 @@
 
 typedef struct get_list {
     PDU pdu;
-    uint8_t pad;
+    uint8_t *pad;
 } get_list;
 
 typedef struct s_list {
@@ -23,8 +23,12 @@ typedef struct s_list {
     uint32_t *server_name;
 } s_list;
 
-s_list* s_list_deserialize(void* ptr);
-void* s_list_serialize(s_list* pdu);
+s_list *s_list_deserialize(void *ptr);
 
+void *s_list_serialize(s_list *pdu);
+
+get_list *get_list_deserialize(void *ptr);
+
+void *get_list_serialize(get_list *pdu);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_NAMESERVER_H

@@ -29,3 +29,16 @@ s_list *s_list_deserialize(void *ptr) {
     return pdu;
 }
 
+void *get_list_serialize(get_list* pdu){
+    uint8_t *data = calloc(1, sizeof(uint32_t));
+    data[0] = pdu->pdu.op;
+    return data;
+}
+
+get_list* get_list_deserialize(void* ptr){
+    get_list* pdu = calloc(1, sizeof(get_list));
+    pdu->pdu.op = OP_GETLIST;
+    pdu->pad = calloc(3, sizeof(uint8_t));
+    return pdu;
+}
+
