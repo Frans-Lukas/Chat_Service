@@ -25,7 +25,7 @@ s_list *s_list_deserialize(void *ptr) {
     pdu->number_of_clients = data[10];
     pdu->server_name_length = data[11];
     pdu->server_name = calloc(pdu->server_name_length, sizeof(uint8_t));
-    memcpy(pdu->server_name, &data[14], pdu->server_name_length);
+    memcpy(pdu->server_name, &data[12], pdu->server_name_length);
     return pdu;
 }
 
