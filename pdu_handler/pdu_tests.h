@@ -10,6 +10,7 @@
 #include "pdu_particpants_tests.h"
 #include "server-nameserver/pdu_handler_server-nameserver.h"
 #include "server-nameserver/test_pdu_handler_server-nameserver.h"
+#include <pdu_handler/client-nameserver/test_pdu_handler_client-nameserver.h>
 
 
 void run_all_tests();
