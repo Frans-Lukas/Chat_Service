@@ -6,6 +6,7 @@
 #include "pdu_handler/client-server/pdu_handler_client-server.h"
 #include "pdu_handler/client-server/pdu_join_tests.h"
 #include "pdu_handler/client-server/pdu_quit_tests.h"
+#include "pdu_handler/client-server/pdu_pleave_tests.h"
 #include "pdu_handler/client-server/pdu_mess_tests.h"
 #include "pdu_handler/client-server/pdu_particpants_tests.h"
 #include "server-nameserver/pdu_handler_server-nameserver.h"

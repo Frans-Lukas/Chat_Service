@@ -9,5 +9,6 @@ void run_all_tests() {
     run_pdu_participants_tests();
     run_pdu_mess_tests();
     run_all_server_nameserver_tests();
+    run_pdu_pleave_tests();
     fprintf(stderr, "All tests successful!\n");
 }

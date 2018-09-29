@@ -83,5 +83,6 @@ uint32_t *build_participant_words(char *participants, int num_participants);
 size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants);
 void *pdu_participants_serialize(PDU *pdu);
 pdu_participants *pdu_participants_deserialize(void *participants_data);
-
+void *pdu_pleave_serialize(PDU *pleave_data);
+pdu_pleave *pdu_pleave_deserialize(void *pleave_data);
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H

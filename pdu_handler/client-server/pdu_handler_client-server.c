@@ -128,13 +128,13 @@ pdu_mess *pdu_mess_deserialize(void *mess_data) {
     size_t message_size = (size_t) get_num_words(pdu_to_return->message_length, 4) * 4;
     pdu_to_return->message = calloc(1, message_size);
     pdu_cpy_chars(pdu_to_return->message, pdu, 12, message_size);
-    size_t identity_size = (size_t) get_num_words( pdu_to_return->identity_length, 4) * 4;
+    size_t identity_size = (size_t) get_num_words(pdu_to_return->identity_length, 4) * 4;
     pdu_to_return->client_identity = calloc(1, identity_size);
     pdu_cpy_chars(pdu_to_return->client_identity, pdu, (int) (12 + message_size), identity_size);
     return pdu_to_return;
 }
 
-bool pdu_mess_validate(PDU *pdu) {
+bool pdu_mess_is_valid(PDU *pdu) {
     pdu_mess *real_pdu = (pdu_mess *) pdu;
     if (create_checksum((char *) real_pdu->message) == real_pdu->checksum) {
         return true;
@@ -143,14 +143,34 @@ bool pdu_mess_validate(PDU *pdu) {
 }
 
 //
-//pdu_pleave* pdu_pleave_create(char* identity){
-//    pdu_pleave* pdu = calloc(1, sizeof(pdu_pleave));
-//    pdu->op = OP_PLEAVE;
-//    pdu->identity_length = (uint8_t) strlen(identity);
-//    pdu->padding_identity_length = add_padding(2);
-//    pdu->timestamp = (uint32_t) time;
-//    pdu->client_identity = build_words(identity, 4);
-//}
+pdu_pleave *pdu_pleave_create(char *identity) {
+    pdu_pleave *pdu = calloc(1, sizeof(pdu_pleave));
+    pdu->op = OP_PLEAVE;
+    pdu->identity_length = (uint8_t) strlen(identity);
+    pdu->timestamp = (uint32_t) time;
+    pdu->client_identity = build_words(identity, 4);
+}
+
+
+pdu_pleave *pdu_pleave_deserialize(void *pleave_data) {
+    uint8_t *pdu = pleave_data;
+    pdu_pleave *pdu_to_return = calloc(1, sizeof(pdu_pleave));
+    pdu_to_return->op = OP_PLEAVE;
+    pdu_cpy_chars(&pdu_to_return->identity_length, pdu, 1, 1);
+    pdu_cpy_chars(&pdu_to_return->timestamp, pdu, 4, 4);
+    pdu_to_return->client_identity = calloc(1, pdu_to_return->identity_length);
+    pdu_cpy_chars(pdu_to_return->client_identity, pdu, 8, pdu_to_return->identity_length);
+    return pdu_to_return;
+}
+
+void *pdu_pleave_serialize(PDU *pleave_data) {
+    pdu_pleave *pdu = (pdu_pleave *) pleave_data;
+    char *data_to_send = calloc(sizeof(char), sizeof(pdu_pleave) + pdu->identity_length);
+    pdu_cpy_chars(data_to_send, pdu, 0, 8);
+    pdu_cpy_chars(data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
+    return data_to_send;
+}
+
 //
 //pdu_pjoin* pdu_pjoin_create(char* identity){
 //    pdu_pjoin* pdu = calloc(1, sizeof(pdu_pjoin));
