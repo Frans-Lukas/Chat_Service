@@ -11,7 +11,7 @@ void run_pdu_mess_tests(){
 }
 
 void assert_deserialize_pdu_mess_works() {
-    char* mock_serialized_pdu = calloc(1, 1);
+    char* mock_serialized_pdu = calloc(1, );
     mock_serialized_pdu[0] = OP_QUIT;
     pdu_quit* deserialized_pdu = pdu_quit_deserialize(mock_serialized_pdu);
     assert(deserialized_pdu->op == OP_QUIT);

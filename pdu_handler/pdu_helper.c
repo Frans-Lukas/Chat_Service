@@ -18,7 +18,7 @@ uint16_t add_padding(void* start_pos, int num_bytes_to_pad) {
 }
 
 __uint8_t create_checksum(char *message) {
-    return 0x1;
+    return 0x1f;
 }
 
 bool data_is_divisible_by_four(char* data){
@@ -49,7 +49,6 @@ char *array_to_string(char *pString[], int list_length) {
 
     return string;
 }
-
 
 char** string_to_string_array(char *string, int num_strings, char* dest[]) {
     char* current_pointer_position = string;
