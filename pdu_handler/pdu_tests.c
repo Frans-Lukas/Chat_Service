@@ -10,5 +10,7 @@ void run_all_tests() {
     run_pdu_mess_tests();
     run_all_server_nameserver_tests();
     run_all_client_nameserver_test();
+    run_pdu_pleave_tests();
+    run_pdu_pjoin_tests();
     fprintf(stderr, "All tests successful!\n");
 }
