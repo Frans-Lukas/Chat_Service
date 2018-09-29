@@ -171,15 +171,33 @@ void *pdu_pleave_serialize(PDU *pleave_data) {
     return data_to_send;
 }
 
-//
-//pdu_pjoin* pdu_pjoin_create(char* identity){
-//    pdu_pjoin* pdu = calloc(1, sizeof(pdu_pjoin));
-//    pdu->op = OP_PLEAVE;
-//    pdu->identity_length = (uint8_t) strlen(identity);
-//    pdu->padding_identity_length = add_padding(2);
-//    pdu->timestamp = (uint32_t) time;
-//    pdu->client_identity = build_words(identity, 4);
-//}
+
+pdu_pjoin* pdu_pjoin_create(char* identity){
+    pdu_pjoin* pdu = calloc(1, sizeof(pdu_pjoin));
+    pdu->op = OP_PJOIN;
+    pdu->identity_length = (uint8_t) strlen(identity);
+    pdu->timestamp = (uint32_t) time;
+    pdu->client_identity = build_words(identity, 4);
+}
+
+pdu_pjoin *pdu_pjoin_deserialize(void *pleave_data) {
+    uint8_t *pdu = pleave_data;
+    pdu_pjoin *pdu_to_return = calloc(1, sizeof(pdu_pjoin));
+    pdu_to_return->op = OP_PJOIN;
+    pdu_cpy_chars(&pdu_to_return->identity_length, pdu, 1, 1);
+    pdu_cpy_chars(&pdu_to_return->timestamp, pdu, 4, 4);
+    pdu_to_return->client_identity = calloc(1, pdu_to_return->identity_length);
+    pdu_cpy_chars(pdu_to_return->client_identity, pdu, 8, pdu_to_return->identity_length);
+    return pdu_to_return;
+}
+
+void *pdu_pjoin_serialize(PDU *pjoin_data) {
+    pdu_pjoin *pdu = (pdu_pjoin *) pjoin_data;
+    char *data_to_send = calloc(sizeof(char), sizeof(pdu_pjoin) + pdu->identity_length);
+    pdu_cpy_chars(data_to_send, pdu, 0, 8);
+    pdu_cpy_chars(data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
+    return data_to_send;
+}
 
 size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants) {
     size_t size = 0;

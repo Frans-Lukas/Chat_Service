@@ -85,4 +85,6 @@ void *pdu_participants_serialize(PDU *pdu);
 pdu_participants *pdu_participants_deserialize(void *participants_data);
 void *pdu_pleave_serialize(PDU *pleave_data);
 pdu_pleave *pdu_pleave_deserialize(void *pleave_data);
+pdu_pjoin *pdu_pjoin_deserialize(void *pleave_data);
+void *pdu_pjoin_serialize(PDU *pjoin_data);
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H
