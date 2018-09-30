@@ -11,13 +11,13 @@ pdu_quit *pdu_quit_create() {
 
 pdu_quit *pdu_quit_deserialize(int fd) {
     pdu_quit *pdu_to_return = calloc(1, sizeof(pdu_quit));
-    if(read(fd, &pdu_to_return->op, 1) < 0){
+    if (read(fd, &pdu_to_return->op, 1) < 0) {
         perror_exit("read()");
     }
     return pdu_to_return;
 }
 
-int pdu_quit_serialize(PDU *join_pdu, char* data_to_send) {
+int pdu_quit_serialize(PDU *join_pdu, char *data_to_send) {
     pdu_quit *pdu = (pdu_quit *) join_pdu;
     data_to_send = calloc(1, sizeof(pdu_quit));
     memcpy(data_to_send, &pdu->op, 1);
@@ -35,7 +35,7 @@ pdu_join *pdu_join_create(char *identity) {
     pdu->identity = build_words(identity, 4);
 }
 
-int pdu_join_serialize(PDU *join_pdu, char* data_to_send) {
+int pdu_join_serialize(PDU *join_pdu, char *data_to_send) {
     pdu_join *pdu = (pdu_join *) join_pdu;
     int size_of_data = (4 + pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4));
     data_to_send = calloc(1, (size_t) size_of_data);
@@ -46,14 +46,16 @@ int pdu_join_serialize(PDU *join_pdu, char* data_to_send) {
     return size_of_data;
 }
 
-
 pdu_join *pdu_join_deserialize(int fd) {
-//    pdu_join *pdu_to_return = calloc(1, sizeof(pdu_join));
-//    pdu_to_return->op = OP_JOIN;
-//    read(fd, &pdu_to_return->identity_length, 1);
-//    uint8_t length = pdu_to_return->identity_length;
-//    pdu_to_return->identity = string_to_words((char *) &pdu[4], length);
-//    return pdu_to_return;
+    pdu_join *pdu_to_return = calloc(1, sizeof(pdu_join));
+    pdu_to_return->op = OP_JOIN;
+    read_from_fd(fd, &pdu_to_return->identity_length, 1);
+    uint8_t length = pdu_to_return->identity_length;
+    read_from_fd(fd, &pdu_to_return->padding, 2);
+    char *identity = calloc(1, pdu_to_return->identity_length);
+    read_from_fd(fd, identity, pdu_to_return->identity_length);
+    pdu_to_return->identity = string_to_words(identity, length);
+    return pdu_to_return;
 }
 
 /**
@@ -174,8 +176,8 @@ void *pdu_pleave_serialize(PDU *pleave_data) {
 }
 
 
-pdu_pjoin* pdu_pjoin_create(char* identity){
-    pdu_pjoin* pdu = calloc(1, sizeof(pdu_pjoin));
+pdu_pjoin *pdu_pjoin_create(char *identity) {
+    pdu_pjoin *pdu = calloc(1, sizeof(pdu_pjoin));
     pdu->op = OP_PJOIN;
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->timestamp = (uint32_t) time;

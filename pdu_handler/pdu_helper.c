@@ -77,7 +77,7 @@ void print_current_working_dirr(){
     }
 }
 
-int try_getting_fd_from_path(char* path){
+int open_fd(char *path){
     int fd = open("../pdu_handler/client-server/pdu_quit_test/data.pdu", O_RDONLY);
     if(fd < 0){
         perror_exit("open()");
