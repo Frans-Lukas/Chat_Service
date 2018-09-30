@@ -35,25 +35,25 @@ pdu_join *pdu_join_create(char *identity) {
     pdu->identity = build_words(identity, 4);
 }
 
-void *pdu_join_serialize(PDU *join_pdu) {
+int pdu_join_serialize(PDU *join_pdu, char* data_to_send) {
     pdu_join *pdu = (pdu_join *) join_pdu;
-    char *data_to_send = calloc(1, (size_t) (4 + pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4)));
+    int size_of_data = (4 + pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4));
+    data_to_send = calloc(1, (size_t) size_of_data);
     memcpy(data_to_send, &pdu->op, 1);
     memcpy(data_to_send + 1, &pdu->identity_length, 1);
     add_padding(data_to_send + 2, 2);
     memcpy(data_to_send + 4, pdu->identity, (size_t) pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4));
-    return data_to_send;
+    return size_of_data;
 }
 
 
-pdu_join *pdu_join_deserialize(void *join_pdu) {
-    uint8_t *pdu = join_pdu;
-    pdu_join *pdu_to_return = calloc(1, sizeof(pdu_join));
-    pdu_to_return->op = OP_JOIN;
-    pdu_to_return->identity_length = pdu[1];
-    uint8_t length = pdu[1];
-    pdu_to_return->identity = string_to_words((char *) &pdu[4], length);
-    return pdu_to_return;
+pdu_join *pdu_join_deserialize(int fd) {
+//    pdu_join *pdu_to_return = calloc(1, sizeof(pdu_join));
+//    pdu_to_return->op = OP_JOIN;
+//    read(fd, &pdu_to_return->identity_length, 1);
+//    uint8_t length = pdu_to_return->identity_length;
+//    pdu_to_return->identity = string_to_words((char *) &pdu[4], length);
+//    return pdu_to_return;
 }
 
 /**
