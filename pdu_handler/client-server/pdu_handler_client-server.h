@@ -79,7 +79,7 @@ pdu_participants* pdu_participants_create(char* participants, int num_participan
 pdu_pleave* pdu_pleave_create(char* identity);
 pdu_pjoin* pdu_pjoin_create(char* identity);
 pdu_join* pdu_join_deserialize(void* join_pdu);
-void* pdu_join_serialize(PDU* join_pdu);
+int pdu_join_serialize(PDU *join_pdu, char* data_to_send);
 bool pdu_join_is_valid(pdu_join* join);
 uint32_t *build_participant_words(char *participants, int num_participants);
 size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants);
