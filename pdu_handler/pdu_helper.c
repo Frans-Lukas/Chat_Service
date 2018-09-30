@@ -84,3 +84,9 @@ int try_getting_fd_from_path(char* path){
     }
     return fd;
 }
+
+void read_from_fd(int fd, void *destination, int size) {
+    if(read(fd, destination, size) < 0){
+        perror_exit("read()");
+    }
+}

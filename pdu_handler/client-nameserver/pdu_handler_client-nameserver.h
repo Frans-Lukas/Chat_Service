@@ -27,7 +27,7 @@ s_list *s_list_deserialize(void *ptr);
 
 void *s_list_serialize(s_list *pdu);
 
-get_list *get_list_deserialize(void *ptr);
+get_list *get_list_deserialize(int fd);
 
 void *get_list_serialize(get_list *pdu);
 
