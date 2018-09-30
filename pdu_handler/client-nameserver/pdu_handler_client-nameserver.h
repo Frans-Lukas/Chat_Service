@@ -29,6 +29,6 @@ void *s_list_serialize(s_list *pdu);
 
 get_list *get_list_deserialize(int fd);
 
-void *get_list_serialize(get_list *pdu);
+int get_list_serialize(get_list* pdu, char* data_to_send);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_NAMESERVER_H

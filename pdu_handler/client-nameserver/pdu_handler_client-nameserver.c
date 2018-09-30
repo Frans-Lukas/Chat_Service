@@ -2,9 +2,6 @@
 #include <zconf.h>
 #include "pdu_handler_client-nameserver.h"
 
-
-void read_from_fd(int fd, void *destination, int size);
-
 void *s_list_serialize(s_list *pdu) {
     uint8_t* data = calloc(12 + pdu->server_name_length, sizeof(uint8_t));
     data[0] = pdu->pdu.op;
@@ -32,19 +29,17 @@ s_list *s_list_deserialize(void *ptr) {
     return pdu;
 }
 
-void *get_list_serialize(get_list* pdu){
-    uint8_t *data = calloc(1, sizeof(uint32_t));
-    data[0] = pdu->pdu.op;
-    return data;
+int get_list_serialize(get_list* pdu, char* data_to_send){
+    data_to_send = calloc(1, sizeof(uint32_t));
+    data_to_send[0] = pdu->pdu.op;
+    return 4;
 }
 
 get_list* get_list_deserialize(int fd){
     get_list* pdu = calloc(1, sizeof(get_list));
-    read_from_fd(fd, pdu->pad, 3);
-
-
-    pdu->pdu.op = OP_GETLIST;
     pdu->pad = calloc(3, sizeof(uint8_t));
+    pdu->pdu.op = OP_GETLIST;
+    read_from_fd(fd, pdu->pad, 3);
     return pdu;
 }
 

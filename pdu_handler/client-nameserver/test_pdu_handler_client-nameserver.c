@@ -5,8 +5,8 @@
 void run_all_client_nameserver_test() {
     test_serialize_s_list();
     test_deserialize_s_list();
-    test_serialize_get_list();
-    test_deserialize_get_list();
+//    test_serialize_get_list();
+//    test_deserialize_get_list();
 }
 
 
@@ -63,17 +63,17 @@ void test_deserialize_s_list() {
     assert(strncmp((char*)pdu->server_name, "abcdefgh" ,8) == 0);
 }
 
-void test_serialize_get_list(){
-    get_list *pdu = calloc(1, sizeof(get_list));
-    pdu->pdu.op = OP_GETLIST;
-    pdu->pad = calloc(3, sizeof(uint8_t));
-    uint8_t* data = get_list_serialize(pdu);
-    assert(data[0] == OP_GETLIST);
-}
-
-void test_deserialize_get_list(){
-    uint8_t *data = calloc(1, sizeof(uint32_t));
-    data[0] = OP_GETLIST;
-    get_list *pdu = get_list_deserialize(data);
-    assert(pdu->pdu.op == OP_GETLIST);
-}
+//void test_serialize_get_list(){
+//    get_list *pdu = calloc(1, sizeof(get_list));
+//    pdu->pdu.op = OP_GETLIST;
+//    pdu->pad = calloc(3, sizeof(uint8_t));
+//    uint8_t* data = get_list_serialize(pdu);
+//    assert(data[0] == OP_GETLIST);
+//}
+//
+//void test_deserialize_get_list(){
+//    uint8_t *data = calloc(1, sizeof(uint32_t));
+//    data[0] = OP_GETLIST;
+//    get_list *pdu = get_list_deserialize(data);
+//    assert(pdu->pdu.op == OP_GETLIST);
+//}
