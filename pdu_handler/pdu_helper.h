@@ -25,6 +25,6 @@ bool data_is_divisible_by_four(char* data);
 char** string_to_string_array(char*, int, char*[]);
 uint32_t * string_to_words(char *string, int size);
 void pdu_cpy_chars(void* dest, void* src, int index, size_t num_bytes);
-
+void print_current_working_dirr();
 
 #endif //CHAT_SERVICE_PDU_HELPER_H

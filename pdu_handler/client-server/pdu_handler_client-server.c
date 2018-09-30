@@ -1,4 +1,4 @@
-//#include <gmpxx.h>
+#include <zconf.h>
 #include "pdu_handler_client-server.h"
 #include "pdu_tests.h"
 
@@ -9,17 +9,19 @@ pdu_quit *pdu_quit_create() {
     return pdu;
 }
 
-pdu_quit *pdu_quit_deserialize(void *quit_pdu) {
+pdu_quit *pdu_quit_deserialize(int fd) {
     pdu_quit *pdu_to_return = calloc(1, sizeof(pdu_quit));
-    pdu_to_return->op = ((uint8_t *) quit_pdu)[0];
+    if(read(fd, &pdu_to_return->op, 1) < 0){
+        perror_exit("read()");
+    }
     return pdu_to_return;
 }
 
-void *pdu_quit_serialize(PDU *join_pdu) {
+int pdu_quit_serialize(PDU *join_pdu, char* data_to_send) {
     pdu_quit *pdu = (pdu_quit *) join_pdu;
-    char *data_to_send = calloc(1, 1);
+    data_to_send = calloc(1, sizeof(pdu_quit));
     memcpy(data_to_send, &pdu->op, 1);
-    return data_to_send;
+    return sizeof(pdu_quit);
 }
 
 pdu_join *pdu_join_create(char *identity) {

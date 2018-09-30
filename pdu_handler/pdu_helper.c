@@ -1,3 +1,4 @@
+#include <zconf.h>
 #include "pdu_helper.h"
 
 uint32_t *build_words(char* input_string, int bytes){
@@ -66,3 +67,11 @@ void pdu_cpy_chars(void *dest, void *src, int index, size_t num_bytes) {
     memcpy(dest, ((char*)src) + index, num_bytes);
 }
 
+void print_current_working_dirr(){
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working dir: %s\n", cwd);
+    } else {
+        perror("getcwd() error");
+    }
+}

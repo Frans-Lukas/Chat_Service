@@ -32,6 +32,8 @@ typedef struct  pdu_participants{
 
 typedef struct pdu_quit{
     op_code op;
+    uint8_t pad1;
+    uint16_t pad2;
 } pdu_quit;
 
 typedef struct pdu_mess{
@@ -69,8 +71,8 @@ pdu_quit* pdu_quit_create();
 
 void *pdu_mess_serialize(PDU *pdu);
 pdu_mess* pdu_mess_deserialize(void* mess_data);
-pdu_quit* pdu_quit_deserialize(void* quit_pdu);
-void* pdu_quit_serialize(PDU* join_pdu);
+pdu_quit *pdu_quit_deserialize(int fd);
+int pdu_quit_serialize(PDU *join_pdu, char* data_to_send);
 pdu_join* pdu_join_create(char* identity);
 pdu_mess* pdu_mess_create(char* identity, char* message);
 pdu_participants* pdu_participants_create(char* participants, int num_participants);

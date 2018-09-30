@@ -4,12 +4,12 @@
 
 #include <assert.h>
 #include "pdu_handler/client-server/pdu_handler_client-server.h"
-#include "pdu_handler/client-server/pdu_join_tests.h"
-#include "pdu_handler/client-server/pdu_quit_tests.h"
-#include "pdu_handler/client-server/pdu_pleave_tests.h"
-#include "pdu_handler/client-server/pdu_pjoin_tests.h"
-#include "pdu_handler/client-server/pdu_mess_tests.h"
-#include "pdu_handler/client-server/pdu_particpants_tests.h"
+#include "pdu_handler/client-server/pdu_join_test/pdu_join_tests.h"
+#include "pdu_handler/client-server/pdu_quit_test/pdu_quit_tests.h"
+#include "pdu_handler/client-server/pdu_pleave_test/pdu_pleave_tests.h"
+#include "pdu_handler/client-server/pdu_pjoin_test/pdu_pjoin_tests.h"
+#include "pdu_handler/client-server/pdu_mess_test/pdu_mess_tests.h"
+#include "pdu_handler/client-server/pdu_participants_test/pdu_particpants_tests.h"
 #include "server-nameserver/pdu_handler_server-nameserver.h"
 #include "server-nameserver/test_pdu_handler_server-nameserver.h"
 #include <pdu_handler/client-nameserver/test_pdu_handler_client-nameserver.h>

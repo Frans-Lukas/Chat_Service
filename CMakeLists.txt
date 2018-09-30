@@ -16,18 +16,18 @@ add_executable(Chat_Service
         pdu_handler/client-nameserver/test_pdu_handler_client-nameserver.h
         pdu_handler/client-server/pdu_handler_client-server.c
         pdu_handler/client-server/pdu_handler_client-server.h
-        pdu_handler/client-server/pdu_join_tests.c
-        pdu_handler/client-server/pdu_join_tests.h
-        pdu_handler/client-server/pdu_mess_tests.c
-        pdu_handler/client-server/pdu_mess_tests.h
-        pdu_handler/client-server/pdu_particpants_tests.c
-        pdu_handler/client-server/pdu_particpants_tests.h
-        pdu_handler/client-server/pdu_pjoin_tests.c
-        pdu_handler/client-server/pdu_pjoin_tests.h
-        pdu_handler/client-server/pdu_pleave_tests.c
-        pdu_handler/client-server/pdu_pleave_tests.h
-        pdu_handler/client-server/pdu_quit_tests.c
-        pdu_handler/client-server/pdu_quit_tests.h
+        pdu_handler/client-server/pdu_join_test/pdu_join_tests.c
+        pdu_handler/client-server/pdu_join_test/pdu_join_tests.h
+        pdu_handler/client-server/pdu_mess_test/pdu_mess_tests.c
+        pdu_handler/client-server/pdu_mess_test/pdu_mess_tests.h
+        pdu_handler/client-server/pdu_participants_test/pdu_particpants_tests.c
+        pdu_handler/client-server/pdu_participants_test/pdu_particpants_tests.h
+        pdu_handler/client-server/pdu_pjoin_test/pdu_pjoin_tests.c
+        pdu_handler/client-server/pdu_pjoin_test/pdu_pjoin_tests.h
+        pdu_handler/client-server/pdu_pleave_test/pdu_pleave_tests.c
+        pdu_handler/client-server/pdu_pleave_test/pdu_pleave_tests.h
+        pdu_handler/client-server/pdu_quit_test/pdu_quit_tests.c
+        pdu_handler/client-server/pdu_quit_test/pdu_quit_tests.h
         pdu_handler/server-nameserver/pdu_handler_server-nameserver.c
         pdu_handler/server-nameserver/pdu_handler_server-nameserver.h
         pdu_handler/server-nameserver/test_pdu_handler_server-nameserver.c

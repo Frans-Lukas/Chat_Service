@@ -1,3 +1,5 @@
+#include <fcntl.h>
+#include <zconf.h>
 #include "pdu_quit_tests.h"
 
 void run_pdu_quit_tests(){
@@ -7,22 +9,25 @@ void run_pdu_quit_tests(){
 }
 
 void assert_deserialize_pdu_quit_works() {
-    char* mock_serialized_pdu = calloc(1, 1);
-    mock_serialized_pdu[0] = OP_QUIT;
-    pdu_quit* deserialized_pdu = pdu_quit_deserialize(mock_serialized_pdu);
+    int fd = open("../pdu_handler/client-server/pdu_quit_test/data.pdu", O_RDONLY);
+    if(fd < 0){
+        perror_exit("open()");
+    }
+    pdu_quit* deserialized_pdu = pdu_quit_deserialize(fd);
     assert(deserialized_pdu->op == OP_QUIT);
-    free(mock_serialized_pdu);
     free(deserialized_pdu);
 }
 
-void assert_serialize_pdu_quit_works() {
-    char* mock_serialized_pdu = calloc(1, 1);
-    mock_serialized_pdu[0] = OP_QUIT;
-    char* real_serialized_pdu = pdu_quit_serialize((PDU *) pdu_quit_create());
-    assert(real_serialized_pdu[0] == OP_QUIT);
-    free(real_serialized_pdu);
-    free(mock_serialized_pdu);
 
+
+void assert_serialize_pdu_quit_works() {
+    char* mock_serialized_pdu = calloc(1, sizeof(pdu_quit));
+    mock_serialized_pdu[0] = OP_QUIT;
+    char* real_serialized_pdu;
+    int size = pdu_quit_serialize((PDU *) pdu_quit_create(), real_serialized_pdu);
+    assert(real_serialized_pdu[0] == OP_QUIT);
+    assert(size == 4);
+    free(real_serialized_pdu);
 }
 
 void assert_pdu_quit_create_works() {

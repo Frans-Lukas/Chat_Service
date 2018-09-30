@@ -8,3 +8,9 @@
 !client-nameserver
 !server-nameserver
 !client-server
+!pdu_quit_test
+!pdu_pleave_test
+!pdu_pjoin_test
+!pdu_participants_test
+!pdu_mess_test
+!pdu_join_test
