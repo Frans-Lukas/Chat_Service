@@ -1,4 +1,5 @@
 #include <zconf.h>
+#include <fcntl.h>
 #include "pdu_helper.h"
 
 uint32_t *build_words(char* input_string, int bytes){
@@ -74,4 +75,12 @@ void print_current_working_dirr(){
     } else {
         perror("getcwd() error");
     }
+}
+
+int try_getting_fd_from_path(char* path){
+    int fd = open("../pdu_handler/client-server/pdu_quit_test/data.pdu", O_RDONLY);
+    if(fd < 0){
+        perror_exit("open()");
+    }
+    return fd;
 }

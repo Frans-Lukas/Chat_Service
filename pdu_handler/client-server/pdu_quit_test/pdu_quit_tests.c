@@ -9,16 +9,11 @@ void run_pdu_quit_tests(){
 }
 
 void assert_deserialize_pdu_quit_works() {
-    int fd = open("../pdu_handler/client-server/pdu_quit_test/data.pdu", O_RDONLY);
-    if(fd < 0){
-        perror_exit("open()");
-    }
+    int fd = try_getting_fd_from_path("../pdu_handler/client-server/pdu_quit_test/data.pdu");
     pdu_quit* deserialized_pdu = pdu_quit_deserialize(fd);
     assert(deserialized_pdu->op == OP_QUIT);
     free(deserialized_pdu);
 }
-
-
 
 void assert_serialize_pdu_quit_works() {
     char* mock_serialized_pdu = calloc(1, sizeof(pdu_quit));
