@@ -43,45 +43,18 @@ void test_serialize_s_list() {
 
 
 void test_deserialize_s_list() {
-
     int fd = open_fd("../pdu_handler/client-nameserver/s_list_data.pdu");
     s_list* pdu = s_list_deserialize(fd);
-
-//    assert(pdu->pdu.op == OP_SLIST);
-//    assert(pdu->number_of_servers == 123);
-//    assert(*((uint8_t *) (&pdu->adress) + 0) == 251);
-//    assert(*((uint8_t *) (&pdu->adress) + 1) == 252);
-//    assert(*((uint8_t *) (&pdu->adress) + 2) == 253);
-//    assert(*((uint8_t *) (&pdu->adress) + 3) == 254);
-//    assert(pdu->port == 1337);
-//    assert(pdu->number_of_clients == 6);
-//    assert(pdu->server_name_length == 8);
-//    assert(strncmp((char *) pdu->server_name, "abcdefgh", 8) == 0);
-
-
-//    s_list* pdu = s_list_deserialize(fd);
-//    uint8_t *data = calloc(20, sizeof(uint8_t));
-//    data[0] = OP_SLIST;
-//    *(uint16_t *) (data + 2) = 123;
-//    *(data + 4) = 251;
-//    *(data + 5) = 252;
-//    *(data + 6) = 253;
-//    *(data + 7) = 254;
-//    *((uint16_t *) (data + 8)) = 1337;
-//    data[10] = 6;
-//    data[11] = 8;
-//    memcpy(&data[12], "abcdefgh", 8);
-//    s_list *pdu = s_list_deserialize(data);
-//    assert(pdu->pdu.op == OP_SLIST);
-//    assert(pdu->number_of_servers == 123);
-//    assert(*((uint8_t *) (&pdu->adress) + 0) == 251);
-//    assert(*((uint8_t *) (&pdu->adress) + 1) == 252);
-//    assert(*((uint8_t *) (&pdu->adress) + 2) == 253);
-//    assert(*((uint8_t *) (&pdu->adress) + 3) == 254);
-//    assert(pdu->port == 1337);
-//    assert(pdu->number_of_clients == 6);
-//    assert(pdu->server_name_length == 8);
-//    assert(strncmp((char *) pdu->server_name, "abcdefgh", 8) == 0);
+    assert(pdu->pdu.op == OP_SLIST);
+    assert(pdu->number_of_servers == 123);
+    assert(*((uint8_t *) (&pdu->adress) + 0) == 251);
+    assert(*((uint8_t *) (&pdu->adress) + 1) == 252);
+    assert(*((uint8_t *) (&pdu->adress) + 2) == 253);
+    assert(*((uint8_t *) (&pdu->adress) + 3) == 254);
+    assert(pdu->port == 1337);
+    assert(pdu->number_of_clients == 6);
+    assert(pdu->server_name_length == 8);
+    assert(strncmp((char *) pdu->server_name, "abcdefgh", 8) == 0);
 }
 
 

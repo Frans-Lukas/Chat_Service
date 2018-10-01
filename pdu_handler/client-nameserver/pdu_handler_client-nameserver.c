@@ -18,7 +18,6 @@ int s_list_serialize(s_list *pdu, char **data) {
 s_list *s_list_deserialize(int fd) {
     s_list *pdu = calloc(1, sizeof(s_list));
     pdu->pdu.op = OP_SLIST;
-
     read_from_fd(fd, &pdu->pdu.op, 1);
     read_from_fd(fd, &pdu->pad, 1);
     read_from_fd(fd, &pdu->number_of_servers, 2);
@@ -27,7 +26,7 @@ s_list *s_list_deserialize(int fd) {
     read_from_fd(fd, &pdu->port, 2);
     read_from_fd(fd, &pdu->number_of_clients, 1);
     read_from_fd(fd, &pdu->server_name_length, 1);
-    read_from_fd(fd, &pdu->server_name, pdu->server_name_length);
+    read_from_fd(fd, pdu->server_name, pdu->server_name_length);
     return pdu;
 }
 

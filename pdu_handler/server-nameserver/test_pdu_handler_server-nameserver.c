@@ -6,7 +6,7 @@
 
 void run_all_server_nameserver_tests() {
     test_deserialize_reg();
-    //test_serialize_reg();
+    test_serialize_reg();
 
     test_serialize_alive();
     test_deserialize_alive();
@@ -110,7 +110,7 @@ void test_serialize_reg() {
     assert(data[0] == OP_REG);
     assert(data[1] == 2);
     assert(*((uint16_t *) (data + 2)) == 1337);
-    assert(strncmp((char *) ((data + 4)), "ab", 2) == 0);
+    assert(strncmp((data + 4), "ab", 2) == 0);
 }
 
 void test_deserialize_reg() {
