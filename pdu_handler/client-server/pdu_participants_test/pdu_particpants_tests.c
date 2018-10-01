@@ -32,29 +32,15 @@ void assert_serialize_pdu_participants_works() {
 }
 
 void assert_deserialize_pdu_participants_works() {
-    char* string = "Anna\0Petter";
-    char* mock_serialized_pdu = calloc(1, 1 + 1 + 2 + 12);
-    mock_serialized_pdu[0] = OP_PARTICIPANTS;
-    mock_serialized_pdu[1] = 2;
-    ((uint16_t*)mock_serialized_pdu)[1] = 12;
-    mock_serialized_pdu[4] = 'A';
-    mock_serialized_pdu[5] = 'n';
-    mock_serialized_pdu[6] = 'n';
-    mock_serialized_pdu[7] = 'a';
-    mock_serialized_pdu[8] = '\0';
-    mock_serialized_pdu[9] = 'P';
-    mock_serialized_pdu[10] = 'e';
-    mock_serialized_pdu[11] = 't';
-    mock_serialized_pdu[12] = 't';
-    mock_serialized_pdu[13] = 'e';
-    mock_serialized_pdu[14] = 'r';
-    mock_serialized_pdu[15] = '\0';
-    pdu_participants* deserialized_pdu = pdu_participants_deserialize(mock_serialized_pdu);
+    char* string = "an\0pe";
+    int fd = open_fd("../pdu_handler/client-server/pdu_participants_test/data.pdu");
+    int op;
+    read_from_fd(fd, &op, 1);
+    pdu_participants* deserialized_pdu = pdu_participants_deserialize(fd);
     assert(deserialized_pdu->op == OP_PARTICIPANTS);
     assert(deserialized_pdu->num_identities == 2);
-    assert(deserialized_pdu->length == 12);
-    assert(strcmp((char*)deserialized_pdu->participant_names, string) == 0);
-    free(mock_serialized_pdu);
+    assert(deserialized_pdu->length == 5);
+    assert(strncmp((char*)deserialized_pdu->participant_names, string, deserialized_pdu->length) == 0);
     free(deserialized_pdu);
 
 }
