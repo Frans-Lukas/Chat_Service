@@ -18,7 +18,8 @@ void assert_pdu_pjoin_create_works(){
 
 void assert_serialize_pdu_pjoin_works(){
     char* identity = "pepe";
-    char* real_serialized_pdu = pdu_pjoin_serialize((PDU *) pdu_pjoin_create(identity));
+    char* real_serialized_pdu;
+    pdu_pjoin_serialize((PDU *) pdu_pjoin_create(identity), &real_serialized_pdu);
     assert(real_serialized_pdu[0] == OP_PJOIN);
     assert(real_serialized_pdu[1] == 4);
     assert(strncmp(real_serialized_pdu + 8, identity, 4) == 0);

@@ -13,7 +13,8 @@ void run_pdu_mess_tests(){
 void assert_serialize_pdu_mess_works(){
     char* identity = "Anders";
     char* message = "Hejsan!";
-    char* serialized_pdu = pdu_mess_serialize((PDU *) pdu_mess_create(identity, message));
+    char* serialized_pdu;
+    pdu_mess_serialize((PDU *) pdu_mess_create(identity, message), &serialized_pdu);
     assert(serialized_pdu[0] == OP_MESS);
     assert(serialized_pdu[2] == strlen(identity));
     assert(serialized_pdu[3] == create_checksum(message));

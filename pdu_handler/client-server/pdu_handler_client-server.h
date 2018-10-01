@@ -69,24 +69,24 @@ typedef struct pdu_pjoin{
 pdu_quit* pdu_quit_create();
 
 
-void *pdu_mess_serialize(PDU *pdu);
+int pdu_mess_serialize(PDU *pdu, char** data_to_send);
 pdu_mess* pdu_mess_deserialize(void* mess_data);
-pdu_quit *pdu_quit_deserialize(int fd);
-int pdu_quit_serialize(PDU *join_pdu, char* data_to_send);
-pdu_join* pdu_join_create(char* identity);
 pdu_mess* pdu_mess_create(char* identity, char* message);
-pdu_participants* pdu_participants_create(char* participants, int num_participants);
-pdu_pleave* pdu_pleave_create(char* identity);
-pdu_pjoin* pdu_pjoin_create(char* identity);
+pdu_quit *pdu_quit_deserialize(int fd);
+int pdu_quit_serialize(PDU *join_pdu, char **data_to_send);
+pdu_join* pdu_join_create(char* identity);
 pdu_join *pdu_join_deserialize(int fd);
-int pdu_join_serialize(PDU *join_pdu, char* data_to_send);
+int pdu_join_serialize(PDU *join_pdu, char** data_to_send);
 bool pdu_join_is_valid(pdu_join* join);
+pdu_pleave* pdu_pleave_create(char* identity);
+int pdu_pleave_serialize(PDU *pleave_data, char** data_to_send);
+pdu_pleave *pdu_pleave_deserialize(void *pleave_data);
+pdu_pjoin* pdu_pjoin_create(char* identity);
+pdu_pjoin *pdu_pjoin_deserialize(void *pleave_data);
+int pdu_pjoin_serialize(PDU *pjoin_data, char** data_to_send);
+pdu_participants* pdu_participants_create(char* participants, int num_participants);
 uint32_t *build_participant_words(char *participants, int num_participants);
 size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants);
-void *pdu_participants_serialize(PDU *pdu);
+int pdu_participants_serialize(PDU *pdu, char** data_to_send);
 pdu_participants *pdu_participants_deserialize(void *participants_data);
-void *pdu_pleave_serialize(PDU *pleave_data);
-pdu_pleave *pdu_pleave_deserialize(void *pleave_data);
-pdu_pjoin *pdu_pjoin_deserialize(void *pleave_data);
-void *pdu_pjoin_serialize(PDU *pjoin_data);
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_SERVER_H
