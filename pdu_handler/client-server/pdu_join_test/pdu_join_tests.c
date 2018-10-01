@@ -16,18 +16,14 @@ void assert_pdu_join_create_works(){
 }
 
 void assert_deserialize_pdu_join_works(){
-//    char* string = "hello";
-//    int fd = open_fd("../pdu_handler/client-server/pdu_join_test/data.pdu");
-//    op_code op;
-//    read_from_fd(fd, &op, 1);
-//    int* data = calloc(1, 110);
-//    for (int i = 0; i < 12; ++i) {
-//        read(fd, data, 1);
-//    }
-//    pdu_join* deserialized_pdu = pdu_join_deserialize(fd);
-//    assert(strcmp((char*)deserialized_pdu->identity, string) == 0);
-//    free(deserialized_pdu);
-//    close(fd);
+    char* string = "anna";
+    int fd = open_fd("../pdu_handler/client-server/pdu_join_test/data.pdu");
+    op_code op;
+    read_from_fd(fd, &op, 1);
+    pdu_join* deserialized_pdu = pdu_join_deserialize(fd);
+    assert(strcmp((char*)deserialized_pdu->identity, string) == 0);
+    free(deserialized_pdu);
+    close(fd);
 }
 
 void assert_serialize_pdu_join_works(){

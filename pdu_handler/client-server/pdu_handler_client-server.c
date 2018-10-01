@@ -48,7 +48,6 @@ pdu_join *pdu_join_deserialize(int fd) {
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
     read_from_fd(fd, &pdu_to_return->padding, 2);
     uint8_t length = pdu_to_return->identity_length;
-    read_from_fd(fd, &pdu_to_return->padding, 2);
     char *identity = calloc(1, pdu_to_return->identity_length);
     read_from_fd(fd, identity, pdu_to_return->identity_length);
     pdu_to_return->identity = string_to_words(identity, length);
@@ -79,15 +78,13 @@ int pdu_participants_serialize(PDU *pdu, char** data_to_send) {
     return size;
 }
 
-pdu_participants *pdu_participants_deserialize(void *participants_data) {
-    uint8_t *pdu = participants_data;
+pdu_participants *pdu_participants_deserialize(int fd) {
     pdu_participants *pdu_to_return = calloc(1, sizeof(pdu_participants));
     pdu_to_return->op = OP_PARTICIPANTS;
-    pdu_cpy_chars(&pdu_to_return->num_identities, pdu, 1, 1);
-    pdu_cpy_chars(&pdu_to_return->length, pdu, 2, 2);
+    read_from_fd(fd, &pdu_to_return->num_identities, 1);
+    read_from_fd(fd, &pdu_to_return->length, 2);
     pdu_to_return->participant_names = calloc(sizeof(uint32_t), (size_t) get_num_words(pdu_to_return->length, 4));
-    pdu_cpy_chars(pdu_to_return->participant_names, pdu, 4,
-                  (size_t) get_num_words(pdu_to_return->length, 4) * 4);
+    read_from_fd(fd, pdu_to_return->participant_names, get_num_words(pdu_to_return->length, 4) * 4);
     return pdu_to_return;
 }
 
@@ -120,20 +117,21 @@ int pdu_mess_serialize(PDU *pdu, char** data_to_send) {
     return size;
 }
 
-pdu_mess *pdu_mess_deserialize(void *mess_data) {
-    uint8_t *pdu = mess_data;
+pdu_mess *pdu_mess_deserialize(int fd) {
     pdu_mess *pdu_to_return = calloc(1, sizeof(pdu_mess));
     pdu_to_return->op = OP_MESS;
-    pdu_cpy_chars(&pdu_to_return->identity_length, pdu, 2, 1);
-    pdu_cpy_chars(&pdu_to_return->checksum, pdu, 3, 1);
-    pdu_cpy_chars(&pdu_to_return->message_length, pdu, 4, 2);
-    pdu_cpy_chars(&pdu_to_return->timestamp, pdu, 8, 4);
+    read_from_fd(fd, &pdu_to_return->padding_op, 1);
+    read_from_fd(fd, &pdu_to_return->identity_length, 1);
+    read_from_fd(fd, &pdu_to_return->checksum, 1);
+    read_from_fd(fd, &pdu_to_return->message_length, 2);
+    read_from_fd(fd, &pdu_to_return->padding_message_length, 2);
+    read_from_fd(fd, &pdu_to_return->timestamp, 4);
     size_t message_size = (size_t) get_num_words(pdu_to_return->message_length, 4) * 4;
     pdu_to_return->message = calloc(1, message_size);
-    pdu_cpy_chars(pdu_to_return->message, pdu, 12, message_size);
+    read_from_fd(fd, pdu_to_return->message, (int) message_size);
     size_t identity_size = (size_t) get_num_words(pdu_to_return->identity_length, 4) * 4;
     pdu_to_return->client_identity = calloc(1, identity_size);
-    pdu_cpy_chars(pdu_to_return->client_identity, pdu, (int) (12 + message_size), identity_size);
+    read_from_fd(fd, pdu_to_return->client_identity, (int) identity_size);
     return pdu_to_return;
 }
 

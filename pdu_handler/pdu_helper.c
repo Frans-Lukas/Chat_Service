@@ -20,7 +20,7 @@ uint16_t add_padding(void* start_pos, int num_bytes_to_pad) {
 }
 
 __uint8_t create_checksum(char *message) {
-    return 0x1f;
+    return 0x01f;
 }
 
 bool data_is_divisible_by_four(char* data){
@@ -90,3 +90,4 @@ void read_from_fd(int fd, void *destination, int size) {
         perror_exit("read()");
     }
 }
+
