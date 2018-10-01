@@ -44,7 +44,7 @@ void test_serialize_s_list() {
 
 void test_deserialize_s_list() {
     int fd = open_fd("../pdu_handler/client-nameserver/s_list_data.pdu");
-    s_list* pdu = s_list_deserialize(fd);
+    s_list *pdu = s_list_deserialize(fd);
     assert(pdu->pdu.op == OP_SLIST);
     assert(pdu->number_of_servers == 123);
     assert(*((uint8_t *) (&pdu->adress) + 0) == 251);
@@ -56,7 +56,6 @@ void test_deserialize_s_list() {
     assert(pdu->server_name_length == 8);
     assert(strncmp((char *) pdu->server_name, "abcdefgh", 8) == 0);
 }
-
 
 
 void test_serialize_get_list() {

@@ -13,12 +13,11 @@ int not_reg_serialize(not_reg *pdu, char** data) {
     return size;
 }
 
-not_reg *not_reg_deserialize(void *ptr) {
-    uint8_t *tmp_ptr = ptr;
+not_reg *not_reg_deserialize(int fd) {
     not_reg *pdu = calloc(1, sizeof(not_reg));
     pdu->pdu.op = OP_NOTREG;
-    pdu->pad = tmp_ptr[1];
-    pdu->id_number = *(uint16_t *) (tmp_ptr + 2);
+    read_from_fd(fd, &pdu->pad, 1);
+    read_from_fd(fd, &pdu->id_number, 2);
     return pdu;
 }
 
@@ -31,12 +30,11 @@ int ack_serialize(ack *pdu, char** data) {
     return 4;
 }
 
-ack *ack_deserialize(void *ptr) {
-    uint8_t *tmp_ptr = ptr;
+ack *ack_deserialize(int fd) {
     ack *pdu = calloc(1, sizeof(ack));
     pdu->pdu.op = OP_ACK;
-    pdu->pad = tmp_ptr[1];
-    pdu->id_number = *(uint16_t *) (tmp_ptr + 2);
+    read_from_fd(fd, &pdu->pad, 1);
+    read_from_fd(fd, &pdu->id_number, 2);
     return pdu;
 }
 
@@ -49,13 +47,12 @@ int alive_serialize(alive *pdu, char** data) {
     return size;
 }
 
-alive *alive_deserialize(void *ptr) {
-    uint8_t *tmp_ptr = ptr;
-    alive *pdu_alive = calloc(1, sizeof(alive));
-    pdu_alive->pdu.op = OP_ALIVE;
-    pdu_alive->nr_of_clients = tmp_ptr[1];
-    pdu_alive->id_number = *(uint16_t *) (tmp_ptr + 2);
-    return pdu_alive;
+alive *alive_deserialize(int fd) {
+    alive *pdu = calloc(1, sizeof(alive));
+    pdu->pdu.op = OP_ALIVE;
+    read_from_fd(fd, &pdu->nr_of_clients, 1);
+    read_from_fd(fd, &pdu->id_number, 2);
+    return pdu;
 }
 
 int reg_serialize(reg *pdu, char** data) {
@@ -68,14 +65,15 @@ int reg_serialize(reg *pdu, char** data) {
     return size;
 }
 
-reg *reg_deserialize(void *ptr) {
-    uint8_t *tmp_ptr = ptr;
-    reg *pdu_reg = calloc(1, sizeof(reg));
-    pdu_reg->pdu.op = OP_REG;
-    memcpy(&pdu_reg->server_name_length, &tmp_ptr[1], sizeof(uint8_t));
-    memcpy(&pdu_reg->tcp_port, &tmp_ptr[2], sizeof(uint16_t));
-    pdu_reg->server_name = build_words((char *) &tmp_ptr[4], 4);
-    return pdu_reg;
+reg* reg_deserialize(int fd) {
+    reg* pdu = calloc(1, sizeof(reg));
+    pdu->pdu.op = OP_REG;
+    read_from_fd(fd, &pdu->server_name_length, 1);
+    read_from_fd(fd, &pdu->tcp_port, 2);
+    int size = 4 + (get_num_words(pdu->server_name_length, 4) * 4);
+    pdu->server_name = calloc((size_t) size, sizeof(uint32_t));
+    read_from_fd(fd, pdu->server_name, pdu->server_name_length);
+    return pdu;
 }
 
 

@@ -41,19 +41,19 @@ uint32_t *build_words(char *input_string, int bytes);
 
 int reg_serialize(reg *pdu, char** data);
 
-reg *reg_deserialize(void *ptr);
+reg *reg_deserialize(int fd);
 
 int alive_serialize(alive *pdu, char** data);
 
-alive *alive_deserialize(void *ptr);
+alive *alive_deserialize(int fd);
 
 int ack_serialize(ack *pdu, char** data);
 
-ack *ack_deserialize(void *ptr);
+ack *ack_deserialize(int fd);
 
 int not_reg_serialize(not_reg *pdu, char** data);
 
-not_reg *not_reg_deserialize(void *ptr);
+not_reg *not_reg_deserialize(int fd);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_SERVER_NAMESERVER_H
 

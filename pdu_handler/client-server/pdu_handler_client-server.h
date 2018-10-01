@@ -80,7 +80,7 @@ int pdu_join_serialize(PDU *join_pdu, char** data_to_send);
 bool pdu_join_is_valid(pdu_join* join);
 pdu_pleave* pdu_pleave_create(char* identity);
 int pdu_pleave_serialize(PDU *pleave_data, char** data_to_send);
-pdu_pleave *pdu_pleave_deserialize(void *pleave_data);
+pdu_pleave *pdu_pleave_deserialize(int fd);
 pdu_pjoin* pdu_pjoin_create(char* identity);
 pdu_pjoin *pdu_pjoin_deserialize(void *pleave_data);
 int pdu_pjoin_serialize(PDU *pjoin_data, char** data_to_send);
