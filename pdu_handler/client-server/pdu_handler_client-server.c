@@ -93,7 +93,7 @@ pdu_mess *pdu_mess_create(char *identity, char *message) {
     pdu->op = OP_MESS;
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->message_length = (uint16_t) strlen(message);
-    pdu->timestamp = (uint32_t) time;
+    pdu->timestamp = (uint32_t) time(NULL);
     pdu->message = build_words(message, 4);
     pdu->client_identity = build_words(identity, 4);
     pdu->checksum = create_checksum(pdu);
@@ -162,7 +162,7 @@ pdu_pleave *pdu_pleave_create(char *identity) {
     pdu_pleave *pdu = calloc(1, sizeof(pdu_pleave));
     pdu->op = OP_PLEAVE;
     pdu->identity_length = (uint8_t) strlen(identity);
-    pdu->timestamp = (uint32_t) time;
+    pdu->timestamp = (uint32_t) time(NULL);
     pdu->client_identity = build_words(identity, 4);
 }
 
@@ -192,7 +192,7 @@ pdu_pjoin *pdu_pjoin_create(char *identity) {
     pdu_pjoin *pdu = calloc(1, sizeof(pdu_pjoin));
     pdu->op = OP_PJOIN;
     pdu->identity_length = (uint8_t) strlen(identity);
-    pdu->timestamp = (uint32_t) time;
+    pdu->timestamp = (uint32_t) time(NULL);
     pdu->client_identity = build_words(identity, 4);
 }
 
