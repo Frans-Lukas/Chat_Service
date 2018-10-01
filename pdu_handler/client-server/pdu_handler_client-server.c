@@ -11,16 +11,14 @@ pdu_quit *pdu_quit_create() {
 
 pdu_quit *pdu_quit_deserialize(int fd) {
     pdu_quit *pdu_to_return = calloc(1, sizeof(pdu_quit));
-    if (read(fd, &pdu_to_return->op, 1) < 0) {
-        perror_exit("read()");
-    }
+    pdu_to_return->op = OP_QUIT;
     return pdu_to_return;
 }
 
-int pdu_quit_serialize(PDU *join_pdu, char *data_to_send) {
+int pdu_quit_serialize(PDU *join_pdu, char **data_to_send) {
     pdu_quit *pdu = (pdu_quit *) join_pdu;
-    data_to_send = calloc(1, sizeof(pdu_quit));
-    memcpy(data_to_send, &pdu->op, 1);
+    *data_to_send = calloc(1, sizeof(pdu_quit));
+    memcpy(*data_to_send, &pdu->op, 1);
     return sizeof(pdu_quit);
 }
 
@@ -28,21 +26,19 @@ pdu_join *pdu_join_create(char *identity) {
     pdu_join *pdu = calloc(1, sizeof(pdu_join));
     pdu->op = OP_JOIN;
     if (strlen(identity) > MAX_IDENTITY_LENGTH) {
-        perror("identity length is too long. Needs to be less than 255 characters");
-        return NULL;
+        perror_exit("identity length is too long. Needs to be less than 255 characters");
     }
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->identity = build_words(identity, 4);
 }
 
-int pdu_join_serialize(PDU *join_pdu, char *data_to_send) {
+int pdu_join_serialize(PDU *join_pdu, char **data_to_send) {
     pdu_join *pdu = (pdu_join *) join_pdu;
-    int size_of_data = (4 + pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4));
-    data_to_send = calloc(1, (size_t) size_of_data);
-    memcpy(data_to_send, &pdu->op, 1);
-    memcpy(data_to_send + 1, &pdu->identity_length, 1);
-    add_padding(data_to_send + 2, 2);
-    memcpy(data_to_send + 4, pdu->identity, (size_t) pdu->identity_length + ((4 - (pdu->identity_length % 4)) % 4));
+    int size_of_data = sizeof(pdu_join) + get_num_words(pdu->identity_length, 4) * 4;
+    *data_to_send = calloc(1, (size_t) size_of_data);
+    *data_to_send[0] = OP_JOIN;
+    pdu_cpy_chars(*data_to_send + 1, &pdu->identity_length, 0, 1);
+    pdu_cpy_chars(*data_to_send + 4, pdu->identity, 0, pdu->identity_length);
     return size_of_data;
 }
 
@@ -50,6 +46,7 @@ pdu_join *pdu_join_deserialize(int fd) {
     pdu_join *pdu_to_return = calloc(1, sizeof(pdu_join));
     pdu_to_return->op = OP_JOIN;
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
+    read_from_fd(fd, &pdu_to_return->padding, 2);
     uint8_t length = pdu_to_return->identity_length;
     read_from_fd(fd, &pdu_to_return->padding, 2);
     char *identity = calloc(1, pdu_to_return->identity_length);
@@ -73,12 +70,13 @@ pdu_participants *pdu_participants_create(char *participants, int num_participan
     pdu->length = (uint16_t) get_size_of_participants(pdu->participant_names, pdu->num_identities);
 }
 
-void *pdu_participants_serialize(PDU *pdu) {
+int pdu_participants_serialize(PDU *pdu, char** data_to_send) {
     pdu_participants *pdu_partici = (pdu_participants *) pdu;
-    char *data_to_send = calloc(sizeof(char), (1 + 1 + 2 + ((size_t) get_num_words(pdu_partici->length, 4)) * 4));
-    pdu_cpy_chars(data_to_send, pdu_partici, 0, 4);
-    memcpy(data_to_send + 4, pdu_partici->participant_names, (size_t) get_num_words(pdu_partici->length, 4) * 4);
-    return data_to_send;
+    int size = (sizeof(pdu_participants) + ( get_num_words(pdu_partici->length, 4)) * 4);
+    *data_to_send = calloc(sizeof(char), (size_t) size);
+    pdu_cpy_chars(*data_to_send, pdu_partici, 0, 4);
+    memcpy(*data_to_send + 4, pdu_partici->participant_names, (size_t) get_num_words(pdu_partici->length, 4) * 4);
+    return size;
 }
 
 pdu_participants *pdu_participants_deserialize(void *participants_data) {
@@ -109,16 +107,17 @@ size_t pdu_mess_size(pdu_mess *mess) {
            2 * sizeof(uint32_t);
 }
 
-void *pdu_mess_serialize(PDU *pdu) {
+int pdu_mess_serialize(PDU *pdu, char** data_to_send) {
     pdu_mess *pdu_message = (pdu_mess *) pdu;
-    char *data_to_send = calloc(sizeof(char), pdu_mess_size(pdu_message));
-    pdu_cpy_chars(data_to_send, pdu_message, 0, 12);
-    pdu_cpy_chars(data_to_send + 12, pdu_message->message, 0,
+    int size = (int) pdu_mess_size(pdu_message);
+    *data_to_send = calloc(sizeof(char), pdu_mess_size(pdu_message));
+    pdu_cpy_chars(*data_to_send, pdu_message, 0, 12);
+    pdu_cpy_chars(*data_to_send + 12, pdu_message->message, 0,
                   (size_t) get_num_words(pdu_message->message_length, 4) * 4);
-    pdu_cpy_chars(data_to_send + 12 + get_num_words(pdu_message->message_length, 4) * 4, pdu_message->client_identity,
+    pdu_cpy_chars(*data_to_send + 12 + get_num_words(pdu_message->message_length, 4) * 4, pdu_message->client_identity,
                   0,
                   (size_t) get_num_words(pdu_message->identity_length, 4) * 4);
-    return data_to_send;
+    return size;
 }
 
 pdu_mess *pdu_mess_deserialize(void *mess_data) {
@@ -167,12 +166,13 @@ pdu_pleave *pdu_pleave_deserialize(void *pleave_data) {
     return pdu_to_return;
 }
 
-void *pdu_pleave_serialize(PDU *pleave_data) {
+int pdu_pleave_serialize(PDU *pleave_data, char** data_to_send) {
     pdu_pleave *pdu = (pdu_pleave *) pleave_data;
-    char *data_to_send = calloc(sizeof(char), sizeof(pdu_pleave) + pdu->identity_length);
-    pdu_cpy_chars(data_to_send, pdu, 0, 8);
-    pdu_cpy_chars(data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
-    return data_to_send;
+    int size = sizeof(pdu_pleave) + pdu->identity_length;
+    *data_to_send = calloc(sizeof(char), size);
+    pdu_cpy_chars(*data_to_send, pdu, 0, 8);
+    pdu_cpy_chars(*data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
+    return size;
 }
 
 
@@ -195,12 +195,13 @@ pdu_pjoin *pdu_pjoin_deserialize(void *pleave_data) {
     return pdu_to_return;
 }
 
-void *pdu_pjoin_serialize(PDU *pjoin_data) {
+int pdu_pjoin_serialize(PDU *pjoin_data, char** data_to_send) {
     pdu_pjoin *pdu = (pdu_pjoin *) pjoin_data;
-    char *data_to_send = calloc(sizeof(char), sizeof(pdu_pjoin) + pdu->identity_length);
-    pdu_cpy_chars(data_to_send, pdu, 0, 8);
-    pdu_cpy_chars(data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
-    return data_to_send;
+    int size = sizeof(pdu_pjoin) + pdu->identity_length;
+    *data_to_send = calloc(sizeof(char), size);
+    pdu_cpy_chars(*data_to_send, pdu, 0, 8);
+    pdu_cpy_chars(*data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
+    return size;
 }
 
 size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants) {

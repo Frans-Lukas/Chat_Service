@@ -21,7 +21,8 @@ void assert_pdu_participants_create_works() {
 
 void assert_serialize_pdu_participants_works() {
     char* string = "pe\0pe\0";
-    char* real_serialized_pdu = pdu_participants_serialize((PDU *) pdu_participants_create(string, 2));
+    char* real_serialized_pdu;
+    pdu_participants_serialize((PDU *) pdu_participants_create(string, 2), &real_serialized_pdu);
     assert(real_serialized_pdu[0] == OP_PARTICIPANTS);
     assert(real_serialized_pdu[1] == 2);
     assert(((uint16_t*)real_serialized_pdu)[1] == 6);
