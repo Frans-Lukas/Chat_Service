@@ -25,10 +25,10 @@ typedef struct s_list {
 
 s_list *s_list_deserialize(void *ptr);
 
-void *s_list_serialize(s_list *pdu);
+int s_list_serialize(s_list *pdu, char** data_to_send);
 
 get_list *get_list_deserialize(int fd);
 
-int get_list_serialize(get_list* pdu, char* data_to_send);
+int get_list_serialize(get_list* pdu, char** data_to_send);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_NAMESERVER_H

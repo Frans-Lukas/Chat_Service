@@ -89,4 +89,5 @@ void read_from_fd(int fd, void *destination, int size) {
     if(read(fd, destination, size) < 0){
         perror_exit("read()");
     }
+    close(fd);
 }
