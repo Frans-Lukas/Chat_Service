@@ -28,25 +28,14 @@ void assert_serialize_pdu_pjoin_works(){
 
 void assert_deserialize_pdu_pjoin_works(){
     char* identity = "pepe";
-    char* mock_serialized_pdu = calloc(1, sizeof(pdu_pjoin) + strlen(identity) + 1);
-    mock_serialized_pdu[0] = OP_PLEAVE;
-    mock_serialized_pdu[1] = 4;
-    mock_serialized_pdu[4] = 5;
-    mock_serialized_pdu[8] = 'p';
-    mock_serialized_pdu[9] = 'e';
-    mock_serialized_pdu[10] = 'p';
-    mock_serialized_pdu[11] = 'e';
-    mock_serialized_pdu[12] = '\0';
-    mock_serialized_pdu[13] = '\0';
-    mock_serialized_pdu[14] = '\0';
-    mock_serialized_pdu[15] = '\0';
-
-    pdu_pjoin* deserialized_pdu = pdu_pjoin_deserialize(mock_serialized_pdu);
+    int fd = open_fd("../pdu_handler/client-server/pdu_pjoin_test/data.pdu");
+    int op;
+    read_from_fd(fd, &op, 1);
+    pdu_pjoin* deserialized_pdu = pdu_pjoin_deserialize(fd);
     //add same padding as mock pdu to make sure string compare works
     assert(deserialized_pdu->op == OP_PJOIN);
     assert(deserialized_pdu->identity_length == 4);
     assert(deserialized_pdu->timestamp == 5);
     assert(strcmp((char*)deserialized_pdu->client_identity, identity) == 0);
-    free(mock_serialized_pdu);
     free(deserialized_pdu);
 }

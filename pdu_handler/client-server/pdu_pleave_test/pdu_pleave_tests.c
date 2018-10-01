@@ -30,7 +30,6 @@ void assert_serialize_pdu_pleave_works(){
 }
 
 void assert_deserialize_pdu_pleave_works(){
-
     int fd = open_fd("../pdu_handler/client-server/pdu_pleave_test/pleave_data.pdu");
     int op_code;
     read_from_fd(fd, &op_code, 1);
