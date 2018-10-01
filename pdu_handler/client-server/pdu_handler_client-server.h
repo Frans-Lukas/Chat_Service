@@ -90,11 +90,11 @@ pdu_pleave *pdu_pleave_create(char *identity);
 
 int pdu_pleave_serialize(PDU *pleave_data, char **data_to_send);
 
-pdu_pleave *pdu_pleave_deserialize(void *pleave_data);
+pdu_pleave *pdu_pleave_deserialize(int fd);
 
 pdu_pjoin *pdu_pjoin_create(char *identity);
 
-pdu_pjoin *pdu_pjoin_deserialize(void *pleave_data);
+pdu_pjoin *pdu_pjoin_deserialize(int fd);
 
 int pdu_pjoin_serialize(PDU *pjoin_data, char **data_to_send);
 

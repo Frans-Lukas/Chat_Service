@@ -157,6 +157,7 @@ pdu_pleave *pdu_pleave_deserialize(int fd) {
     pdu_pleave *pdu_to_return = calloc(1, sizeof(pdu_pleave));
     pdu_to_return->op = OP_PLEAVE;
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
+    read_from_fd(fd, &pdu_to_return->padding_identity_length, 2);
     read_from_fd(fd, &pdu_to_return->timestamp, 4);
     pdu_to_return->client_identity = calloc(1, pdu_to_return->identity_length);
     read_from_fd(fd, pdu_to_return->client_identity, pdu_to_return->identity_length);
@@ -181,14 +182,13 @@ pdu_pjoin *pdu_pjoin_create(char *identity) {
     pdu->client_identity = build_words(identity, 4);
 }
 
-pdu_pjoin *pdu_pjoin_deserialize(void *pleave_data) {
-    uint8_t *pdu = pleave_data;
+pdu_pjoin *pdu_pjoin_deserialize(int fd) {
     pdu_pjoin *pdu_to_return = calloc(1, sizeof(pdu_pjoin));
     pdu_to_return->op = OP_PJOIN;
-    pdu_cpy_chars(&pdu_to_return->identity_length, pdu, 1, 1);
-    pdu_cpy_chars(&pdu_to_return->timestamp, pdu, 4, 4);
+    read_from_fd(fd, &pdu_to_return->identity_length, 1);
+    read_from_fd(fd, &pdu_to_return->timestamp, 4);
     pdu_to_return->client_identity = calloc(1, pdu_to_return->identity_length);
-    pdu_cpy_chars(pdu_to_return->client_identity, pdu, 8, pdu_to_return->identity_length);
+    read_from_fd(fd, pdu_to_return->client_identity, pdu_to_return->identity_length);
     return pdu_to_return;
 }
 
