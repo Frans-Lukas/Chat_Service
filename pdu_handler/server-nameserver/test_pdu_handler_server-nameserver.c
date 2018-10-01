@@ -6,7 +6,7 @@
 
 void run_all_server_nameserver_tests() {
     test_deserialize_reg();
-    test_serialize_reg();
+    //test_serialize_reg();
 
     test_serialize_alive();
     test_deserialize_alive();
@@ -24,7 +24,8 @@ void test_serialize_not_reg() {
     pdu->pad = 42;
     pdu->id_number = 1337;
 
-    uint8_t *data = not_reg_serialize(pdu);
+    char *data;
+    not_reg_serialize(pdu, &data);
     assert(data[0] == OP_NOTREG);
     assert(data[1] == 42);
     assert(*(uint16_t *) (data + 2) == 1337);
@@ -44,12 +45,13 @@ void test_deserialize_not_reg() {
 }
 
 void test_serialize_ack() {
-    ack *pdu = calloc(1, sizeof(ack));
-    pdu->pdu.op = OP_ACK;
-    pdu->pad = 42;
-    pdu->id_number = 1337;
+    ack *pdu_ack = calloc(1, sizeof(ack));
+    pdu_ack->pdu.op = OP_ACK;
+    pdu_ack->pad = 42;
+    pdu_ack->id_number = 1337;
 
-    uint8_t *data = ack_serialize(pdu);
+    char *data;
+    ack_serialize(pdu_ack, &data);
     assert(data[0] == OP_ACK);
     assert(data[1] == 42);
     assert(*(uint16_t *) (data + 2) == 1337);
@@ -73,7 +75,8 @@ void test_serialize_alive() {
     pdu->pdu.op = OP_ALIVE;
     pdu->id_number = (uint16_t) 1337;
     pdu->nr_of_clients = (uint8_t) 6;
-    uint8_t *data = alive_serialize(pdu);
+    char *data;
+    alive_serialize(pdu, &data);
 
     assert(data[0] == OP_ALIVE);
     assert(data[1] == 6);
@@ -101,7 +104,8 @@ void test_serialize_reg() {
     pdu->server_name = calloc(1, sizeof(uint32_t));
     strncpy((char *) pdu->server_name, "ab", 2);
 
-    uint8_t *data = reg_serialize(pdu);
+    char *data;
+    reg_serialize(pdu, &data);
 
     assert(data[0] == OP_REG);
     assert(data[1] == 2);
