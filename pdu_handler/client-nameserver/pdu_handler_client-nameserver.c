@@ -3,40 +3,31 @@
 #include "pdu_handler_client-nameserver.h"
 
 int s_list_serialize(s_list *pdu, char **data) {
-   // int size = get_num_words(pdu->server_name_length + sizeof(s_list), 4);
-  //  char *data_to_send = calloc(size, sizeof(uint32_t));
-    data= calloc(12 + pdu->server_name_length, sizeof(uint8_t));
-    *data[0] = pdu->pdu.op;
-    *data[1] = pdu->pad;
-    *(uint16_t*) (*data + 2) = pdu->number_of_servers;
-    *(uint32_t*) (*data + 4) = pdu->adress;
-    *(uint16_t*) (*data + 8) = pdu->port;
-    *data[10] = pdu->number_of_clients;
-    *data[11] = pdu->server_name_length;
-    memcpy(&*data[14], pdu->server_name, pdu->server_name_length);
-
-//    *data_to_send[0] = OP_SLIST;
-//    *data_to_send[1] = pdu->pad;
-//    memcpy((&*data_to_send[2]), &pdu->number_of_servers, 2);
-//    memcpy((&*data_to_send[4]), &pdu->adress, 4);
-//    memcpy((&*data_to_send[8]), &pdu->port, 8);
-//    *data_to_send[10] = pdu->number_of_clients;
-//    *data_to_send[11] = pdu->server_name_length;
-//    memcpy(*(&data_to_send[14]), &pdu->server_name_length, pdu->server_name_length);
-    return 2432;
+    int size = 12 + (get_num_words(pdu->server_name_length, 4) * 4);
+    *data = calloc(1, sizeof(s_list));
+    *data[0] = OP_SLIST;
+    pdu_cpy_chars(*data + 2, &pdu->number_of_servers, 0, 2);
+    pdu_cpy_chars(*data + 4, &pdu->adress, 0, 4);
+    pdu_cpy_chars(*data + 8, &pdu->port, 0, 2);
+    pdu_cpy_chars(*data + 10, &pdu->number_of_clients, 0, 1);
+    pdu_cpy_chars(*data + 11, &pdu->server_name_length, 0, 1);
+    pdu_cpy_chars(*data + 12, &pdu->server_name, 0, pdu->server_name_length);
+    return size;
 }
 
-s_list *s_list_deserialize(void *ptr) {
-    uint8_t *data = ptr;
+s_list *s_list_deserialize(int fd) {
     s_list *pdu = calloc(1, sizeof(s_list));
     pdu->pdu.op = OP_SLIST;
-    pdu->number_of_servers = *(uint16_t *) (data + 2);
-    pdu->adress = *(uint32_t *) (data + 4);
-    pdu->port = *(uint16_t *) (data + 8);
-    pdu->number_of_clients = data[10];
-    pdu->server_name_length = data[11];
+
+    read_from_fd(fd, &pdu->pdu.op, 1);
+    read_from_fd(fd, &pdu->pad, 1);
+    read_from_fd(fd, &pdu->number_of_servers, 2);
     pdu->server_name = calloc(pdu->server_name_length, sizeof(uint8_t));
-    memcpy(pdu->server_name, &data[12], pdu->server_name_length);
+    read_from_fd(fd, &pdu->adress, 4);
+    read_from_fd(fd, &pdu->port, 2);
+    read_from_fd(fd, &pdu->number_of_clients, 1);
+    read_from_fd(fd, &pdu->server_name_length, 1);
+    read_from_fd(fd, &pdu->server_name, pdu->server_name_length);
     return pdu;
 }
 
