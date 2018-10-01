@@ -1,5 +1,6 @@
 #include <zconf.h>
 #include <fcntl.h>
+#include <pdu_handler/client-server/pdu_handler_client-server.h>
 #include "pdu_helper.h"
 
 uint32_t *build_words(char* input_string, int bytes){
@@ -19,9 +20,6 @@ uint16_t add_padding(void* start_pos, int num_bytes_to_pad) {
     }
 }
 
-__uint8_t create_checksum(char *message) {
-    return 0x01f;
-}
 
 bool data_is_divisible_by_four(char* data){
     return strlen(data) % 4 == 0;

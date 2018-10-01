@@ -14,10 +14,11 @@ void assert_serialize_pdu_mess_works(){
     char* identity = "Anders";
     char* message = "Hejsan!";
     char* serialized_pdu;
-    pdu_mess_serialize((PDU *) pdu_mess_create(identity, message), &serialized_pdu);
+    pdu_mess* pdu = pdu_mess_create(identity, message);
+    pdu_mess_serialize((PDU *) pdu, &serialized_pdu);
     assert(serialized_pdu[0] == OP_MESS);
     assert(serialized_pdu[2] == strlen(identity));
-    assert(serialized_pdu[3] == create_checksum(message));
+    assert(serialized_pdu[3] == create_checksum(pdu));
     assert((uint16_t)serialized_pdu[4] == strlen(message));
     assert(strcmp(&serialized_pdu[12], message) == 0);
     assert(strncmp(&serialized_pdu[12 + strlen(message) + 1], identity, strlen(identity)) == 0);
