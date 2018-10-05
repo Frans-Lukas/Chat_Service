@@ -18,9 +18,6 @@ data queue_dequeue(queue* q) {
 
     while(q->front == NULL) {
         pthread_cond_wait(&cond, &mutex);
-        if(sigint){
-            return 0;
-        }
     }
 
     node* front_node = q->front;

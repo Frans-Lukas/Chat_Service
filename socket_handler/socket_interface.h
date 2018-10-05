@@ -4,6 +4,5 @@
 
 #ifndef CHAT_SERVICE_SOCKET_INTERFACE_H
 #define CHAT_SERVICE_SOCKET_INTERFACE_H
-#define "../pdu_handler/pdu_helper.c"
 
 #endif //CHAT_SERVICE_SOCKET_INTERFACE_H

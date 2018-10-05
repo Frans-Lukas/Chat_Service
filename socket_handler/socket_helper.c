@@ -1,9 +1,5 @@
 #include "socket_helper.h"
 
-void perror_exit(char msg[]) {
-    perror(msg);
-    exit(1);
-}
 
 void *socket_read_from(void *socket) {
     int socket_fd = *((int*) socket);

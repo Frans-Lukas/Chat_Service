@@ -6,6 +6,8 @@
 !*.txt
 !pdu_handler
 !client-nameserver
+!test_client-nameserver
+!test_server-nameserver
 !server-nameserver
 !client-server
 !pdu_quit_test
