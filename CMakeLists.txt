@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD 11)
 include_directories(.)
 include_directories(pdu_handler)
 include_directories(pdu_handler/client-nameserver)
+include_directories(pdu_handler/client-nameserver/test_client-nameserver)
 include_directories(pdu_handler/client-server)
 include_directories(pdu_handler/client-server/pdu_join_test)
 include_directories(pdu_handler/client-server/pdu_mess_test)
@@ -14,9 +15,12 @@ include_directories(pdu_handler/client-server/pdu_pjoin_test)
 include_directories(pdu_handler/client-server/pdu_pleave_test)
 include_directories(pdu_handler/client-server/pdu_quit_test)
 include_directories(pdu_handler/server-nameserver)
+include_directories(pdu_handler/server-nameserver/test_server-nameserver)
 include_directories(socket_handler)
 
 add_executable(Chat_Service
+        pdu_handler/client-nameserver/test_client-nameserver/test_pdu_handler_client-nameserver.c
+        pdu_handler/client-nameserver/test_client-nameserver/test_pdu_handler_client-nameserver.h
         pdu_handler/client-nameserver/pdu_handler_client-nameserver.c
         pdu_handler/client-nameserver/pdu_handler_client-nameserver.h
         pdu_handler/client-server/pdu_join_test/pdu_join_tests.c
@@ -33,6 +37,8 @@ add_executable(Chat_Service
         pdu_handler/client-server/pdu_quit_test/pdu_quit_tests.h
         pdu_handler/client-server/pdu_handler_client-server.c
         pdu_handler/client-server/pdu_handler_client-server.h
+        pdu_handler/server-nameserver/test_server-nameserver/test_pdu_handler_server-nameserver.c
+        pdu_handler/server-nameserver/test_server-nameserver/test_pdu_handler_server-nameserver.h
         pdu_handler/server-nameserver/pdu_handler_server-nameserver.c
         pdu_handler/server-nameserver/pdu_handler_server-nameserver.h
         pdu_handler/pdu_helper.c
