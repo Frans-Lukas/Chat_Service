@@ -35,6 +35,7 @@ void assert_deserialize_pdu_pjoin_works(){
     //add same padding as mock pdu to make sure string compare works
     assert(deserialized_pdu->op == OP_PJOIN);
     assert(deserialized_pdu->identity_length == 4);
+    ntohl(deserialized_pdu->timestamp);
     assert(deserialized_pdu->timestamp == 5);
     assert(strcmp((char*)deserialized_pdu->client_identity, identity) == 0);
     free(deserialized_pdu);

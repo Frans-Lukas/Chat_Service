@@ -15,6 +15,8 @@ void assert_serialize_pdu_mess_works(){
     char* message = "Hejsan!";
     char* serialized_pdu;
     pdu_mess* pdu = pdu_mess_create(identity, message);
+    htons(pdu->message_length);
+    htonl(pdu->timestamp);
     pdu_mess_serialize((PDU *) pdu, &serialized_pdu);
     assert(serialized_pdu[0] == OP_MESS);
     assert(serialized_pdu[2] == strlen(identity));
@@ -32,6 +34,8 @@ void assert_deserialize_pdu_mess_works() {
     int op;
     read_from_fd(fd, &op, 1);
     pdu_mess* deserialized_pdu = pdu_mess_deserialize(fd);
+    htons(deserialized_pdu->message_length);
+    htonl(deserialized_pdu->timestamp);
     assert(deserialized_pdu->op == OP_MESS);
     assert(deserialized_pdu->identity_length == strlen(identity));
     assert(deserialized_pdu->message_length == strlen(message));

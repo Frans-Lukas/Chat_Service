@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <netinet/in.h>
 #include <time.h>
 #include <stdbool.h>
 #include "../error_handling.h"
