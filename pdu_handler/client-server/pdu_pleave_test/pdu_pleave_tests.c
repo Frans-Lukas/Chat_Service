@@ -37,8 +37,8 @@ void assert_deserialize_pdu_pleave_works(){
     //add same padding as mock pdu to make sure string compare works
     assert(deserialized_pdu->op == OP_PLEAVE);
     assert(deserialized_pdu->identity_length == 4);
+    ntohl(deserialized_pdu->timestamp);
     assert(deserialized_pdu->timestamp == 5);
     assert(strncmp((char*)deserialized_pdu->client_identity, "pepe", 4) == 0);
-    //free(mock_serialized_pdu);
     free(deserialized_pdu);
 }
