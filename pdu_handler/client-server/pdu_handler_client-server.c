@@ -97,19 +97,32 @@ pdu_mess *pdu_mess_create(char *identity, char *message) {
     pdu->message = build_words(message, 4);
     pdu->client_identity = build_words(identity, 4);
     pdu->checksum = create_checksum(pdu);
+    fprintf(stderr, "");
 }
 
 
 
 uint8_t create_checksum(pdu_mess *message){
-    int size = 12;
     int checksum = 0;
-    for (int i = 0; i < size; ++i) {
-        checksum += ((uint8_t*)message)[i];
-        if(checksum > 255){
-            checksum -= 255;
-        }
+    checksum += message->op;
+    checksum += message->padding_op;
+    checksum += message->identity_length;
+    checksum += message->checksum;
+    checksum += ((uint8_t*)&message->message_length)[0];
+    checksum += ((uint8_t*)&message->message_length)[1];
+    checksum += ((uint8_t*)&message->padding_message_length)[0];
+    checksum += ((uint8_t*)&message->padding_message_length)[1];
+    checksum += ((uint8_t*)&message->timestamp)[0];
+    checksum += ((uint8_t*)&message->timestamp)[1];
+    checksum += ((uint8_t*)&message->timestamp)[2];
+    checksum += ((uint8_t*)&message->timestamp)[3];
+    for (int i = 0; i < message->message_length; ++i) {
+        checksum += message->message[i];
     }
+    for (int j = 0; j < message->identity_length; ++j) {
+        checksum += message->client_identity[j];
+    }
+    checksum = checksum % 255;
     return ~(uint8_t)checksum;
 }
 
@@ -151,7 +164,7 @@ pdu_mess *pdu_mess_deserialize(int fd) {
 
 bool pdu_mess_is_valid(PDU *pdu) {
     pdu_mess *real_pdu = (pdu_mess *) pdu;
-    if (create_checksum((char *) real_pdu->message) == real_pdu->checksum) {
+    if (create_checksum(real_pdu) == 0) {
         return true;
     }
     return false;
