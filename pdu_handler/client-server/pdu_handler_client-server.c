@@ -92,11 +92,25 @@ pdu_mess *pdu_mess_create(char *identity, char *message) {
     pdu_mess *pdu = calloc(1, sizeof(pdu_mess));
     pdu->op = OP_MESS;
     pdu->identity_length = (uint8_t) strlen(identity);
-    pdu->checksum = create_checksum(message);
     pdu->message_length = (uint16_t) strlen(message);
     pdu->timestamp = (uint32_t) time(NULL);
     pdu->message = build_words(message, 4);
     pdu->client_identity = build_words(identity, 4);
+    pdu->checksum = create_checksum(pdu);
+}
+
+
+
+uint8_t create_checksum(pdu_mess *message){
+    int size = 12;
+    int checksum = 0;
+    for (int i = 0; i < size; ++i) {
+        checksum += ((uint8_t*)message)[i];
+        if(checksum > 255){
+            checksum -= 255;
+        }
+    }
+    return ~(uint8_t)checksum;
 }
 
 size_t pdu_mess_size(pdu_mess *mess) {

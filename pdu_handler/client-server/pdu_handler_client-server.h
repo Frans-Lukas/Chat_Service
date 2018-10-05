@@ -69,12 +69,13 @@ typedef struct pdu_pjoin {
 
 pdu_quit *pdu_quit_create();
 
-
 int pdu_mess_serialize(PDU *pdu, char **data_to_send);
 
 pdu_mess *pdu_mess_create(char *identity, char *message);
 
 pdu_mess *pdu_mess_deserialize(int fd);
+
+uint8_t create_checksum(pdu_mess *message);
 
 int pdu_quit_serialize(PDU *join_pdu, char **data_to_send);
 
