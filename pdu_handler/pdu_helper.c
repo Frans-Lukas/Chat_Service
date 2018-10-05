@@ -1,6 +1,9 @@
 #include <zconf.h>
 #include <fcntl.h>
 #include <pdu_handler/client-server/pdu_handler_client-server.h>
+#include <pdu_handler/client-nameserver/pdu_handler_client-nameserver.h>
+#include <pdu_handler/server-nameserver/pdu_handler_server-nameserver.h>
+#include <tiff.h>
 #include "pdu_helper.h"
 
 uint32_t *build_words(char* input_string, int bytes){
@@ -18,6 +21,102 @@ uint16_t add_padding(void* start_pos, int num_bytes_to_pad) {
     for (int i = 0; i < num_bytes_to_pad; ++i) {
         ((char*)start_pos)[i] = '\0';
     }
+}
+
+int pdu_serialize(PDU* pdu, char** data_ptr){
+    int length = 0;
+    switch(pdu->op){
+        case OP_JOIN:
+            length = pdu_join_serialize(pdu, data_ptr);
+            break;
+        case OP_QUIT:
+            length = pdu_quit_serialize(pdu, data_ptr);
+            break;
+        case OP_PJOIN:
+            length = pdu_pjoin_serialize(pdu, data_ptr);
+            break;
+        case OP_PLEAVE:
+            length = pdu_pleave_serialize(pdu, data_ptr);
+            break;
+        case OP_MESS:
+            length = pdu_mess_serialize(pdu, data_ptr);
+            break;
+        case OP_PARTICIPANTS:
+            length = pdu_participants_serialize(pdu, data_ptr);
+            break;
+        case OP_SLIST:
+            length = s_list_serialize(pdu, data_ptr);
+            break;
+        case OP_GETLIST:
+            length = get_list_serialize(pdu, data_ptr);
+            break;
+        case OP_REG:
+            length = reg_serialize(pdu, data_ptr);
+            break;
+        case OP_ACK:
+            length = ack_serialize(pdu, data_ptr);
+            break;
+        case OP_ALIVE:
+            length = alive_serialize(pdu, data_ptr);
+            break;
+        case OP_NOTREG:
+            length = not_reg_serialize(pdu, data_ptr);
+            break;
+        default:
+            return -1;
+    }
+    return length;
+}
+
+
+PDU* deserialize_next_pdu(int fd){
+    uint8 opcode = 0;
+    read(fd, &opcode, 1);
+    PDU* pdu;
+    switch (opcode){
+        case OP_JOIN:
+            pdu = pdu_join_deserialize(fd);
+            break;
+        case OP_QUIT:
+            pdu = pdu_quit_create();
+            break;
+        case OP_PJOIN:
+            pdu = pdu_pjoin_deserialize(fd);
+            break;
+        case OP_PLEAVE:
+            pdu = pdu_pleave_deserialize(fd);
+            break;
+        case OP_MESS:
+            pdu = pdu_mess_deserialize(fd);
+            break;
+        case OP_PARTICIPANTS:
+            pdu = pdu_participants_deserialize(fd);
+            break;
+        case OP_SLIST:
+            pdu = s_list_deserialize(fd);
+            break;
+        case OP_GETLIST:
+            pdu = get_list_deserialize(fd);
+            break;
+        case OP_REG:
+            pdu = reg_deserialize(fd);
+            break;
+        case OP_ACK:
+            pdu = ack_deserialize(fd);
+            break;
+        case OP_ALIVE:
+            pdu = alive_deserialize(fd);
+            break;
+        case OP_NOTREG:
+            pdu = not_reg_deserialize(fd);
+            break;
+        default:
+            return NULL;
+    }
+
+    return pdu;
+
+
 }
 
 
