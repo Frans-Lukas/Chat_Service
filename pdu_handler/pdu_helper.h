@@ -23,6 +23,9 @@ int get_num_words(int string_len, int bytes);
 
 uint16_t add_padding(void *, int);
 
+int pdu_serialize(PDU* pdu, char** data_ptr);
+
+PDU* pdu_deserialize_next(int fd);
 
 char *array_to_string(char *pString[], int list_length);
 
