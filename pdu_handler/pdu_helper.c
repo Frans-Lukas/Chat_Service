@@ -69,54 +69,37 @@ int pdu_serialize(PDU* pdu, char** data_ptr){
 }
 
 
-PDU* deserialize_next_pdu(int fd){
+PDU* pdu_deserialize_next(int fd){
     uint8 opcode = 0;
     read(fd, &opcode, 1);
-    PDU* pdu;
     switch (opcode){
         case OP_JOIN:
-            pdu = pdu_join_deserialize(fd);
-            break;
+            return (PDU *) pdu_join_deserialize(fd);
         case OP_QUIT:
-            pdu = pdu_quit_create();
-            break;
+            return (PDU *) pdu_quit_create();
         case OP_PJOIN:
-            pdu = pdu_pjoin_deserialize(fd);
-            break;
+            return (PDU *) pdu_pjoin_deserialize(fd);
         case OP_PLEAVE:
-            pdu = pdu_pleave_deserialize(fd);
-            break;
+            return (PDU *) pdu_pleave_deserialize(fd);
         case OP_MESS:
-            pdu = pdu_mess_deserialize(fd);
-            break;
+            return (PDU *) pdu_mess_deserialize(fd);
         case OP_PARTICIPANTS:
-            pdu = pdu_participants_deserialize(fd);
-            break;
+            return (PDU *) pdu_participants_deserialize(fd);
         case OP_SLIST:
-            pdu = s_list_deserialize(fd);
-            break;
+            return (PDU *) s_list_deserialize(fd);
         case OP_GETLIST:
-            pdu = get_list_deserialize(fd);
-            break;
+            return (PDU *) get_list_deserialize(fd);
         case OP_REG:
-            pdu = reg_deserialize(fd);
-            break;
+            return (PDU *) reg_deserialize(fd);
         case OP_ACK:
-            pdu = ack_deserialize(fd);
-            break;
+            return (PDU *) ack_deserialize(fd);
         case OP_ALIVE:
-            pdu = alive_deserialize(fd);
-            break;
+            return (PDU *) alive_deserialize(fd);
         case OP_NOTREG:
-            pdu = not_reg_deserialize(fd);
-            break;
+            return (PDU *) not_reg_deserialize(fd);
         default:
             return NULL;
     }
-
-    return pdu;
-
-
 }
 
 
