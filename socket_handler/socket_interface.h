@@ -5,4 +5,8 @@
 #ifndef CHAT_SERVICE_SOCKET_INTERFACE_H
 #define CHAT_SERVICE_SOCKET_INTERFACE_H
 
+
+int write_pdu_to_socket(PDU* pdu, int socket);
+PDU* read_pdu_from_socket(int socket);
+
 #endif //CHAT_SERVICE_SOCKET_INTERFACE_H
