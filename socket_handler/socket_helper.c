@@ -117,8 +117,8 @@ int socket_tcp_get_connecting_socket(int socket){
     return client_socket;
 }
 
-int socket_single_write_to(int socket, char* message) {
-    return (int) send(socket, message, BUFSIZE, 0);
+int socket_single_write_to(int socket, char* message, int data_size) {
+    return (int) send(socket, message, (size_t) data_size, 0);
 }
 
 

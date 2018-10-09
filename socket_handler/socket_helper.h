@@ -22,7 +22,7 @@
 void perror_exit(char msg[]);
 void *socket_read_from(void *socket);
 void *socket_write_to(void *socket);
-int socket_single_write_to(int socket, char* message);
+int socket_single_write_to(int socket, char* message, int data_size);
 int socket_udp_create();
 int socket_tcp_create();
 void socket_make_reusable(int socket);
