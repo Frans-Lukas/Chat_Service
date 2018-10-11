@@ -18,8 +18,9 @@ void socket_interface_test_all(){
 
     pthread_t writer;
 
-    test_socket_pdu_write_tcp(NULL);
     pthread_create(&writer, NULL, &test_socket_pdu_read_tcp, NULL);
+    test_socket_pdu_write_tcp(NULL);
+    pthread_join(writer, NULL);
 }
 
 void* test_socket_pdu_read_tcp(void *data){
@@ -29,7 +30,6 @@ void* test_socket_pdu_read_tcp(void *data){
         pdu = socket_read_pdu_from(&socket_to_read_from, 1);
     }
     pdu_join* real_pdu = (pdu_join *) pdu[0];
-    fprintf(stderr, "hello\n");
     assert(real_pdu->op == OP_JOIN);
     assert(strncmp((char*)real_pdu->identity, "Kubadoo", real_pdu->identity_length) == 0);
 }

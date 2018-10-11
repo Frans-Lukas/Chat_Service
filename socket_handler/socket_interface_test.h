@@ -4,7 +4,7 @@
 
 #ifndef CHAT_SERVICE_SOCKET_INTERFACE_TEST_H
 #define CHAT_SERVICE_SOCKET_INTERFACE_TEST_H
-static const int port = 1503;
+static const int port = 1509;
 
 void socket_interface_test_all();
 void test_socket_interface_deserialize_works();

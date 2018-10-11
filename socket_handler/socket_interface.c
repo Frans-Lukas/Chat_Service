@@ -47,7 +47,7 @@ PDU** socket_read_pdu_from(int *socket, int socket_array_size){
         printf(stderr, "poll() error");
         return NULL;
     }
-    PDU* data[socket_array_size];
+    PDU** data = calloc((size_t) socket_array_size, sizeof(PDU));
     for (int j = 0; j < socket_array_size; ++j) {
         if(fd[j].revents & POLLIN){
             data[j] = pdu_deserialize_next(socket[j]);
