@@ -53,7 +53,6 @@ int socket_tcp_create(){
         perror_exit("socket()");
     }
     socket_make_reusable(socket_fd);
-    socket_make_timeout(socket_fd);
     return socket_fd;
 }
 
