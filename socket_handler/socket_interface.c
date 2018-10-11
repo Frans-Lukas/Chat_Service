@@ -8,24 +8,24 @@
 #include <poll.h>
 
 
-int socket_write_pdu_to(PDU *pdu, int *socket, int socket_array_size){
+int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
 
-    struct pollfd poll_struct[socket_array_size];
-    for(int i=0; i<socket_array_size; i++){
+    struct pollfd poll_struct[number_of_sockets];
+    for (int i = 0; i < number_of_sockets; i++) {
         poll_struct[i].fd = socket[i];
         poll_struct[i].events = POLLOUT;
     }
 
-    if( 0 > poll(poll_struct, 1, 100)){
+    if (0 > poll(poll_struct, 1, 100)) {
         printf(stderr, "poll() error");
         return -1;
     }
 
-    for(int i=0; i<socket_array_size; i++) {
+    for (int i = 0; i < number_of_sockets; i++) {
         if (poll_struct[i].revents & POLLOUT) {
             char *data;
             int pdu_size = pdu_serialize(pdu, &data);
-            if(0 > socket_single_write_to(socket[i], data, pdu_size)){
+            if (0 > socket_single_write_to(socket[i], data, pdu_size)) {
                 return -1;
             }
         }
@@ -33,28 +33,27 @@ int socket_write_pdu_to(PDU *pdu, int *socket, int socket_array_size){
     return 0;
 }
 
-PDU** socket_read_pdu_from(int *socket, int socket_array_size){
+int socket_read_pdu_from(int *socket, int number_of_sockets, PDU** pointer_list) {
 
     //if poll says socket is readable, read from socket.
-    struct pollfd fd[socket_array_size];
-    for (int i = 0; i < socket_array_size; ++i) {
+    struct pollfd fd[number_of_sockets];
+    for (int i = 0; i < number_of_sockets; ++i) {
         fd[i].fd = socket[i];
         fd[i].events = POLLIN;
     }
     int timeout;
     timeout = 2;
-    if( 0 > poll(fd, (nfds_t) socket_array_size, timeout)){
+    if (0 > poll(fd, (nfds_t) number_of_sockets, timeout)) {
         printf(stderr, "poll() error");
-        return NULL;
+        return -1;
     }
-    PDU* data[socket_array_size];
-    for (int j = 0; j < socket_array_size; ++j) {
-        if(fd[j].revents & POLLIN){
-            data[j] = pdu_deserialize_next(socket[j]);
-        } else{
-            data[j] = NULL;
+    for (int j = 0; j < number_of_sockets; ++j) {
+        if (fd[j].revents & POLLIN) {
+            pointer_list[j] = pdu_deserialize_next(socket[j]);
+        } else {
+            pointer_list[j] = NULL;
         }
     }
-    return data;
+    return 0;
 }
 

@@ -17,25 +17,25 @@ void socket_interface_test_all(){
     test_socket_interface_deserialize_works();
 
     pthread_t writer;
+    pthread_t reader;
 
-    test_socket_pdu_write_tcp(NULL);
-    pthread_create(&writer, NULL, &test_socket_pdu_read_tcp, NULL);
+    pthread_create(&reader, NULL, &test_socket_pdu_read_tcp, NULL);
+    pthread_create(&writer, NULL, &test_socket_pdu_write_tcp, NULL);
+    pthread_join(writer, 0);
+    pthread_join(reader, 0);
 }
 
 void* test_socket_pdu_read_tcp(void *data){
-    int socket_to_read_from = start_test_client();
-    PDU** pdu = NULL;
-    while(pdu == NULL){
-        pdu = socket_read_pdu_from(&socket_to_read_from, 1);
-    }
+    int socket_to_read_from = start_test_server();
+    PDU** pdu = calloc(1, sizeof(PDU*));
+    while(socket_read_pdu_from(&socket_to_read_from, 1, pdu) == -1);
     pdu_join* real_pdu = (pdu_join *) pdu[0];
-    fprintf(stderr, "hello\n");
     assert(real_pdu->op == OP_JOIN);
     assert(strncmp((char*)real_pdu->identity, "Kubadoo", real_pdu->identity_length) == 0);
 }
 
 void* test_socket_pdu_write_tcp(void *data){
-    int socket_to_write_to = start_test_server();
+    int socket_to_write_to = start_test_client();
     pdu_join* pdu = pdu_join_create("Kubadoo");
     while(socket_write_pdu_to((PDU *) pdu, &socket_to_write_to, 1) == -1);
 }
