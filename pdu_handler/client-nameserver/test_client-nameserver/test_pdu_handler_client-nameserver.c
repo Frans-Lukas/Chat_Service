@@ -47,15 +47,26 @@ void test_deserialize_s_list() {
     int fd = open_fd("../pdu_handler/client-nameserver/test_client-nameserver/s_list_data.pdu");
     s_list *pdu = s_list_deserialize(fd);
     assert(pdu->pdu.op == OP_SLIST);
-    assert(pdu->number_of_servers == ntohs(123));
-    assert(*((uint8_t *) (&pdu->adress) + 0) == 251);
-    assert(*((uint8_t *) (&pdu->adress) + 1) == 252);
-    assert(*((uint8_t *) (&pdu->adress) + 2) == 253);
-    assert(*((uint8_t *) (&pdu->adress) + 3) == 254);
-    assert(pdu->port == ntohs(1337));
-    assert(pdu->number_of_clients == 6);
-    assert(pdu->server_name_length == 8);
-    assert(strncmp((char *) pdu->server_name, "abcdefgh", 8) == 0);
+    assert(pdu->number_of_servers == ntohs(2));
+
+
+    assert(*((uint8_t *) (&pdu->adress[0]) + 0) == 251);
+    assert(*((uint8_t *) (&pdu->adress[0]) + 1) == 252);
+    assert(*((uint8_t *) (&pdu->adress[0]) + 2) == 253);
+    assert(*((uint8_t *) (&pdu->adress[0]) + 3) == 254);
+    assert(pdu->port[0] == ntohs(1337));
+    assert(pdu->number_of_clients[0] == 6);
+    assert(pdu->server_name_length[0] == 8);
+    assert(strncmp((char*)(&pdu->server_name[0]), "abcdefgh", 8) == 0);
+
+    assert(*((uint8_t *) (&pdu->adress[1]) + 0) == 100);
+    assert(*((uint8_t *) (&pdu->adress[1]) + 1) == 101);
+    assert(*((uint8_t *) (&pdu->adress[1]) + 2) == 102);
+    assert(*((uint8_t *) (&pdu->adress[1]) + 3) == 103);
+    assert(pdu->port[1] == ntohs(420));
+    assert(pdu->number_of_clients[1] == 5);
+    assert(pdu->server_name_length[1] == 4);
+    assert(strncmp((char*)(&pdu->server_name[1]), "efgh", 4) == 0);
 }
 
 

@@ -16,11 +16,11 @@ typedef struct s_list {
     PDU pdu;
     uint8_t pad;
     uint16_t number_of_servers;
-    uint32_t adress;
-    uint16_t port;
-    uint8_t number_of_clients;
-    uint8_t server_name_length;
-    uint32_t *server_name;
+    uint32_t* adress;
+    uint16_t* port;
+    uint8_t* number_of_clients;
+    uint8_t* server_name_length;
+    uint32_t** server_name;
 } s_list;
 
 s_list *s_list_deserialize(int fd);
