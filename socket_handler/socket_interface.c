@@ -20,7 +20,7 @@ int write_pdu_to_socket(PDU* pdu, int socket[], int size){
         printf(stderr, "poll() error");
         return -1;
     }
-    
+
     for(int i=0; i<size; i++) {
         if (poll_struct[i].revents & POLLOUT) {
             char *data;
