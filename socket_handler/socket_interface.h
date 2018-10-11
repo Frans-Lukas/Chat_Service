@@ -6,8 +6,8 @@
 #define CHAT_SERVICE_SOCKET_INTERFACE_H
 
 
-int write_pdu_to_socket(PDU* pdu, int socket[], int size);
-PDU** read_pdu_from_socket(int socket[], int size);
+int socket_write_pdu_to(PDU *pdu, int *socket, int socket_array_size);
+PDU** socket_read_pdu_from(int *socket, int socket_array_size);
 
 
 #endif //CHAT_SERVICE_SOCKET_INTERFACE_H

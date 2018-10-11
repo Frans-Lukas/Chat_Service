@@ -8,10 +8,10 @@
 #include <poll.h>
 
 
-int write_pdu_to_socket(PDU* pdu, int socket[], int size){
+int socket_write_pdu_to(PDU *pdu, int *socket, int socket_array_size){
 
-    struct pollfd poll_struct[size];
-    for(int i=0; i<size; i++){
+    struct pollfd poll_struct[socket_array_size];
+    for(int i=0; i<socket_array_size; i++){
         poll_struct[i].fd = socket[i];
         poll_struct[i].events = POLLOUT;
     }
@@ -21,11 +21,11 @@ int write_pdu_to_socket(PDU* pdu, int socket[], int size){
         return -1;
     }
 
-    for(int i=0; i<size; i++) {
+    for(int i=0; i<socket_array_size; i++) {
         if (poll_struct[i].revents & POLLOUT) {
             char *data;
             int pdu_size = pdu_serialize(pdu, &data);
-            if(0 > socket_single_write_to(socket, data, pdu_size)){
+            if(0 > socket_single_write_to(socket[i], data, pdu_size)){
                 return -1;
             }
         }
@@ -33,22 +33,22 @@ int write_pdu_to_socket(PDU* pdu, int socket[], int size){
     return 0;
 }
 
-PDU** read_pdu_from_socket(int socket[], int size){
+PDU** socket_read_pdu_from(int *socket, int socket_array_size){
 
     //if poll says socket is readable, read from socket.
-    struct pollfd fd[size];
-    for (int i = 0; i < size; ++i) {
+    struct pollfd fd[socket_array_size];
+    for (int i = 0; i < socket_array_size; ++i) {
         fd[i].fd = socket[i];
         fd[i].events = POLLIN;
     }
     int timeout;
-    timeout = 100;
-    if( 0 > poll(fd, (nfds_t) size, timeout)){
+    timeout = 2;
+    if( 0 > poll(fd, (nfds_t) socket_array_size, timeout)){
         printf(stderr, "poll() error");
         return NULL;
     }
-    PDU* data[size];
-    for (int j = 0; j < size; ++j) {
+    PDU* data[socket_array_size];
+    for (int j = 0; j < socket_array_size; ++j) {
         if(fd[j].revents & POLLIN){
             data[j] = pdu_deserialize_next(socket[j]);
         } else{

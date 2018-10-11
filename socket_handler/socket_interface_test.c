@@ -5,13 +5,61 @@
 #include <pdu_handler/pdu_helper.h>
 #include <pdu_handler/client-server/pdu_handler_client-server.h>
 #include <assert.h>
+#include <pthread.h>
 #include "socket_interface_test.h"
+#include "socket_interface.h"
+#include "socket_helper.h"
+#include "network_helper.h"
 
 
 void socket_interface_test_all(){
     test_socket_interface_serialize_works();
     test_socket_interface_deserialize_works();
+
+    pthread_t writer;
+    pthread_t reader;
+
+    pthread_create(&reader, NULL, &test_socket_pdu_read, NULL);
+    pthread_create(&writer, NULL, &test_socket_pdu_write, NULL);
 }
+
+void* test_socket_pdu_read(void* data){
+    int socket_to_read_from = start_test_client();
+    PDU** pdu = socket_read_pdu_from(&socket_to_read_from, 1);
+    pdu_join* real_pdu = (pdu_join *) pdu[0];
+    assert(real_pdu->op == OP_JOIN);
+    assert(strncmp((char*)real_pdu->identity, "Kubadoo", real_pdu->identity_length) == 0);
+}
+
+void* test_socket_pdu_write(void* data){
+    int socket_to_write_to = start_test_server();
+    pdu_join* pdu = pdu_join_create("Kubadoo");
+    socket_write_pdu_to((PDU *) pdu, &socket_to_write_to, 1);
+}
+
+int start_test_client(){
+    pdu_join* pdu = pdu_join_create("Kubadoo");
+    int socket_to_write_to = socket_tcp_create();
+
+    char* hostname = calloc(1, 256);
+    char* ip = calloc(1, 17);
+    network_getFQDN(hostname, 256);
+    network_hostname_to_ip(hostname, ip);
+    socket_connect(1502, ip, socket_to_write_to);
+
+    free(ip);
+    free(hostname);
+    return socket_to_write_to;
+}
+
+int start_test_server(){
+    int socket_to_read_from = socket_tcp_create();
+    socket_bind(1502, socket_to_read_from);
+    socket_tcp_listen(socket_to_read_from);
+    return socket_tcp_get_connecting_socket(socket_to_read_from);
+}
+
+
 
 void test_socket_interface_deserialize_works(){
     char* string = "an\0pe";
@@ -24,7 +72,6 @@ void test_socket_interface_deserialize_works(){
     assert(strncmp((char*)deserialized_pdu->participant_names, string, deserialized_pdu->length) == 0);
     free(deserialized_pdu);
 }
-
 
 void test_socket_interface_serialize_works(){
     char* string = "pe\0pe\0";

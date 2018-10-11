@@ -3,7 +3,7 @@
 #include "socket_helper.h"
 
 
-int getFQDN(char *fqdn, size_t n) {
+int network_getFQDN(char *fqdn, size_t n) {
     char hostname[256];
     int r = gethostname(hostname, 256);
     if (r != 0) {
@@ -22,7 +22,7 @@ int getFQDN(char *fqdn, size_t n) {
     return 0;
 }
 
-int hostname_to_ip(const char *hostname, char *ip) {
+int network_hostname_to_ip(const char *hostname, char *ip) {
     struct hostent *he;
     struct in_addr **addr_list;
 

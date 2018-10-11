@@ -5,8 +5,8 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <string.h>
-int getFQDN(char *fqdn, size_t n);
-int hostname_to_ip(const char *hostname, char *ip);
+int network_getFQDN(char *fqdn, size_t n);
+int network_hostname_to_ip(const char *hostname, char *ip);
 #endif
 
 
