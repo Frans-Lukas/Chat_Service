@@ -55,6 +55,6 @@ PDU** socket_read_pdu_from(int *socket, int number_of_sockets) {
             data[j] = NULL;
         }
     }
-    return 0;
+    return data;
 }
 
