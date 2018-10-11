@@ -39,19 +39,19 @@ typedef struct not_reg {
 
 uint32_t *build_words(char *input_string, int bytes);
 
-int reg_serialize(reg *pdu, char** data);
+int reg_serialize(PDU *p, char** data);
 
 reg *reg_deserialize(int fd);
 
-int alive_serialize(alive *pdu, char** data);
+int alive_serialize(PDU *p, char** data);
 
 alive *alive_deserialize(int fd);
 
-int ack_serialize(ack *pdu, char** data);
+int ack_serialize(PDU *p, char** data);
 
 ack *ack_deserialize(int fd);
 
-int not_reg_serialize(not_reg *pdu, char** data);
+int not_reg_serialize(PDU *p, char** data);
 
 not_reg *not_reg_deserialize(int fd);
 

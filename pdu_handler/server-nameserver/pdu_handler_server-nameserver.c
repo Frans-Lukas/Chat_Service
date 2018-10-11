@@ -4,7 +4,8 @@
 #include "pdu_handler_server-nameserver.h"
 
 
-int not_reg_serialize(not_reg *pdu, char** data) {
+int not_reg_serialize(PDU *p, char** data) {
+    not_reg* pdu = (not_reg*)p;
     int size = 4;
     *data = calloc(4, sizeof(uint8_t));
     *data[0] = OP_NOTREG;
@@ -23,7 +24,8 @@ not_reg *not_reg_deserialize(int fd) {
     return pdu;
 }
 
-int ack_serialize(ack *pdu, char** data) {
+int ack_serialize(PDU *p, char** data) {
+    ack* pdu = (ack*)p;
     *data = calloc(4, sizeof(uint8_t));
     *data[0] = OP_ACK;
     *data[1] = pdu->pad;
@@ -42,7 +44,8 @@ ack *ack_deserialize(int fd) {
     return pdu;
 }
 
-int alive_serialize(alive *pdu, char** data) {
+int alive_serialize(PDU *p, char** data) {
+    alive* pdu = (alive*)p;
     int size = sizeof(alive);
     *data = calloc(size, sizeof(uint8_t));
     *data[0] = OP_ALIVE;
@@ -61,7 +64,8 @@ alive *alive_deserialize(int fd) {
     return pdu;
 }
 
-int reg_serialize(reg *pdu, char** data) {
+int reg_serialize(PDU *p, char** data) {
+    reg* pdu = (reg*)p;
     int size = sizeof(reg) + pdu->server_name_length;
     *data = calloc(1, (size_t) size);
     *data[0] = OP_REG;
