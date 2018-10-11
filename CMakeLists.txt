@@ -55,4 +55,4 @@ add_executable(Chat_Service
         socket_handler/socket_interface.h
         error_handling.c
         error_handling.h
-        main.c)
+        main.c socket_handler/socket_interface_test.c socket_handler/socket_interface_test.h)

@@ -68,7 +68,6 @@ int pdu_serialize(PDU* pdu, char** data_ptr){
     return length;
 }
 
-
 PDU* pdu_deserialize_next(int fd){
     uint8 opcode = 0;
     read(fd, &opcode, 1);

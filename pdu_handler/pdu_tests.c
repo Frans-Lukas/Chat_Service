@@ -1,5 +1,6 @@
 
 
+#include <socket_handler/socket_interface_test.h>
 #include "pdu_tests.h"
 
 void run_all_tests() {
@@ -12,5 +13,6 @@ void run_all_tests() {
     run_all_client_nameserver_test();
     run_pdu_pleave_tests();
     run_pdu_pjoin_tests();
+    socket_interface_test_all();
     fprintf(stderr, "All tests successful!\n");
 }
