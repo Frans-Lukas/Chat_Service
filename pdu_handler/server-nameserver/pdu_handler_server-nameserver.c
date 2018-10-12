@@ -4,7 +4,7 @@
 #include "pdu_handler_server-nameserver.h"
 
 
-int not_reg_serialize(PDU *p, char** data) {
+int pdu_not_reg_serialize(PDU *p, char **data) {
     not_reg* pdu = (not_reg*)p;
     int size = 4;
     *data = calloc(4, sizeof(uint8_t));
@@ -15,7 +15,7 @@ int not_reg_serialize(PDU *p, char** data) {
     return size;
 }
 
-not_reg *not_reg_deserialize(int fd) {
+not_reg *pdu_not_reg_deserialize(int fd) {
     not_reg *pdu = calloc(1, sizeof(not_reg));
     pdu->pdu.op = OP_NOTREG;
     read_from_fd(fd, &pdu->pad, 1);
@@ -24,7 +24,7 @@ not_reg *not_reg_deserialize(int fd) {
     return pdu;
 }
 
-int ack_serialize(PDU *p, char** data) {
+int pdu_ack_serialize(PDU *p, char **data) {
     ack* pdu = (ack*)p;
     *data = calloc(4, sizeof(uint8_t));
     *data[0] = OP_ACK;
@@ -35,7 +35,7 @@ int ack_serialize(PDU *p, char** data) {
     return 4;
 }
 
-ack *ack_deserialize(int fd) {
+ack *pdu_ack_deserialize(int fd) {
     ack *pdu = calloc(1, sizeof(ack));
     pdu->pdu.op = OP_ACK;
     read_from_fd(fd, &pdu->pad, 1);
@@ -44,7 +44,7 @@ ack *ack_deserialize(int fd) {
     return pdu;
 }
 
-int alive_serialize(PDU *p, char** data) {
+int pdu_alive_serialize(PDU *p, char **data) {
     alive* pdu = (alive*)p;
     int size = sizeof(alive);
     *data = calloc(size, sizeof(uint8_t));
@@ -55,7 +55,7 @@ int alive_serialize(PDU *p, char** data) {
     return size;
 }
 
-alive *alive_deserialize(int fd) {
+alive *pdu_alive_deserialize(int fd) {
     alive *pdu = calloc(1, sizeof(alive));
     pdu->pdu.op = OP_ALIVE;
     read_from_fd(fd, &pdu->nr_of_clients, 1);
@@ -64,7 +64,7 @@ alive *alive_deserialize(int fd) {
     return pdu;
 }
 
-int reg_serialize(PDU *p, char** data) {
+int pdu_reg_serialize(PDU *p, char **data) {
     reg* pdu = (reg*)p;
     int size = sizeof(reg) + pdu->server_name_length;
     *data = calloc(1, (size_t) size);
@@ -76,7 +76,7 @@ int reg_serialize(PDU *p, char** data) {
     return size;
 }
 
-reg* reg_deserialize(int fd) {
+reg* pdu_reg_deserialize(int fd) {
     reg* pdu = calloc(1, sizeof(reg));
     pdu->pdu.op = OP_REG;
     read_from_fd(fd, &pdu->server_name_length, 1);

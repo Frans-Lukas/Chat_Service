@@ -27,7 +27,7 @@ void test_serialize_s_list() {
     pdu->server_name = calloc(2, sizeof(uint32_t));
     memcpy(pdu->server_name, "abcdefgh", 8);
 
-    int result = s_list_serialize(pdu, &test_data);
+    int result = pdu_s_list_serialize(pdu, &test_data);
 
     assert(test_data[0] == OP_SLIST);
     assert(*(uint16_t *) (test_data + 2) == htons(420));
@@ -45,7 +45,7 @@ void test_serialize_s_list() {
 
 void test_deserialize_s_list() {
     int fd = open_fd("../pdu_handler/client-nameserver/test_client-nameserver/s_list_data.pdu");
-    s_list *pdu = s_list_deserialize(fd);
+    s_list *pdu = pdu_s_list_deserialize(fd);
     assert(pdu->pdu.op == OP_SLIST);
     assert(pdu->number_of_servers == ntohs(2));
 
@@ -74,13 +74,13 @@ void test_serialize_get_list() {
     char *test_data;
     get_list *test_pdu = calloc(1, sizeof(get_list));
     test_pdu->pdu.op = OP_GETLIST;
-    test_pdu->pad = calloc(3, sizeof(uint8_t)), get_list_serialize(test_pdu, &test_data);
+    test_pdu->pad = calloc(3, sizeof(uint8_t)), pdu_get_list_serialize(test_pdu, &test_data);
     assert(test_data[0] == OP_GETLIST);
 }
 
 
 void test_deserialize_get_list() {
     int fd = open_fd("../pdu_handler/client-nameserver/test_client-nameserver/get_list_data.pdu");
-    get_list *pdu = get_list_deserialize(fd);
+    get_list *pdu = pdu_get_list_deserialize(fd);
     assert(pdu->pdu.op == OP_GETLIST);
 }

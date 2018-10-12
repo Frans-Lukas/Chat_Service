@@ -3,7 +3,7 @@
 #include <netinet/in.h>
 #include "pdu_handler_client-nameserver.h"
 
-int s_list_serialize(PDU *p, char **data) {
+int pdu_s_list_serialize(PDU *p, char **data) {
     s_list* pdu = (s_list*)p;
     int size = 12 + (get_num_words(pdu->server_name_length, 4) * 4);
     *data = calloc(1, sizeof(s_list));
@@ -20,7 +20,7 @@ int s_list_serialize(PDU *p, char **data) {
     return size;
 }
 
-s_list *s_list_deserialize(int fd) {
+s_list *pdu_s_list_deserialize(int fd) {
     s_list *pdu = calloc(1, sizeof(s_list));
     pdu->pdu.op = OP_SLIST;
     read_from_fd(fd, &pdu->pdu.op, 1);
@@ -46,14 +46,14 @@ s_list *s_list_deserialize(int fd) {
     return pdu;
 }
 
-int get_list_serialize(PDU *p, char **data_to_send) {
+int pdu_get_list_serialize(PDU *p, char **data_to_send) {
     get_list* pdu = (get_list*)p;
     *data_to_send = calloc(1, sizeof(uint32_t));
     *data_to_send[0] = pdu->pdu.op;
     return 4;
 }
 
-get_list *get_list_deserialize(int fd) {
+get_list *pdu_get_list_deserialize(int fd) {
     get_list *pdu = calloc(1, sizeof(get_list));
     pdu->pad = calloc(3, sizeof(uint8_t));
     pdu->pdu.op = OP_GETLIST;

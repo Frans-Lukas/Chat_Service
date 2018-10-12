@@ -19,7 +19,6 @@ void *socket_read_from(void *socket) {
     }
 }
 
-
 void *socket_write_to(void *socket) {
     int socket_fd = *((int*) socket);
     while(1){

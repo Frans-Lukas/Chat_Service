@@ -45,22 +45,22 @@ int pdu_serialize(PDU* pdu, char** data_ptr){
             length = pdu_participants_serialize(pdu, data_ptr);
             break;
         case OP_SLIST:
-            length = s_list_serialize(pdu, data_ptr);
+            length = pdu_s_list_serialize(pdu, data_ptr);
             break;
         case OP_GETLIST:
-            length = get_list_serialize(pdu, data_ptr);
+            length = pdu_get_list_serialize(pdu, data_ptr);
             break;
         case OP_REG:
-            length = reg_serialize(pdu, data_ptr);
+            length = pdu_reg_serialize(pdu, data_ptr);
             break;
         case OP_ACK:
-            length = ack_serialize(pdu, data_ptr);
+            length = pdu_ack_serialize(pdu, data_ptr);
             break;
         case OP_ALIVE:
-            length = alive_serialize(pdu, data_ptr);
+            length = pdu_alive_serialize(pdu, data_ptr);
             break;
         case OP_NOTREG:
-            length = not_reg_serialize(pdu, data_ptr);
+            length = pdu_not_reg_serialize(pdu, data_ptr);
             break;
         default:
             return -1;
@@ -85,22 +85,21 @@ PDU* pdu_deserialize_next(int fd){
         case OP_PARTICIPANTS:
             return (PDU *) pdu_participants_deserialize(fd);
         case OP_SLIST:
-            return (PDU *) s_list_deserialize(fd);
+            return (PDU *) pdu_s_list_deserialize(fd);
         case OP_GETLIST:
-            return (PDU *) get_list_deserialize(fd);
+            return (PDU *) pdu_get_list_deserialize(fd);
         case OP_REG:
-            return (PDU *) reg_deserialize(fd);
+            return (PDU *) pdu_reg_deserialize(fd);
         case OP_ACK:
-            return (PDU *) ack_deserialize(fd);
+            return (PDU *) pdu_ack_deserialize(fd);
         case OP_ALIVE:
-            return (PDU *) alive_deserialize(fd);
+            return (PDU *) pdu_alive_deserialize(fd);
         case OP_NOTREG:
-            return (PDU *) not_reg_deserialize(fd);
+            return (PDU *) pdu_not_reg_deserialize(fd);
         default:
             return NULL;
     }
 }
-
 
 bool data_is_divisible_by_four(char* data){
     return strlen(data) % 4 == 0;

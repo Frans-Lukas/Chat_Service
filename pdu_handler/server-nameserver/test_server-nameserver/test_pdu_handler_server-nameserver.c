@@ -27,7 +27,7 @@ void test_serialize_not_reg() {
     pdu->id_number = 1337;
 
     char *data;
-    not_reg_serialize(pdu, &data);
+    pdu_not_reg_serialize(pdu, &data);
     assert(data[0] == OP_NOTREG);
     assert(data[1] == 42);
     assert(*(uint16_t *) (data + 2) == htons(1337));
@@ -37,7 +37,7 @@ void test_deserialize_not_reg() {
     int fd = open_fd("../pdu_handler/server-nameserver/test_server-nameserver/not_reg_data.pdu");
     int op_code;
     read_from_fd(fd, &op_code, 1);
-    not_reg *pdu = not_reg_deserialize(fd);
+    not_reg *pdu = pdu_not_reg_deserialize(fd);
     assert(pdu->pdu.op == OP_NOTREG);
     assert(pdu->pad == 42);
     assert(pdu->id_number == ntohs(1337));
@@ -50,7 +50,7 @@ void test_serialize_ack() {
     pdu_ack->id_number = 1337;
 
     char *data;
-    ack_serialize(pdu_ack, &data);
+    pdu_ack_serialize(pdu_ack, &data);
     assert(data[0] == OP_ACK);
     assert(data[1] == 42);
     assert(*(uint16_t *) (data + 2) == htons(1337));
@@ -60,7 +60,7 @@ void test_deserialize_ack() {
     int fd = open_fd("../pdu_handler/server-nameserver/test_server-nameserver/ack_data.pdu");
     int op_code;
     read_from_fd(fd, &op_code, 1);
-    ack *pdu = ack_deserialize(fd);
+    ack *pdu = pdu_ack_deserialize(fd);
     assert(pdu->pdu.op == OP_ACK);
     assert(pdu->pad == 42);
     assert(pdu->id_number == ntohs(1337));
@@ -72,7 +72,7 @@ void test_serialize_alive() {
     pdu->id_number = (uint16_t) 1337;
     pdu->nr_of_clients = (uint8_t) 6;
     char *data;
-    alive_serialize(pdu, &data);
+    pdu_alive_serialize(pdu, &data);
 
     assert(data[0] == OP_ALIVE);
     assert(data[1] == 6);
@@ -83,7 +83,7 @@ void test_deserialize_alive() {
     int fd = open_fd("../pdu_handler/server-nameserver/test_server-nameserver/alive_data.pdu");
     int op_code;
     read_from_fd(fd, &op_code, 1);
-    alive *pdu = alive_deserialize(fd);
+    alive *pdu = pdu_alive_deserialize(fd);
     assert(pdu->pdu.op == OP_ALIVE);
     assert(pdu != NULL);
     assert(pdu->pdu.op == OP_ALIVE);
@@ -100,7 +100,7 @@ void test_serialize_reg() {
     strncpy((char *) pdu->server_name, "ab", 2);
 
     char *data;
-    int result = reg_serialize(pdu, &data);
+    int result = pdu_reg_serialize(pdu, &data);
 
     assert(result == 18);
     assert(data[0] == OP_REG);
@@ -113,7 +113,7 @@ void test_deserialize_reg() {
     int fd = open_fd("../pdu_handler/server-nameserver/test_server-nameserver/reg_data.pdu");
     int op_code;
     read_from_fd(fd, &op_code, 1);
-    reg *pdu = reg_deserialize(fd);
+    reg *pdu = pdu_reg_deserialize(fd);
     assert(pdu->pdu.op == OP_REG);
     assert(pdu != NULL);
     assert(pdu->tcp_port == ntohs(1337));

@@ -23,12 +23,12 @@ typedef struct s_list {
     uint32_t** server_name;
 } s_list;
 
-s_list *s_list_deserialize(int fd);
+s_list *pdu_s_list_deserialize(int fd);
 
-int s_list_serialize(PDU *p, char** data_to_send);
+int pdu_s_list_serialize(PDU *p, char **data_to_send);
 
-get_list *get_list_deserialize(int fd);
+get_list *pdu_get_list_deserialize(int fd);
 
-int get_list_serialize(PDU* p, char** data_to_send);
+int pdu_get_list_serialize(PDU *p, char **data_to_send);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_CLIENT_NAMESERVER_H

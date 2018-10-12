@@ -39,21 +39,21 @@ typedef struct not_reg {
 
 uint32_t *build_words(char *input_string, int bytes);
 
-int reg_serialize(PDU *p, char** data);
+int pdu_reg_serialize(PDU *p, char **data);
 
-reg *reg_deserialize(int fd);
+reg *pdu_reg_deserialize(int fd);
 
-int alive_serialize(PDU *p, char** data);
+int pdu_alive_serialize(PDU *p, char **data);
 
-alive *alive_deserialize(int fd);
+alive *pdu_alive_deserialize(int fd);
 
-int ack_serialize(PDU *p, char** data);
+int pdu_ack_serialize(PDU *p, char **data);
 
-ack *ack_deserialize(int fd);
+ack *pdu_ack_deserialize(int fd);
 
-int not_reg_serialize(PDU *p, char** data);
+int pdu_not_reg_serialize(PDU *p, char **data);
 
-not_reg *not_reg_deserialize(int fd);
+not_reg *pdu_not_reg_deserialize(int fd);
 
 #endif //CHAT_SERVICE_PDU_HANDLER_SERVER_NAMESERVER_H
 
