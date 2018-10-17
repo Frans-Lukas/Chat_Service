@@ -23,6 +23,8 @@ typedef struct s_list {
     uint32_t** server_name;
 } s_list;
 
+get_list* pdu_create_get_list();
+
 s_list *pdu_s_list_deserialize(int fd);
 
 int pdu_s_list_serialize(PDU *p, char **data_to_send);
