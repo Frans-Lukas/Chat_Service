@@ -6,7 +6,7 @@
 int pdu_s_list_serialize(PDU *p, char **data) {
     s_list* pdu = (s_list*)p;
     int size = 12 + (get_num_words(pdu->server_name_length, 4) * 4);
-    *data = calloc(1, sizeof(s_list));
+    *data = safe_calloc(1, sizeof(s_list));
     *data[0] = OP_SLIST;
     pdu->number_of_servers = htons(pdu->number_of_servers);
     pdu_cpy_chars(*data + 2, &pdu->number_of_servers, 0, 2);
@@ -21,17 +21,17 @@ int pdu_s_list_serialize(PDU *p, char **data) {
 }
 
 s_list *pdu_s_list_deserialize(int fd) {
-    s_list *pdu = calloc(1, sizeof(s_list));
+    s_list *pdu = safe_calloc(1, sizeof(s_list));
     pdu->pdu.op = OP_SLIST;
     read_from_fd(fd, &pdu->pdu.op, 1);
     read_from_fd(fd, &pdu->pad, 1);
     read_from_fd(fd, &pdu->number_of_servers, 2);
 
-    pdu->adress = calloc(pdu->number_of_servers, sizeof(uint32_t));
-    pdu->port = calloc(pdu->number_of_servers, sizeof(uint16_t));
-    pdu->number_of_clients = calloc(pdu->number_of_servers, sizeof(uint8_t));
-    pdu->server_name_length = calloc(pdu->number_of_servers, sizeof(uint8_t));
-    pdu->server_name = calloc(pdu->number_of_servers, sizeof(uint32_t));
+    pdu->adress = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
+    pdu->port = safe_calloc(pdu->number_of_servers, sizeof(uint16_t));
+    pdu->number_of_clients = safe_calloc(pdu->number_of_servers, sizeof(uint8_t));
+    pdu->server_name_length = safe_calloc(pdu->number_of_servers, sizeof(uint8_t));
+    pdu->server_name = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
 
     for(int i=0; i<pdu->number_of_servers; i++){
         read_from_fd(fd, &pdu->adress[i], 4);
@@ -39,7 +39,7 @@ s_list *pdu_s_list_deserialize(int fd) {
         pdu->port[i] = ntohs(pdu->port[i]);
         read_from_fd(fd, &pdu->number_of_clients[i], 1);
         read_from_fd(fd, &pdu->server_name_length[i], 1);
-        pdu->server_name[i] = calloc(pdu->server_name_length[i], sizeof(uint8_t));
+        pdu->server_name[i] = safe_calloc(pdu->server_name_length[i], sizeof(uint8_t));
         read_from_fd(fd, &pdu->server_name[i], pdu->server_name_length[i]);
     }
     pdu->number_of_servers = ntohs(pdu->number_of_servers);
@@ -48,14 +48,14 @@ s_list *pdu_s_list_deserialize(int fd) {
 
 int pdu_get_list_serialize(PDU *p, char **data_to_send) {
     get_list* pdu = (get_list*)p;
-    *data_to_send = calloc(1, sizeof(uint32_t));
+    *data_to_send = safe_calloc(1, sizeof(uint32_t));
     *data_to_send[0] = pdu->pdu.op;
     return 4;
 }
 
 get_list *pdu_get_list_deserialize(int fd) {
-    get_list *pdu = calloc(1, sizeof(get_list));
-    pdu->pad = calloc(3, sizeof(uint8_t));
+    get_list *pdu = safe_calloc(1, sizeof(get_list));
+    pdu->pad = safe_calloc(3, sizeof(uint8_t));
     pdu->pdu.op = OP_GETLIST;
     read_from_fd(fd, pdu->pad, 3);
     return pdu;

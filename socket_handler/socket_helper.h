@@ -15,6 +15,7 @@
 #include <arpa/inet.h>
 #include <sys/un.h>
 #include <netdb.h>
+#include "../error_handling.h"
 
 #ifndef BUFSIZE
 #define BUFSIZE 100

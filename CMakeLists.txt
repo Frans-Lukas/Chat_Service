@@ -55,7 +55,7 @@ add_executable(Chat_Service
         socket_handler/socket_interface.h
         error_handling.c
         error_handling.h
-        main.c socket_handler/socket_interface_test.c socket_handler/socket_interface_test.h)
+        main.c socket_handler/socket_interface_test.c socket_handler/socket_interface_test.h socket_handler/client_list.c socket_handler/client_list.h)
 
 find_package(Threads)
 target_link_libraries(Chat_Service ${CMAKE_THREAD_LIBS_INIT})
