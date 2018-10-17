@@ -13,7 +13,15 @@ typedef struct server_accepting_arguments{
     client_list* cl;
 } server_accepting_arguments;
 
+typedef struct server_heart_beat_arguments{
+    int name_server_port;
+    char* name_server_address;
+    int own_port;
+    char* own_address;
+} server_heart_beat_arguments;
+
 void* server_keep_accepting_clients(void* args);
-void server_run_server();
+void server_run_server(int port);
+void *server_heart_beat(void* args);
 
 #endif //CHAT_SERVICE_CHAT_SERVICE_SERVER_H
