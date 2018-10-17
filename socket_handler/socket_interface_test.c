@@ -44,8 +44,8 @@ int start_test_client(){
     pdu_join* pdu = pdu_join_create("Kubadoo");
     int socket_to_write_to = socket_tcp_create();
 
-    char* hostname = calloc(1, 256);
-    char* ip = calloc(1, 17);
+    char* hostname = safe_calloc(1, 256);
+    char* ip = safe_calloc(1, 17);
     network_getFQDN(hostname, 256);
     network_hostname_to_ip(hostname, ip);
     socket_connect(port, ip, socket_to_write_to);

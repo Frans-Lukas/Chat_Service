@@ -6,7 +6,7 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 queue* queue_create(void) {
     pthread_mutex_lock(&mutex);
-    queue* q = calloc(1, sizeof(queue));
+    queue* q = safe_calloc(1, sizeof(queue));
     q->front = NULL;
     q->back = NULL;
     pthread_mutex_unlock(&mutex);
@@ -30,7 +30,7 @@ data queue_dequeue(queue* q) {
 
 void queue_enqueue(queue* q, data value) {
     pthread_mutex_lock(&mutex);
-    node* new_node = calloc(1, sizeof(node));
+    node* new_node = safe_calloc(1, sizeof(node));
     new_node->value = value;
     new_node->next_in_line = NULL;
 

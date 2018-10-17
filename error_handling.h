@@ -8,4 +8,5 @@
 #include <stdlib.h>
 
 void perror_exit(char msg[]);
+void* safe_calloc(size_t num_size, size_t size);
 #endif //CHAT_SERVICE_ERROR_HANDLING_H

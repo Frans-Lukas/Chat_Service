@@ -8,7 +8,7 @@ void run_pdu_quit_tests(){
 }
 
 void assert_serialize_pdu_quit_works() {
-    char* mock_serialized_pdu = calloc(1, sizeof(pdu_quit));
+    char* mock_serialized_pdu = safe_calloc(1, sizeof(pdu_quit));
     mock_serialized_pdu[0] = OP_QUIT;
     char* real_serialized_pdu;
     int size = pdu_quit_serialize((PDU *) pdu_quit_create(), &real_serialized_pdu);

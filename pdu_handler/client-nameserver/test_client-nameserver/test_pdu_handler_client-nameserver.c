@@ -13,7 +13,7 @@ void run_all_client_nameserver_test() {
 
 
 void test_serialize_s_list() {
-    s_list *pdu = calloc(1, sizeof(s_list));
+    s_list *pdu = safe_calloc(1, sizeof(s_list));
     char *test_data;
     pdu->pdu.op = OP_SLIST;
     pdu->number_of_servers = 420;
@@ -24,7 +24,7 @@ void test_serialize_s_list() {
     pdu->port = 7331;
     pdu->number_of_clients = 9;
     pdu->server_name_length = 8;
-    pdu->server_name = calloc(2, sizeof(uint32_t));
+    pdu->server_name = safe_calloc(2, sizeof(uint32_t));
     memcpy(pdu->server_name, "abcdefgh", 8);
 
     int result = pdu_s_list_serialize(pdu, &test_data);
@@ -72,9 +72,9 @@ void test_deserialize_s_list() {
 
 void test_serialize_get_list() {
     char *test_data;
-    get_list *test_pdu = calloc(1, sizeof(get_list));
+    get_list *test_pdu = safe_calloc(1, sizeof(get_list));
     test_pdu->pdu.op = OP_GETLIST;
-    test_pdu->pad = calloc(3, sizeof(uint8_t)), pdu_get_list_serialize(test_pdu, &test_data);
+    test_pdu->pad = safe_calloc(3, sizeof(uint8_t)), pdu_get_list_serialize(test_pdu, &test_data);
     assert(test_data[0] == OP_GETLIST);
 }
 

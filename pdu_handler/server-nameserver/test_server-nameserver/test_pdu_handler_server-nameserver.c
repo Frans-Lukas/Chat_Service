@@ -21,7 +21,7 @@ void run_all_server_nameserver_tests() {
 }
 
 void test_serialize_not_reg() {
-    not_reg *pdu = calloc(1, sizeof(not_reg));
+    not_reg *pdu = safe_calloc(1, sizeof(not_reg));
     pdu->pdu.op = OP_NOTREG;
     pdu->pad = 42;
     pdu->id_number = 1337;
@@ -44,7 +44,7 @@ void test_deserialize_not_reg() {
 }
 
 void test_serialize_ack() {
-    ack *pdu_ack = calloc(1, sizeof(ack));
+    ack *pdu_ack = safe_calloc(1, sizeof(ack));
     pdu_ack->pdu.op = OP_ACK;
     pdu_ack->pad = 42;
     pdu_ack->id_number = 1337;
@@ -67,7 +67,7 @@ void test_deserialize_ack() {
 }
 
 void test_serialize_alive() {
-    alive *pdu = calloc(1, sizeof(alive));
+    alive *pdu = safe_calloc(1, sizeof(alive));
     pdu->pdu.op = OP_ALIVE;
     pdu->id_number = (uint16_t) 1337;
     pdu->nr_of_clients = (uint8_t) 6;
@@ -92,11 +92,11 @@ void test_deserialize_alive() {
 }
 
 void test_serialize_reg() {
-    reg *pdu = calloc(1, sizeof(reg));
+    reg *pdu = safe_calloc(1, sizeof(reg));
     pdu->pdu.op = OP_REG;
     pdu->server_name_length = 2;
     pdu->tcp_port = (uint16_t) 1337;
-    pdu->server_name = calloc(1, sizeof(uint32_t));
+    pdu->server_name = safe_calloc(1, sizeof(uint32_t));
     strncpy((char *) pdu->server_name, "ab", 2);
 
     char *data;

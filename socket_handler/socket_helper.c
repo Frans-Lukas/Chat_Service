@@ -22,7 +22,7 @@ void *socket_read_from(void *socket) {
 void *socket_write_to(void *socket) {
     int socket_fd = *((int*) socket);
     while(1){
-        char *buf = calloc(BUFSIZE, sizeof(char));
+        char *buf = safe_calloc(BUFSIZE, sizeof(char));
         ssize_t len = read(STDIN_FILENO, buf, BUFSIZE);
         //eof
         if(len==0){
