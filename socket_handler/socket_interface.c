@@ -58,7 +58,11 @@ PDU** socket_read_pdu_from(int *socket, int number_of_sockets) {
     return data;
 }
 
-// returns socket for client
+
+
+int socket_tcp_server_create(int port){
+
+}
 int create_client_socket(int port, char *adress) {
     int client_socket = socket_tcp_create();
     char *ip = safe_calloc(1, 17);
