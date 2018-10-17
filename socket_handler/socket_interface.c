@@ -58,3 +58,10 @@ PDU** socket_read_pdu_from(int *socket, int number_of_sockets) {
     return data;
 }
 
+int socket_name_server_tcp_connect(int adress, char *hostname) {
+    socket_tcp_create();
+
+
+    return 0;
+}
+
