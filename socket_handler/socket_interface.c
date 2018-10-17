@@ -64,11 +64,10 @@ int socket_tcp_server_create(int port){
 
 }
 int create_client_socket(int port, char *adress) {
-    int client_socket = socket_tcp_create();
+    int tcp_socket = socket_tcp_create();
     char *ip = safe_calloc(1, 17);
     network_hostname_to_ip(adress, ip);
-    socket_connect(port, ip, client_socket);
+    int client_socket = socket_connect(port, ip, tcp_socket);
     free(ip);
     return client_socket;
 }
-
