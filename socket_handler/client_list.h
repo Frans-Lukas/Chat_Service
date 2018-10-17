@@ -14,6 +14,8 @@ typedef struct client_list{
     int clients[256];
     int size;
     int num_connected_clients;
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
 } client_list;
 
 client_list* client_list_create();

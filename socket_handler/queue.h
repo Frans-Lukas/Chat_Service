@@ -16,6 +16,8 @@ typedef void memFreeFunc(data);
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#include "../error_handling.h"
+
 typedef struct node{
     data value;
     struct node* next_in_line;
@@ -27,6 +29,8 @@ typedef struct queue{
     node *front;
     node *back;
     memFreeFunc* freeFunc;
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
 } queue;
 #endif
 
@@ -40,7 +44,7 @@ bool queue_is_empty(queue* queue);
 
 void queue_free(queue*);
 
-void queue_release_threads(void);
+void queue_release_threads(queue* q);
 
 void queue_set_memory_handler(queue *queue, memFreeFunc *freeFunc);
 
