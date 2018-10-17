@@ -58,3 +58,7 @@ PDU** socket_read_pdu_from(int *socket, int number_of_sockets) {
     return data;
 }
 
+
+int socket_tcp_server_create(int port){
+
+}
