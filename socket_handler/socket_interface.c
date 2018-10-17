@@ -58,10 +58,9 @@ PDU** socket_read_pdu_from(int *socket, int number_of_sockets) {
     return data;
 }
 
-int socket_name_server_tcp_connect(int adress, char *hostname) {
-    int socket_to_read_from = socket_tcp_create();
-    socket_bind(port, socket_to_read_from);
-    socket_tcp_listen(socket_to_read_from);
+int create_client_socket(int port, char *adress) {
+    int server_socket = socket_tcp_create();
+    socket_connect(port, adress, server_socket);
     return 0;
 }
 

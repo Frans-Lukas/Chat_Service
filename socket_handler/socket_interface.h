@@ -5,7 +5,7 @@
 
 int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets);
 PDU** socket_read_pdu_from(int *socket, int number_of_socketst);
-int socket_name_server_tcp_connect(int adress, char* hostname);
+int create_client_socket(int adress, char *hostname);
 int socket_server_connect(int adress, char* hostname);
 
 
