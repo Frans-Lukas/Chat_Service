@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <pdu_handler/pdu_helper.h>
 #include "chat_service_server.h"
-#include "socket_handler/socket_interface.h
+#include "socket_handler/socket_interface.h"
 
 void server_run_server(int port){
     client_list* client_list = client_list_create();

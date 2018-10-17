@@ -10,8 +10,8 @@ client_list *client_list_create() {
     client_list* cl = safe_calloc(1, sizeof(client_list));
     cl->size = CLIENT_LIST_MAX_SIZE;
     cl->num_connected_clients = 0;
-    cl->mutex = PTHREAD_MUTEX_INITIALIZER;
-    cl->cond = PTHREAD_COND_INITIALIZER;
+    cl->mutex = (pthread_mutex_t) PTHREAD_MUTEX_INITIALIZER;
+    cl->cond = (pthread_cond_t) PTHREAD_COND_INITIALIZER;
     return cl;
 }
 
