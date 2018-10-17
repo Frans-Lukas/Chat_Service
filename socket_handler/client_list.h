@@ -12,6 +12,8 @@
 
 typedef struct client_list{
     int clients[256];
+    int size;
+    int num_connected_clients;
 } client_list;
 
 client_list* client_list_create();
