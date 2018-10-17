@@ -3,11 +3,13 @@
 //
 #include <socket_handler/socket_helper.h>
 #include <pthread.h>
+#include <pdu_handler/pdu_helper.h>
 #include "chat_service_server.h"
+#include "socket_handler/socket_interface.h
 
-void server_run_server(){
+void server_run_server(int port){
     client_list* client_list = client_list_create();
-    int server_socket = socket_tcp_server_create();
+    int server_socket = socket_tcp_server_create(port);
 
     //keep accepting clients until max client limit
     pthread_t client_accepter;
@@ -28,6 +30,13 @@ void* server_keep_accepting_clients(void* args){
     }
 }
 
-void server_read_and_forward_messages(void* args){
+void *server_read_and_forward_messages(void* args){
+
+}
+
+void *server_heart_beat(void* args){
+    server_heart_beat_arguments* heartbeat_args = args;
+    int name_server_socket = socket_udp_name_server_socket(
+            heartbeat_args->name_server_port, heartbeat_args->name_server_address);
 
 }
