@@ -36,10 +36,8 @@ void test_serialize_not_reg() {
 void test_deserialize_not_reg() {
     int fd = open_fd("../pdu_handler/server-nameserver/test_server-nameserver/not_reg_data.pdu");
     int op_code;
-    read_from_fd(fd, &op_code, 1);
     not_reg *pdu = pdu_not_reg_deserialize(fd);
     assert(pdu->pdu.op == OP_NOTREG);
-    assert(pdu->pad == 42);
     assert(pdu->id_number == ntohs(1337));
 }
 
@@ -58,11 +56,8 @@ void test_serialize_ack() {
 
 void test_deserialize_ack() {
     int fd = open_fd("../pdu_handler/server-nameserver/test_server-nameserver/ack_data.pdu");
-    int op_code;
-    read_from_fd(fd, &op_code, 1);
     ack *pdu = pdu_ack_deserialize(fd);
     assert(pdu->pdu.op == OP_ACK);
-    assert(pdu->pad == 42);
     assert(pdu->id_number == ntohs(1337));
 }
 
@@ -100,9 +95,9 @@ void test_serialize_reg() {
     strncpy((char *) pdu->server_name, "ab", 2);
 
     char *data;
-    int result = pdu_reg_serialize(pdu, &data);
+    int result = pdu_reg_serialize((PDU *) pdu, &data);
 
-    assert(result == 18);
+    assert(result == 8);
     assert(data[0] == OP_REG);
     assert(data[1] == 2);
     assert(*((uint16_t *) (data + 2)) == htons(1337));

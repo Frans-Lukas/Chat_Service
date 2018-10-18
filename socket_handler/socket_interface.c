@@ -6,6 +6,7 @@
 #include "socket_interface.h"
 #include "socket_helper.h"
 #include <poll.h>
+#include <pdu_handler/server-nameserver/pdu_handler_server-nameserver.h>
 
 
 int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
@@ -16,7 +17,7 @@ int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
         poll_struct[i].events = POLLOUT;
     }
 
-    if (0 > poll(poll_struct, 1, 100)) {
+    if (0 > poll(poll_struct, 1, 1000)) {
         printf(stderr, "poll() error");
         return -1;
     }
@@ -42,7 +43,7 @@ PDU** socket_read_pdu_from(int *socket, int number_of_sockets) {
         fd[i].events = POLLIN;
     }
     int timeout;
-    timeout = 2;
+    timeout = 1000;
     if (0 > poll(fd, (nfds_t) number_of_sockets, timeout)) {
         printf(stderr, "poll() error");
         return NULL;
@@ -58,6 +59,54 @@ PDU** socket_read_pdu_from(int *socket, int number_of_sockets) {
     return data;
 }
 
+ack* socket_read_ack_from_udp(int socket){
+    ack* pdu_ack = NULL;
+    struct pollfd fd[1];
+    for (int i = 0; i < 1; ++i) {
+        fd[i].fd = socket;
+        fd[i].events = POLLIN;
+    }
+    int timeout;
+    timeout = 1000;
+    if (0 > poll(fd, (nfds_t) 1, timeout)) {
+        printf(stderr, "poll() error");
+        return NULL;
+    }
+    for (int j = 0; j < 1; ++j) {
+        if(fd[j].revents & POLLIN){
+            pdu_ack = pdu_ack_deserialize(socket);
+        } else{
+            pdu_ack = NULL;
+        }
+    }
+    return pdu_ack;
+}
+
+not_reg* socket_read_not_reg_from_udp(int socket){
+    not_reg* not_reg = NULL;
+    struct pollfd fd[1];
+    for (int i = 0; i < 1; ++i) {
+        fd[i].fd = socket;
+        fd[i].events = POLLIN;
+    }
+    int timeout;
+    timeout = 2;
+    if (0 > poll(fd, (nfds_t) 1, timeout)) {
+        printf(stderr, "poll() error");
+        return NULL;
+    }
+    for (int j = 0; j < 1; ++j) {
+        if(fd[j].revents & POLLIN){
+            not_reg = pdu_not_reg_deserialize(socket);
+        } else{
+            not_reg = NULL;
+        }
+    }
+    return not_reg;
+}
+
+
+
 int socket_tcp_server_create(int port){
     int server_socket = socket_tcp_create();
     socket_bind(port, server_socket);
@@ -67,9 +116,10 @@ int socket_tcp_server_create(int port){
 
 int socket_udp_name_server_socket(int port, char* server_name){
     int client_socket = socket_udp_create();
-    char* ip;
+    char* ip = calloc(1, 255);
     network_hostname_to_ip(server_name, ip);
     socket_connect(port, ip, client_socket);
+    free(ip);
     return client_socket;
 }
 

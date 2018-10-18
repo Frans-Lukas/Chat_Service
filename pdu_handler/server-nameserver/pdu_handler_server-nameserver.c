@@ -47,10 +47,12 @@ int pdu_not_reg_serialize(PDU *p, char **data) {
 
 not_reg *pdu_not_reg_deserialize(int fd) {
     not_reg *pdu = safe_calloc(1, sizeof(not_reg));
-    pdu->pdu.op = OP_NOTREG;
-    read_from_fd(fd, &pdu->pad, 1);
-    read_from_fd(fd, &pdu->id_number, 2);
+    char* data = calloc(1, 4);
+    read_from_fd(fd, data, 4);
+    pdu->pdu.op = (op_code) data[0];
+    pdu_cpy_chars(&pdu->id_number, data, 2, 2);
     pdu->id_number = ntohs(pdu->id_number);
+    free(data);
     return pdu;
 }
 
@@ -67,10 +69,13 @@ int pdu_ack_serialize(PDU *p, char **data) {
 
 ack *pdu_ack_deserialize(int fd) {
     ack *pdu = safe_calloc(1, sizeof(ack));
+
+    char* data = calloc(1, 4);
+    read_from_fd(fd, data, 4);
     pdu->pdu.op = OP_ACK;
-    read_from_fd(fd, &pdu->pad, 1);
-    read_from_fd(fd, &pdu->id_number, 2);
+    pdu_cpy_chars(&pdu->id_number, data, 2, 2);
     pdu->id_number = ntohs(pdu->id_number);
+    free(data);
     return pdu;
 }
 
@@ -96,13 +101,14 @@ alive *pdu_alive_deserialize(int fd) {
 
 int pdu_reg_serialize(PDU *p, char **data) {
     reg* pdu = (reg*)p;
-    int size = sizeof(reg) + pdu->server_name_length;
+    int size = 4 + get_num_words(pdu->server_name_length, 4) * 4;
     *data = safe_calloc(1, (size_t) size);
     *data[0] = OP_REG;
     pdu_cpy_chars((*data) + 1, &pdu->server_name_length, 0, 1);
     pdu->tcp_port = htons(pdu->tcp_port);
     pdu_cpy_chars((*data) + 2, &pdu->tcp_port, 0, 2);
-    pdu_cpy_chars((*data) + 4, pdu->server_name, 0, pdu->server_name_length);
+    pdu_cpy_chars((*data) + 4, build_words((char *) pdu->server_name, 4), 0, pdu->server_name_length);
+
     return size;
 }
 
