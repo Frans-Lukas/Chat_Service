@@ -122,7 +122,6 @@ static void start_heartbeat_thread(int port, client_list *client_list) {
     pthread_join(heart_beat_thread, 0);
 }
 
-<<<<<<< HEAD
 
 void register_to_name_server(int tcp_port, int server_name_length, char* server_name){
 
@@ -133,10 +132,8 @@ void register_to_name_server(int tcp_port, int server_name_length, char* server_
    // socket_write_pdu_to()
 }
 
-void* server_keep_accepting_clients(void* args){
-=======
+
 static void* server_keep_accepting_clients(void* args){
->>>>>>> 751a6bd6349b6e57863c41088ecc7dc41032fd5a
     server_accepting_arguments* data = args;
     client_list* cl = data->cl;
     int server_socket = data->server_socket;
