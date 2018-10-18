@@ -47,9 +47,9 @@ int pdu_not_reg_serialize(PDU *p, char **data) {
 
 not_reg *pdu_not_reg_deserialize(int fd) {
     not_reg *pdu = safe_calloc(1, sizeof(not_reg));
-    pdu->pdu.op = OP_NOTREG;
     char* data = calloc(1, 4);
     read_from_fd(fd, data, 4);
+    pdu->pdu.op = (op_code) data[0];
     pdu_cpy_chars(&pdu->id_number, data, 2, 2);
     pdu->id_number = ntohs(pdu->id_number);
     free(data);

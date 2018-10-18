@@ -7,6 +7,6 @@
 
 int main() {
     run_all_tests();
-    server_run_server(1338);
+    server_run_server(3003);
     return 0;
 }
