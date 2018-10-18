@@ -22,6 +22,6 @@ typedef struct server_heart_beat_arguments{
 
 void* server_keep_accepting_clients(void* args);
 void server_run_server(int port);
-void *server_heart_beat(void* args);
+void *server_start_heart_beat(void *args);
 
 #endif //CHAT_SERVICE_CHAT_SERVICE_SERVER_H

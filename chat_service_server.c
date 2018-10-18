@@ -34,9 +34,12 @@ void *server_read_and_forward_messages(void* args){
 
 }
 
-void *server_heart_beat(void* args){
+void *server_start_heart_beat(void *args){
     server_heart_beat_arguments* heartbeat_args = args;
     int name_server_socket = socket_udp_name_server_socket(
             heartbeat_args->name_server_port, heartbeat_args->name_server_address);
+    while(1){
+        PDU*
+    }
 
 }
