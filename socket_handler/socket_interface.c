@@ -73,11 +73,16 @@ int socket_udp_name_server_socket(int port, char* server_name){
     return client_socket;
 }
 
-int create_client_socket(int port, char *adress) {
+int create_tcp_name_server_socket(int port, char *server_name) {
     int tcp_socket = socket_tcp_create();
     char *ip = safe_calloc(1, 17);
-    network_hostname_to_ip(adress, ip);
-    int client_socket = socket_connect(port, ip, tcp_socket);
+    network_hostname_to_ip(server_name, ip);
+
+    if(0 != socket_connect(port, ip, tcp_socket)){
+        perror_exit("Could not connect to name_server");
+    }
     free(ip);
-    return client_socket;
+    return tcp_socket;
 }
+
+

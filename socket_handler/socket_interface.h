@@ -10,5 +10,5 @@ int socket_server_connect(int adress, char* hostname);
 int socket_tcp_server_create(int port);
 int socket_udp_name_server_socket(int port, char* server_name);
 
-
+int create_tcp_name_server_socket(int port, char* server_name);
 #endif //CHAT_SERVICE_SOCKET_INTERFACE_H

@@ -12,7 +12,7 @@
 //    pdu->port = safe_calloc(pdu->number_of_servers, sizeof(uint16_t));
 //    pdu->number_of_clients = safe_calloc(pdu->number_of_servers, sizeof(uint8_t));
 //    pdu->server_name_length = safe_calloc(pdu->number_of_servers, sizeof(uint8_t));
-//    pdu->server_name = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
+//    pdu->server_name = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));number_of_servers
 //    for(int i = 0; i < number_of_servers; i++){
 //        pdu->port[i] = (uint16_t) port[i];
 //        pdu->number_of_clients[i] = (uint8_t) number_of_clients[i];
@@ -39,9 +39,9 @@ int pdu_s_list_serialize(PDU *p, char **data) {
 s_list *pdu_s_list_deserialize(int fd) {
     s_list *pdu = safe_calloc(1, sizeof(s_list));
     pdu->pdu.op = OP_SLIST;
-    read_from_fd(fd, &pdu->pdu.op, 1);
     read_from_fd(fd, &pdu->pad, 1);
     read_from_fd(fd, &pdu->number_of_servers, 2);
+    pdu->number_of_servers = ntohs(pdu->number_of_servers);
 
     pdu->adress = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
     pdu->port = safe_calloc(pdu->number_of_servers, sizeof(uint16_t));
@@ -58,7 +58,6 @@ s_list *pdu_s_list_deserialize(int fd) {
         pdu->server_name[i] = safe_calloc(pdu->server_name_length[i], sizeof(uint8_t));
         read_from_fd(fd, &pdu->server_name[i], pdu->server_name_length[i]);
     }
-    pdu->number_of_servers = ntohs(pdu->number_of_servers);
     return pdu;
 }
 

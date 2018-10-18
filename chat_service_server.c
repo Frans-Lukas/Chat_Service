@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include <pdu_handler/pdu_helper.h>
 #include "chat_service_server.h"
+#include "server-nameserver/pdu_handler_server-nameserver.h"
 #include "socket_handler/socket_interface.h"
 
 void server_run_server(int port){
@@ -16,6 +17,16 @@ void server_run_server(int port){
     server_accepting_arguments* args = safe_calloc(1, sizeof(server_accepting_arguments));
 
     pthread_create(&client_accepter, NULL, &server_keep_accepting_clients, args);
+}
+
+
+void register_to_name_server(int tcp_port, int server_name_length, char* server_name){
+
+    int server_name_socket = socket_udp_name_server_socket(tcp_port, server_name);
+//    reg* reg_pd u = pdu_create_reg(server_name_length, tcp_port, server_name);
+
+
+   // socket_write_pdu_to()
 }
 
 void* server_keep_accepting_clients(void* args){
@@ -40,3 +51,6 @@ void *server_heart_beat(void* args){
             heartbeat_args->name_server_port, heartbeat_args->name_server_address);
 
 }
+
+
+
