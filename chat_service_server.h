@@ -18,10 +18,12 @@ typedef struct server_heart_beat_arguments{
     char* name_server_address;
     int own_port;
     char* own_address;
+    client_list* cl;
 } server_heart_beat_arguments;
 
 void* server_keep_accepting_clients(void* args);
 void server_run_server(int port);
 void *server_start_heart_beat(void *args);
+ack* socket_read_ack_from_udp(int socket);
 
 #endif //CHAT_SERVICE_CHAT_SERVICE_SERVER_H
