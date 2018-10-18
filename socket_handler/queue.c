@@ -3,8 +3,8 @@
 
 queue* queue_create(void) {
     queue* q = safe_calloc(1, sizeof(queue));
-    q->mutex = PTHREAD_MUTEX_INITIALIZER;
-    q->cond = PTHREAD_COND_INITIALIZER;
+    q->mutex = (pthread_mutex_t) PTHREAD_MUTEX_INITIALIZER;
+    q->cond = (pthread_cond_t )PTHREAD_COND_INITIALIZER;
     q->front = NULL;
     q->back = NULL;
     return q;

@@ -3,6 +3,36 @@
 #include <netinet/in.h>
 #include "pdu_handler_server-nameserver.h"
 
+reg *pdu_create_reg(int server_name_length, int tcp_port, char *server_name) {
+    reg *pdu = calloc(1, sizeof(reg));
+    pdu->pdu.op = OP_REG;
+    pdu->server_name_length = (uint8_t) server_name_length;
+    pdu->tcp_port = (uint16_t) tcp_port;
+    pdu->server_name = build_words(server_name, 4);
+    return pdu;
+}
+
+alive *pdu_create_alive(int number_of_clients, int id_number) {
+    alive* pdu = calloc(1, sizeof(alive));
+    pdu->pdu.op = OP_ALIVE;
+    pdu->nr_of_clients = (uint8_t) number_of_clients;
+    pdu->id_number = (uint16_t) id_number;
+    return pdu;
+}
+
+not_reg *pdu_create_not_reg(int id_number) {
+    not_reg* pdu = calloc(1, sizeof(not_reg));
+    pdu->pdu.op = OP_NOTREG;
+    pdu->id_number = (uint16_t) id_number;
+    return pdu;
+}
+
+ack *pdu_create_ack(int id_number) {
+    ack* pdu = calloc(1, sizeof(ack));
+    pdu->pdu.op = OP_ACK;
+    pdu->id_number = (uint16_t) id_number;
+    return pdu;
+}
 
 int pdu_not_reg_serialize(PDU *p, char **data) {
     not_reg* pdu = (not_reg*)p;

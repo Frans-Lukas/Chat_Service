@@ -37,7 +37,13 @@ typedef struct not_reg {
     uint16_t id_number;
 } not_reg;
 
-uint32_t *build_words(char *input_string, int bytes);
+reg* pdu_create_reg(int server_name_length, int tcp_port, char *server_name);
+
+alive* pdu_create_alive(int number_of_clients, int id_number);
+
+not_reg* pdu_create_not_reg(int id_number);
+
+ack* pdu_create_ack(int id_number);
 
 int pdu_reg_serialize(PDU *p, char **data);
 
