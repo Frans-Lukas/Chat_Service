@@ -35,7 +35,7 @@ server_info *let_user_choose_server(s_list *pList) {
     server_info* server_to_connect_to = calloc(1, sizeof(server_info));
     server_to_connect_to->server_name = (char *) pList->server_name[choice];
     server_to_connect_to->port = pList->port[choice];
-    server_to_connect_to->address = (char *) pList->adress[choice];
+    server_to_connect_to->address = format_to_ip(&pList->adress[choice]);
 
     return server_to_connect_to;
 }
@@ -59,7 +59,7 @@ void print_s_list(s_list* s){
 
 char *format_to_ip(uint32_t *adress){
     char *kuba = calloc(16, sizeof(char));
-    sprintf(kuba, "%d.%d.%d.%d\n", *((uint8_t *) adress + 0), *((uint8_t *) adress + 1),
+    sprintf(kuba, "%d.%d.%d.%d", *((uint8_t *) adress + 0), *((uint8_t *) adress + 1),
             *((uint8_t *)adress + 2), *((uint8_t *) adress) + 3);
     return kuba;
 }
@@ -74,10 +74,5 @@ s_list* get_server_list_form_names_server(char *name_server_adress, int name_ser
     while(NULL == (response = socket_read_pdu_from(&server_name_socket, 1)));
 
     return (s_list *) response[0];
-}
-
-void* connect_to_server(char *server_name, int port) {
-    int server_socket = socket_tcp_create();
-    int client_socket = socket_connect(port, server_name, server_socket);
 }
 
