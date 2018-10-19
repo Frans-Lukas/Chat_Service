@@ -15,7 +15,28 @@ void init_client(){
     char *name_server = "itchy.cs.umu.se";
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
-    fprintf(stderr, "%s", (char*)(&server_list->server_name[0]));
+    print_s_list(server_list);
+}
+
+
+void print_s_list(s_list* s){
+
+
+
+    fprintf(stderr, "op code =  %d\n", s->pdu.op);
+    fprintf(stderr, "number of servers = %d\n\n\n", s->number_of_servers);
+
+
+    for(int i=0; i < s->number_of_servers; i++){
+        fprintf(stderr, "adress[%d] = %d.%d.%d.%d\n", i, *((uint8_t *) (&s->adress[i]) + 0), *((uint8_t *) (&s->adress[i]) + 1),
+                *((uint8_t *) (&s->adress[i]) + 2), *((uint8_t *) (&s->adress[i]) + 3));
+        fprintf(stderr, "port[%d] = %d\n", i, s->port[i]);
+        fprintf(stderr, "number_of_clients[%d] = %d\n", i, s->number_of_clients[i]);
+        fprintf(stderr, "server_name_length[%d] = %d\n", i, s->server_name_length[i]);
+        fprintf(stderr, "%s",(char*)s->server_name[i]);
+        fprintf(stderr, "\n\n\n");
+    }
+
 }
 
 
@@ -24,10 +45,10 @@ s_list* get_server_list_form_names_server(char *name_server_adress, int name_ser
     get_list* get_list = pdu_create_get_list();
     while(-1 == socket_write_pdu_to((PDU *) get_list, &server_name_socket, 1));
 
-    s_list* server_list = NULL;
-    while(NULL == (server_list = (s_list*)socket_read_pdu_from(&server_name_socket, 1)));
+    PDU** response = NULL;
+    while(NULL == (response = socket_read_pdu_from(&server_name_socket, 1)));
 
-    return &server_list[0];
+    return (s_list *) response[0];
 }
 
 void* connect_to_server(char *server_name, int port) {
