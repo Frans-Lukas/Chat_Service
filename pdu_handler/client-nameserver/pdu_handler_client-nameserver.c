@@ -56,7 +56,7 @@ s_list *pdu_s_list_deserialize(int fd) {
         read_from_fd(fd, &pdu->number_of_clients[i], 1);
         read_from_fd(fd, &pdu->server_name_length[i], 1);
         pdu->server_name[i] = safe_calloc(pdu->server_name_length[i], sizeof(uint8_t));
-        read_from_fd(fd, &pdu->server_name[i], pdu->server_name_length[i]);
+        read_from_fd(fd, pdu->server_name[i], get_num_words(pdu->server_name_length[i], 4)*4);
     }
     return pdu;
 }
