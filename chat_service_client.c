@@ -30,12 +30,8 @@ s_list* get_server_list_form_names_server(char *name_server_adress, int name_ser
     return &server_list[0];
 }
 
-
 void* connect_to_server(char *server_name, int port) {
     int server_socket = socket_tcp_create();
     int client_socket = socket_connect(port, server_name, server_socket);
-
-
 }
-
 

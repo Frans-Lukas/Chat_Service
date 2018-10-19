@@ -10,8 +10,6 @@
 #include "server-nameserver/pdu_handler_server-nameserver.h"
 #include "socket_handler/socket_interface.h"
 
-
-
 void server_run_server(int port){
     client_list* client_list = client_list_create();
     int server_socket = socket_tcp_server_create(port);
@@ -19,16 +17,10 @@ void server_run_server(int port){
     start_accepter_thread(client_list, server_socket);
     start_heartbeat_thread(port, client_list);
 
-    //alla sockets som inte har en identitet ska inv'nta pdu_join
-    //Las meddelanden fran alla nadra och invanta pdu_quit. Vidarebefore alla meddelanden.
-    //lamnar en klient, meddela alla.
-    // joinar en klient, meddela alla.
-    //
-
-    server_message_forwarding(client_list);
-
-
-    while(1);
+    while(1){
+        server_message_forwarding(client_list);
+        sleep(2);
+    }
 }
 
 void server_message_forwarding(client_list *client_list_arg) {
@@ -68,7 +60,6 @@ void server_message_forwarding(client_list *client_list_arg) {
                     break;
             }
         }
-
     }
 }
 
@@ -91,8 +82,9 @@ void op_join_response(client_list *cl, int num_clients, int *connected_sockets, 
     client clie = client_list_get_client_from_socket_id(connected_sockets[i], cl);
     pdu_pjoin* pjoin = pdu_pjoin_create(clie.identity);
     socket_write_pdu_to((PDU *) pjoin, connected_sockets, num_clients);
-
-    free(participants_string);
+    if(num_partici > 0){
+        free(participants_string);
+    }
     free(join);
     free(pjoin);
     free(participants);
@@ -123,16 +115,6 @@ static void start_heartbeat_thread(int port, client_list *client_list) {
 }
 
 
-void register_to_name_server(int tcp_port, int server_name_length, char* server_name){
-
-    int server_name_socket = socket_udp_name_server_socket(tcp_port, server_name);
-//    reg* reg_pd u = pdu_create_reg(server_name_length, tcp_port, server_name);
-
-
-   // socket_write_pdu_to()
-}
-
-
 static void* server_keep_accepting_clients(void* args){
     server_accepting_arguments* data = args;
     client_list* cl = data->cl;
@@ -147,10 +129,6 @@ static void* server_keep_accepting_clients(void* args){
         sleep(2);
     }
     free(data);
-}
-
-void *server_read_and_forward_messages(void* args){
-
 }
 
 static void *server_start_heart_beat(void *args){
