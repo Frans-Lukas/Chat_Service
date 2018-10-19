@@ -114,6 +114,12 @@ int socket_tcp_server_create(int port){
     return server_socket;
 }
 
+int socket_tcp_client_create(int port, char* address){
+    int client_socket = socket_tcp_create();
+    socket_connect(port, address, client_socket);
+    return client_socket;
+}
+
 int socket_udp_name_server_socket(int port, char* server_name){
     int client_socket = socket_udp_create();
     char* ip = calloc(1, 255);
