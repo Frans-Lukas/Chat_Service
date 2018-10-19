@@ -16,7 +16,7 @@ void init_client(){
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
     print_s_list(server_list);
-    
+
 }
 
 
