@@ -11,21 +11,39 @@
 //när en klient ansluter till chattsessione
 
 
+server_info *let_user_choose_server(s_list *pList);
+
 void init_client(){
     char *name_server = "itchy.cs.umu.se";
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
-    print_s_list(server_list);
+    //print_s_list(server_list);
+
+    server_info* server_to_connect_to = let_user_choose_server(server_list);
+    int socket_to_server = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
+
+}
+
+server_info *let_user_choose_server(s_list *pList) {
+    fprintf(stderr, "Please choose a server to connect to.\n");
+    for (int i = 0; i < pList->number_of_servers; ++i) {
+        fprintf(stderr, "%d. %s\n", i, (char*)pList->server_name[i]);
+    }
+    int choice;
+    scanf("%d", &choice);
+    fprintf(stderr, "Trying to connect to server %s\n.", (char*)pList->server_name[choice]);
+    server_info* server_to_connect_to = calloc(1, sizeof(server_info));
+    server_to_connect_to->server_name = (char *) pList->server_name[choice];
+    server_to_connect_to->port = pList->port[choice];
+    server_to_connect_to->address = (char *) pList->adress[choice];
+
+    return server_to_connect_to;
 }
 
 
 void print_s_list(s_list* s){
-
-
-
     fprintf(stderr, "op code =  %d\n", s->pdu.op);
     fprintf(stderr, "number of servers = %d\n\n\n", s->number_of_servers);
-
 
     for(int i=0; i < s->number_of_servers; i++){
         fprintf(stderr, "adress[%d] = %d.%d.%d.%d\n", i, *((uint8_t *) (&s->adress[i]) + 0), *((uint8_t *) (&s->adress[i]) + 1),
