@@ -16,6 +16,7 @@ void init_client(){
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
     print_s_list(server_list);
+    
 }
 
 
@@ -37,6 +38,13 @@ void print_s_list(s_list* s){
         fprintf(stderr, "\n\n\n");
     }
 
+}
+
+char *format_to_ip(uint32_t *adress){
+    char *kuba = calloc(16, sizeof(char));
+    sprintf(kuba, "%d.%d.%d.%d\n", *((uint8_t *) adress + 0), *((uint8_t *) adress + 1),
+            *((uint8_t *)adress + 2), *((uint8_t *) adress) + 3);
+    return kuba;
 }
 
 
