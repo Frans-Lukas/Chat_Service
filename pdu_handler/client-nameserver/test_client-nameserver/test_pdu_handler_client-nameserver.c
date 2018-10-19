@@ -45,7 +45,10 @@ void test_serialize_s_list() {
 
 void test_deserialize_s_list() {
     int fd = open_fd("../pdu_handler/client-nameserver/test_client-nameserver/s_list_data.pdu");
+    char c;
+    read_from_fd(fd, &c, 1);
     s_list *pdu = pdu_s_list_deserialize(fd);
+
     assert(pdu->pdu.op == OP_SLIST);
     assert(pdu->number_of_servers == ntohs(2));
 
