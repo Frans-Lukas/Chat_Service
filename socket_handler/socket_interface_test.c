@@ -1,6 +1,4 @@
-//
-// Created by c16fld on 2018-10-10.
-//
+
 
 #include <pdu_handler/pdu_helper.h>
 #include <pdu_handler/client-server/pdu_handler_client-server.h>

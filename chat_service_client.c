@@ -1,5 +1,6 @@
 
 #include <pdu_handler/client-nameserver/pdu_handler_client-nameserver.h>
+#include <pdu_handler/client-server/pdu_handler_client-server.h>
 #include "chat_service_client.h"
 #include "socket_helper.h"
 #include "socket_interface.h"
@@ -11,18 +12,92 @@
 //när en klient ansluter till chattsessione
 
 
-server_info *let_user_choose_server(s_list *pList);
+
+
 
 void init_client(){
     char *name_server = "itchy.cs.umu.se";
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
-    //print_s_list(server_list);
-
     server_info* server_to_connect_to = let_user_choose_server(server_list);
-    int socket_to_server = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
+    int server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
+    fprintf(stderr, "Connected to server\n");
+    send_join_to_server(server_socket);
+    read_from_client_socket(server_socket);
+}
+
+
+void chat_session(){
+
+    //Medans sessionen är alive
+
+    //Läs meddelande ifall det finns något att läsa
+
+    // Skriv meddelande ifall det finns något att skriva
+
 
 }
+
+
+void send_join_to_server(int server_socket){
+    char *name = "Kuba";
+    pdu_join* pdu = pdu_join_create(name);
+    while( -1 == socket_write_pdu_to((PDU*)pdu, &server_socket, 1));
+}
+
+void read_from_client_socket(int server_socket){
+    PDU** response = NULL;
+
+    bool is_alive = true;
+
+    while(is_alive){
+
+
+        while(NULL == (response = socket_read_pdu_from(&server_socket, 1)));
+
+        switch (response[0]->op){
+            case OP_MESS:
+                handle_message((pdu_mess *) response[0]);
+                break;
+            case OP_QUIT:
+                handle_quit((pdu_quit *) response[0]);
+                is_alive = false;
+                break;
+            case OP_PJOIN:
+                handle_pjoin((pdu_pjoin *) response[0]);
+                break;
+            case OP_PLEAVE:
+                handle_pleave((pdu_pleave *) response[0]);
+                break;
+            case OP_PARTICIPANTS:
+                handle_response((pdu_participants*) response[0]);
+                break;
+            default:
+                fprintf(stderr, "Something is fishy\n");
+                break;
+        }
+        sleep(1);
+    }
+}
+
+void handle_pleave(pdu_pleave *pdu) {
+
+}
+
+void handle_pjoin(pdu_pjoin *pdu) {
+
+}
+
+void handle_message(pdu_mess *pdu) {
+
+
+    fprintf(stderr, "%s" , pdu->message);
+}
+
+void handle_quit(pdu_quit *pdu) {
+
+}
+
 
 server_info *let_user_choose_server(s_list *pList) {
     fprintf(stderr, "Please choose a server to connect to.\n");
@@ -38,6 +113,10 @@ server_info *let_user_choose_server(s_list *pList) {
     server_to_connect_to->address = format_to_ip(&pList->adress[choice]);
 
     return server_to_connect_to;
+}
+
+void handle_response(pdu_participants *pdu) {
+
 }
 
 
@@ -58,9 +137,9 @@ void print_s_list(s_list* s){
 }
 
 char *format_to_ip(uint32_t *adress){
-    char *kuba = calloc(16, sizeof(char));
+    char *kuba = calloc(18, sizeof(uint8_t));
     sprintf(kuba, "%d.%d.%d.%d", *((uint8_t *) adress + 0), *((uint8_t *) adress + 1),
-            *((uint8_t *)adress + 2), *((uint8_t *) adress) + 3);
+            *((uint8_t *)adress + 2), *((uint8_t *) adress + 3));
     return kuba;
 }
 
@@ -72,7 +151,6 @@ s_list* get_server_list_form_names_server(char *name_server_adress, int name_ser
 
     PDU** response = NULL;
     while(NULL == (response = socket_read_pdu_from(&server_name_socket, 1)));
-
     return (s_list *) response[0];
 }
 

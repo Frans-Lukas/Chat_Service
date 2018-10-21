@@ -51,6 +51,7 @@ s_list *pdu_s_list_deserialize(int fd) {
 
     for(int i=0; i<pdu->number_of_servers; i++){
         read_from_fd(fd, &pdu->adress[i], 4);
+        //pdu->adress[i] = ntohl(pdu->adress[i]);
         read_from_fd(fd, &pdu->port[i], 2);
         pdu->port[i] = ntohs(pdu->port[i]);
         read_from_fd(fd, &pdu->number_of_clients[i], 1);

@@ -15,4 +15,16 @@ void init_client();
 s_list* get_server_list_form_names_server(char *name_server_adress, int name_server_port);
 void print_s_list(s_list *s);
 char *format_to_ip(uint32_t *adress);
+void handle_response(pdu_participants *pdu );
+void handle_quit(pdu_quit *pParticipants);
+
+void handle_message(pdu_mess *pParticipants);
+
+void handle_pjoin(pdu_pjoin *pParticipants);
+
+void handle_pleave(pdu_pleave *pParticipants);
+
+server_info *let_user_choose_server(s_list *pList);
+void read_from_client_socket(int server_socket);
+void send_join_to_server(int server_socket);
 #endif //CHAT_SERVICE_CHAT_SERVICE_CLIENT_H
