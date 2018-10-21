@@ -140,8 +140,7 @@ static void *server_start_heart_beat(void *args){
     server_heart_beat_arguments* heartbeat_args = args;
     int name_server_socket = socket_udp_name_server_socket(
             heartbeat_args->name_server_port, heartbeat_args->name_server_address);
-    char *server_name = "Kapperino";
-    reg* reg = pdu_create_reg((int) strlen(server_name), heartbeat_args->own_port, server_name);
+    reg* reg = pdu_create_reg((int) strlen(heartbeat_args->own_address), heartbeat_args->own_port, heartbeat_args->own_address);
 
 
 #pragma clang diagnostic push

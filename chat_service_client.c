@@ -43,7 +43,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
 }
 
 
-void read_from_client_stdin(client_info *client){
+int read_from_client_stdin(client_info *client){
     //char *text = calloc(1,1);
     char buffer[255];
 
@@ -63,7 +63,7 @@ void read_from_client_stdin(client_info *client){
     //printf("\ntext:\n%s",text);
 }
 
-void write_to_client_stdout(int server_socket){
+int write_to_client_stdout(int server_socket){
     PDU** response = NULL;
     while (response  == NULL || response[0] == NULL){
         response = socket_read_pdu_from(&server_socket, 1);
