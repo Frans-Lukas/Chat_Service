@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -6,9 +7,9 @@
 #include "chat_service_server.h"
 #include "chat_service_client.h"
 
-int main() {
-    //run_all_tests();
-    server_run_server(3003);
-    //init_client();
+int main(){
+
+
+    server_run_server(9999);
     return 0;
 }

@@ -100,6 +100,7 @@ static void start_accepter_thread(client_list *client_list, int server_socket) {
     acc_args->cl = client_list;
     acc_args->server_socket = server_socket;
     pthread_create(&client_accepter_thread, NULL, &server_keep_accepting_clients, acc_args);
+    //pthread_join(client_accepter_thread, 0);
 }
 
 static void start_heartbeat_thread(int port, client_list *client_list) {
@@ -112,6 +113,7 @@ static void start_heartbeat_thread(int port, client_list *client_list) {
     hb_args->own_port = port;
     hb_args->name_server_address = "itchy.cs.umu.se";
     hb_args->name_server_port = 1337;
+
 
     pthread_create(&heart_beat_thread, NULL, &server_start_heart_beat, hb_args);
 }
@@ -133,12 +135,13 @@ static void* server_keep_accepting_clients(void* args){
     free(data);
 }
 
+
 static void *server_start_heart_beat(void *args){
     server_heart_beat_arguments* heartbeat_args = args;
     int name_server_socket = socket_udp_name_server_socket(
             heartbeat_args->name_server_port, heartbeat_args->name_server_address);
-
-    reg* reg = pdu_create_reg((int) strlen(heartbeat_args->own_address), heartbeat_args->own_port, heartbeat_args->own_address);
+    char *server_name = "Kapperino";
+    reg* reg = pdu_create_reg((int) strlen(server_name), heartbeat_args->own_port, server_name);
 
 
 #pragma clang diagnostic push

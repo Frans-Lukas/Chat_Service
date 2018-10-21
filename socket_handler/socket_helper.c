@@ -82,6 +82,7 @@ int socket_connect(int port, char *ip_address, int socket) {
     struct sockaddr_in serv_addr = {0};
     serv_addr.sin_family = AF_INET;
     //make string ip address into network byte order.
+
     if (inet_pton(AF_INET, ip_address, &serv_addr.sin_addr) <= 0) {
         fprintf(stderr, "ip: %s \n", ip_address);
         perror_exit("inet_pton()");

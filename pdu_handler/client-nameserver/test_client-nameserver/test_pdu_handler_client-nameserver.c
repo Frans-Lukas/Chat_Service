@@ -60,7 +60,7 @@ void test_deserialize_s_list() {
     assert(pdu->port[0] == ntohs(1337));
     assert(pdu->number_of_clients[0] == 6);
     assert(pdu->server_name_length[0] == 8);
-    assert(strncmp((char*)(&pdu->server_name[0]), "abcdefgh", 8) == 0);
+    assert(strncmp((char*)(pdu->server_name[0]), "abcdefgh", 8) == 0);
 
     assert(*((uint8_t *) (&pdu->adress[1]) + 0) == 100);
     assert(*((uint8_t *) (&pdu->adress[1]) + 1) == 101);
@@ -69,7 +69,7 @@ void test_deserialize_s_list() {
     assert(pdu->port[1] == ntohs(420));
     assert(pdu->number_of_clients[1] == 5);
     assert(pdu->server_name_length[1] == 4);
-    assert(strncmp((char*)(&pdu->server_name[1]), "efgh", 4) == 0);
+    assert(strncmp((char*)(*(pdu->server_name) + 1), "efgh", 4) == 0);
 }
 
 

@@ -92,7 +92,7 @@ not_reg* socket_read_not_reg_from_udp(int socket){
     int timeout;
     timeout = 2;
     if (0 > poll(fd, (nfds_t) 1, timeout)) {
-        printf(stderr, "poll() error");
+        fprintf(stderr, "poll() error");
         return NULL;
     }
     for (int j = 0; j < 1; ++j) {
@@ -106,7 +106,6 @@ not_reg* socket_read_not_reg_from_udp(int socket){
 }
 
 
-
 int socket_tcp_server_create(int port){
     int server_socket = socket_tcp_create();
     socket_bind(port, server_socket);
@@ -116,8 +115,10 @@ int socket_tcp_server_create(int port){
 
 int socket_tcp_client_create(int port, char* address){
     int client_socket = socket_tcp_create();
-    socket_connect(port, address, client_socket);
-    return client_socket;
+    if(-1 == socket_connect(port, address, client_socket)){
+        return -1;
+    }
+    return client_socket ;
 }
 
 int socket_udp_name_server_socket(int port, char* server_name){
@@ -140,5 +141,3 @@ int create_tcp_name_server_socket(int port, char *server_name) {
     free(ip);
     return tcp_socket;
 }
-
-
