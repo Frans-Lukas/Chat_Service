@@ -18,3 +18,4 @@
 !pdu_join_test
 !socket_handler
 !*.pdu
+!*.sh
