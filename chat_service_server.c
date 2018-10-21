@@ -17,6 +17,8 @@ void server_run_server(int port){
     start_accepter_thread(client_list, server_socket);
     start_heartbeat_thread(port, client_list);
 
+
+
     while(1){
         server_message_forwarding(client_list);
         sleep(2);
@@ -84,6 +86,7 @@ void op_join_response(client_list *cl, int num_clients, int *connected_sockets, 
 
     client clie = client_list_get_client_from_socket_id(connected_sockets[i], cl);
     pdu_pjoin* pjoin = pdu_pjoin_create(clie.identity);
+    fprintf(stderr, "Client %s joined the server.\n", clie.identity);
     socket_write_pdu_to((PDU *) pjoin, connected_sockets, num_clients);
     if(num_partici > 0){
         free(participants_string);
@@ -100,7 +103,6 @@ static void start_accepter_thread(client_list *client_list, int server_socket) {
     acc_args->cl = client_list;
     acc_args->server_socket = server_socket;
     pthread_create(&client_accepter_thread, NULL, &server_keep_accepting_clients, acc_args);
-    //pthread_join(client_accepter_thread, 0);
 }
 
 static void start_heartbeat_thread(int port, client_list *client_list) {
@@ -129,6 +131,7 @@ static void* server_keep_accepting_clients(void* args){
             clnt.socket = socket_tcp_get_connecting_socket(server_socket);
             clnt.identity = NULL;
             client_list_add_client(clnt, cl);
+            fprintf(stderr, "New client joined.\n");
         }
         sleep(2);
     }
@@ -158,7 +161,7 @@ static void *server_start_heart_beat(void *args){
             }
         }
         uint16_t id = pdu_ack->id_number;
-
+        fprintf(stderr, "Server is registered at name server.\n");
         not_reg *not_reg = NULL;
         while (not_reg == NULL) {
             alive *alive = pdu_create_alive(heartbeat_args->cl->num_connected_clients, id);
