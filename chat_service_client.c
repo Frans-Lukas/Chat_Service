@@ -19,6 +19,7 @@
 
 void init_client(char* username, char *server_option, char* server_adress, int server_port){
     char *name_server = "itchy.cs.umu.se";
+    char* user_name = "kuba";
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
     server_info* server_to_connect_to = let_user_choose_server(server_list);
@@ -36,75 +37,86 @@ void init_client(char* username, char *server_option, char* server_adress, int s
     client_info *client = calloc(1, sizeof(client_info));
 
     client->server_socket = server_socket;
+    client->identity = user_name;
+
+    send_join_to_server(client);
+
+    pthread_t reader_thread;
+    pthread_t writer_thread;
 
 
-    send_join_to_server(server_socket);
+    pthread_create(&reader_thread, NULL, &read_from_client_stdin, client);
+    pthread_create(&writer_thread, NULL, &read_from_client_stdin, &server_socket);
 
 
-    while(1){
-
-        read_from_client_stdin(client);
-        write_to_client_stdout(server_socket);
-
-    }
-
+    pthread_join(reader_thread, NULL);
+    pthread_join(writer_thread, NULL);
 }
 
 
-int read_from_client_stdin(client_info *client){
-    //char *text = calloc(1,1);
-    char buffer[255];
+void* read_from_client_stdin(void* data){
+    client_info *client = (client_info *) data;
+    while(1) {
+        //char *text = calloc(1,1);
+        char buffer[255];
 
-    printf("Enter a message: ");
-    while( fgets(buffer, 255 , stdin) ) /* break with ^D or ^Z */
-    {
-        //text = realloc( text, strlen(text)+1+strlen(buffer) );
-        //if( !text ) {
+        printf("Enter a message: ");
+        while (fgets(buffer, 255, stdin)) /* break with ^D or ^Z */
+        {
+            //text = realloc( text, strlen(text)+1+strlen(buffer) );
+            //if( !text ) {
             //ERROR
-        //}
-        //strcat( text, buffer ); /* note a '\n' is appended here everytime */
-        //printf("%s\n", buffer);
-        char *identity = "kuba";
-        pdu_mess * mess = pdu_mess_create(identity, buffer);
-        if(socket_write_pdu_to((PDU*)mess, &client->server_socket, 1) == -1){
-            fprintf(stderr, "socket_write_pdu_to mess failed\n");
+            //}
+            //strcat( text, buffer ); /* note a '\n' is appended here everytime */
+            //printf("%s\n", buffer);
+            pdu_mess *mess = pdu_mess_create(client->identity, buffer);
+            if (socket_write_pdu_to((PDU *) mess, &client->server_socket, 1) == -1) {
+                fprintf(stderr, "socket_write_pdu_to mess failed\n");
+                return NULL;
+            }
+            fprintf(stderr, "");
         }
     }
     //printf("\ntext:\n%s",text);
 }
 
-int write_to_client_stdout(int server_socket){
-    PDU** response = NULL;
-    while (response  == NULL || response[0] == NULL){
-        response = socket_read_pdu_from(&server_socket, 1);
-    }
+void* write_to_client_stdout(void* data){
+    int server_socket = *(int*)data;
 
-    switch (response[0]->op){
-        case OP_MESS:
-            fprintf(stderr, "Got Message\n");
-            handle_message((pdu_mess *) response[0]);
-            break;
-        case OP_QUIT:
-            fprintf(stderr, "Got quit\n");
-            handle_quit((pdu_quit *) response[0]);
-            break;
-        case OP_PJOIN:
-            fprintf(stderr, "Got pjoin\n");
-            handle_pjoin((pdu_pjoin *) response[0]);
-            break;
-        case OP_PLEAVE:
-            fprintf(stderr, "Got pleave\n");
-            handle_pleave((pdu_pleave *) response[0]);
-            break;
-        case OP_PARTICIPANTS:
-            fprintf(stderr, "Got participants\n");
-            handle_response((pdu_participants*) response[0]);
-            break;
-        default:
-            fprintf(stderr, "Something is fishy\n");
-            break;
+    while(1) {
+        PDU **response = NULL;
+        while (response == NULL || response[0] == NULL) {
+            response = socket_read_pdu_from(&server_socket, 1);
+        }
+
+        switch (response[0]->op) {
+            case OP_MESS:
+                fprintf(stderr, "Got Message\n");
+                handle_message((pdu_mess *) response[0]);
+                break;
+            case OP_QUIT:
+                fprintf(stderr, "Got quit\n");
+                handle_quit((pdu_quit *) response[0]);
+                return NULL;
+                break;
+            case OP_PJOIN:
+                fprintf(stderr, "Got pjoin\n");
+                handle_pjoin((pdu_pjoin *) response[0]);
+                break;
+            case OP_PLEAVE:
+                fprintf(stderr, "Got pleave\n");
+                handle_pleave((pdu_pleave *) response[0]);
+                break;
+            case OP_PARTICIPANTS:
+                fprintf(stderr, "Got participants\n");
+                handle_response((pdu_participants *) response[0]);
+                break;
+            default:
+                fprintf(stderr, "Something is fishy\n");
+                break;
+        }
+        sleep(1);
     }
-    sleep(1);
 }
 
 
@@ -122,10 +134,9 @@ void chat_session(){
 }
 
 
-void send_join_to_server(int server_socket){
-    char *name = "Kuba";
-    pdu_join* pdu = pdu_join_create(name);
-    while(-1 == socket_write_pdu_to((PDU*)pdu, &server_socket, 1));
+void send_join_to_server(client_info *client){
+    pdu_join* pdu = pdu_join_create(client->identity);
+    while(-1 == socket_write_pdu_to((PDU*)pdu, &client->server_socket, 1));
 }
 
 

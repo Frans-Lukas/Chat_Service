@@ -14,6 +14,7 @@ typedef struct server_info{
 
 typedef struct client_info{
     int server_socket;
+    char *identity;
 } client_info;
 
 void init_client(char* username, char *server_option, char* server_adress, int server_port);
@@ -31,11 +32,12 @@ void handle_pleave(pdu_pleave *pParticipants);
 void print_message(pdu_mess *pdu);
 
 server_info *let_user_choose_server(s_list *pList);
-void send_join_to_server(int server_socket);
-int write_to_client_stdout(int server_socket);
+void send_join_to_server(client_info *client);
 
 
-int read_from_client_stdin(client_info *client);
+void* write_to_client_stdout(void* data);
+
+void* read_from_client_stdin(void* data);
 
 
 
