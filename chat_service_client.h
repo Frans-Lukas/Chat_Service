@@ -11,6 +11,11 @@ typedef struct server_info{
     int port;
 } server_info;
 
+
+typedef struct client_info{
+    int server_socket;
+} client_info;
+
 void init_client();
 s_list* get_server_list_form_names_server(char *name_server_adress, int name_server_port);
 void print_s_list(s_list *s);
@@ -23,8 +28,16 @@ void handle_message(pdu_mess *pParticipants);
 void handle_pjoin(pdu_pjoin *pParticipants);
 
 void handle_pleave(pdu_pleave *pParticipants);
+void print_message(pdu_mess *pdu);
 
 server_info *let_user_choose_server(s_list *pList);
-void read_from_client_socket(int server_socket);
+void write_to_client_stdout(int server_socket);
 void send_join_to_server(int server_socket);
+
+
+void read_from_client_stdin(client_info *client);
+
+
+
+
 #endif //CHAT_SERVICE_CHAT_SERVICE_CLIENT_H

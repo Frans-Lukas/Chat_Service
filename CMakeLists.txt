@@ -46,6 +46,7 @@ add_executable(Client
         chat_service_client.c
         chat_service_client.h)
 
+
 find_package(Threads)
 target_link_libraries(Client ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(Server ${CMAKE_THREAD_LIBS_INIT})
