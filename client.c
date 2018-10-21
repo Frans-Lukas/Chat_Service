@@ -16,8 +16,9 @@
 // ./client kubalito ns nameserver.cs.umu.se 1337
 int main(int argc, char *argv[]) {
 
-
-
-    init_client();
+    if(argc != 5){
+        fprintf(stderr, "Wrong amount of parameters");
+    }
+    init_client(argv[1], argv[2], argv[3], atoi(argv[4]));
     return 0;
 }
