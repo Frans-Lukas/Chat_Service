@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     if(argc != 5){
         fprintf(stderr, "Wrong amount of parameters");
     }
+    run_all_tests();
     init_client(argv[1], argv[2], argv[3], atoi(argv[4]));
     return 0;
 }

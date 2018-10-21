@@ -46,7 +46,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
 
 
     pthread_create(&reader_thread, NULL, &read_from_client_stdin, client);
-    pthread_create(&writer_thread, NULL, &read_from_client_stdin, &server_socket);
+    pthread_create(&writer_thread, NULL, &write_to_client_stdout, &server_socket);
 
 
     pthread_join(reader_thread, NULL);
@@ -63,21 +63,22 @@ void* read_from_client_stdin(void* data){
         printf("Enter a message: ");
         while (fgets(buffer, 255, stdin)) /* break with ^D or ^Z */
         {
+            if(strcmp(buffer, "\n") == 0){
+                continue;
+            }
             //text = realloc( text, strlen(text)+1+strlen(buffer) );
             //if( !text ) {
             //ERROR
             //}
             //strcat( text, buffer ); /* note a '\n' is appended here everytime */
             //printf("%s\n", buffer);
-            pdu_mess *mess = pdu_mess_create(client->identity, buffer);
+            pdu_mess *mess = pdu_mess_create(client, buffer);
             if (socket_write_pdu_to((PDU *) mess, &client->server_socket, 1) == -1) {
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
                 return NULL;
             }
-            fprintf(stderr, "");
         }
     }
-    //printf("\ntext:\n%s",text);
 }
 
 void* write_to_client_stdout(void* data){
@@ -112,7 +113,6 @@ void* write_to_client_stdout(void* data){
                 handle_response((pdu_participants *) response[0]);
                 break;
             default:
-                fprintf(stderr, "Something is fishy\n");
                 break;
         }
         sleep(1);
@@ -155,7 +155,6 @@ void handle_message(pdu_mess *pdu) {
 }
 
 void print_message(pdu_mess *pdu){
-    fprintf(stderr, "\n\n\nMESSAGE RECEIVED");
 
     fprintf(stderr, "identity_length: %d\n", pdu->identity_length);
     fprintf(stderr, "check_sum: %d\n", pdu->checksum);
@@ -164,14 +163,10 @@ void print_message(pdu_mess *pdu){
     fprintf(stderr, "time_stamp: %d\n", pdu->timestamp);
 
     fprintf(stderr, "message: ");
-    for(int i=0; i<pdu->message_length; i++){
-        fprintf(stderr, "%c", pdu->message[i]);
-    }
-    fprintf(stderr, "\n");
+    fprintf(stderr, "%s", (char*)pdu->message);
     fprintf(stderr, "client_identity: ");
-    for(int i=0; i<pdu->identity_length; i++){
-        fprintf(stderr, "%c", pdu->client_identity[i]);
-    }
+    fprintf(stderr, "%s", (char*)pdu->client_identity);
+
     fprintf(stderr, "\n\n\n");
 }
 

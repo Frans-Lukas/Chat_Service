@@ -39,13 +39,15 @@ void server_message_forwarding(client_list *client_list_arg) {
     PDU** responses = socket_read_pdu_from(connected_sockets, client_list_arg->num_connected_clients);
 
     for (int i = 0; i < num_clients; ++i) {
-        if(responses[i] != NULL){
-            fprintf(stderr, "%d\n", responses[i]->op);
+        if(responses[i] != NULL && responses[i]->op != 0){
+            fprintf(stderr, "opcode: %d\n", responses[i]->op);
             switch (responses[i]->op){
                 case OP_MESS: {
                     //broadcast message to clients
                     fprintf(stderr, "Recieved MESS\n");
-                    socket_write_pdu_to(responses[i], connected_sockets, num_clients);
+                    if(socket_write_pdu_to(responses[i], connected_sockets, num_clients) == -1){
+                        perror("Failed to write to MESS sockets\n");
+                    }
                     break;
                 }
                 case OP_QUIT: {
