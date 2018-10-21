@@ -13,6 +13,8 @@
 
 server_info *let_user_choose_server(s_list *pList);
 
+void start_client_interface(int client_socket);
+
 void init_client(){
     char *name_server = "itchy.cs.umu.se";
     int port = 1337;
@@ -21,6 +23,11 @@ void init_client(){
 
     server_info* server_to_connect_to = let_user_choose_server(server_list);
     int socket_to_server = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
+    start_client_interface(socket_to_server);
+
+}
+
+void start_client_interface(int client_socket) {
 
 }
 
@@ -36,7 +43,6 @@ server_info *let_user_choose_server(s_list *pList) {
     server_to_connect_to->server_name = (char *) pList->server_name[choice];
     server_to_connect_to->port = pList->port[choice];
     server_to_connect_to->address = (char *) pList->adress[choice];
-
     return server_to_connect_to;
 }
 
