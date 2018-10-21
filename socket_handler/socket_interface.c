@@ -10,25 +10,11 @@
 
 
 int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
-
-    struct pollfd poll_struct[number_of_sockets];
     for (int i = 0; i < number_of_sockets; i++) {
-        poll_struct[i].fd = socket[i];
-        poll_struct[i].events = POLLOUT;
-    }
-
-    if (0 > poll(poll_struct, 1, 1000)) {
-        printf(stderr, "poll() error");
-        return -1;
-    }
-
-    for (int i = 0; i < number_of_sockets; i++) {
-        if (poll_struct[i].revents & POLLOUT) {
-            char *data;
-            int pdu_size = pdu_serialize(pdu, &data);
-            if (0 > socket_single_write_to(socket[i], data, pdu_size)) {
-                return -1;
-            }
+        char *data;
+        int pdu_size = pdu_serialize(pdu, &data);
+        if (0 > socket_single_write_to(socket[i], data, pdu_size)) {
+            return -1;
         }
     }
     return 0;

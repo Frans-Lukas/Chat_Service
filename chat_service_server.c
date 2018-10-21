@@ -43,8 +43,12 @@ void server_message_forwarding(client_list *clint_list) {
                 case OP_MESS: {
                     //broadcast message to clients
                     fprintf(stderr, "Recieved MESS\n");
-                    if(socket_write_pdu_to(responses[i], connected_sockets, num_clients) == -1){
-                        perror("Failed to write to MESS sockets\n");
+                    if(create_checksum((pdu_mess *) responses[i]) == 255){
+                        if(socket_write_pdu_to(responses[i], connected_sockets, num_clients) == -1){
+                            perror("Failed to write to MESS sockets\n");
+                        }
+                    } else{
+                        perror("Invalid checksum. Will not forward message.\n");
                     }
                     break;
                 }
