@@ -57,7 +57,7 @@ int start_test_server(){
     int socket_to_read_from = socket_tcp_create();
     socket_bind(port, socket_to_read_from);
     socket_tcp_listen(socket_to_read_from);
-    return socket_tcp_get_connecting_socket(socket_to_read_from);
+    return socket_tcp_get_connecting_socket_by_accepting(socket_to_read_from);
 }
 
 void test_socket_interface_deserialize_works(){

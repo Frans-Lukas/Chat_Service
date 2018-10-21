@@ -31,7 +31,7 @@ void socket_make_timeout(int sockfd);
 int socket_connect(int port, char *ip_address, int socket);
 void socket_bind(int port, int socket);
 void socket_tcp_listen(int socket);
-int socket_tcp_get_connecting_socket(int socket);
+int socket_tcp_get_connecting_socket_by_accepting(int socket);
 ssize_t socket_recvfrom(int port, char *ip_address, int socket, char* message);
 
 

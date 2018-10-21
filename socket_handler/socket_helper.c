@@ -108,7 +108,7 @@ void socket_tcp_listen(int socket){
     listen(socket, backlog);
 }
 
-int socket_tcp_get_connecting_socket(int socket){
+int socket_tcp_get_connecting_socket_by_accepting(int socket){
     int client_socket = accept(socket, NULL, NULL);
     if(client_socket<0){
         perror_exit("accept()");

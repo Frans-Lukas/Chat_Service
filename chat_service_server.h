@@ -27,7 +27,7 @@ static void *server_start_heart_beat(void *args);
 static ack* socket_read_ack_from_udp(int socket);
 static void start_accepter_thread(client_list *client_list, int server_socket);
 static void start_heartbeat_thread(int port, client_list *client_list);
-void server_message_forwarding(client_list *client_list_arg);
+void server_message_forwarding(client_list *clint_list);
 void op_join_response(client_list *cl, int num_clients, int *connected_sockets, PDU **responses, int i);
 void op_quit_response(client_list *cl, int num_clients, int *connected_sockets, PDU **responses, int i);
 

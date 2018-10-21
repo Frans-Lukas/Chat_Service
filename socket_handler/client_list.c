@@ -17,8 +17,17 @@ client_list *client_list_create() {
     return cl;
 }
 
-int client_list_add_client(client c, client_list *cl) {
+void print_lock(client_list* cl){
     pthread_mutex_lock(&cl->mutex);
+    fprintf(stderr, "locking mutex\n");
+}
+void print_unlock(client_list* cl){
+    pthread_mutex_unlock(&cl->mutex);
+
+}
+
+int client_list_add_client(client c, client_list *cl) {
+    print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == 0) {
             cl->clients[i] = c;
@@ -33,7 +42,7 @@ int client_list_add_client(client c, client_list *cl) {
 }
 
 int client_list_remove_client(client c, client_list *cl) {
-    pthread_mutex_lock(&cl->mutex);
+    print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == c.socket) {
             cl->clients[i].socket = 0;
@@ -49,7 +58,7 @@ int client_list_remove_client(client c, client_list *cl) {
 }
 
 client client_list_get_client_from_index(int index, client_list *cl) {
-    pthread_mutex_lock(&cl->mutex);
+    print_lock(cl);
     if (index >= CLIENT_LIST_MAX_SIZE) {
         pthread_mutex_unlock(&cl->mutex);
         perror_exit("Index out of bounds on client list");
@@ -59,7 +68,7 @@ client client_list_get_client_from_index(int index, client_list *cl) {
 }
 
 client client_list_get_client_from_socket_id(int socket_id, client_list *cl) {
-    pthread_mutex_lock(&cl->mutex);
+    print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == socket_id) {
             pthread_mutex_unlock(&cl->mutex);
@@ -73,7 +82,7 @@ client client_list_get_client_from_socket_id(int socket_id, client_list *cl) {
 }
 
 int client_list_set_identity_to_socket(int socket, char *identity, client_list *cl) {
-    pthread_mutex_lock(&cl->mutex);
+    print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == socket) {
             cl->clients[i].identity = identity;
@@ -88,7 +97,7 @@ int client_list_set_identity_to_socket(int socket, char *identity, client_list *
 
 
 client client_list_get_client_from_identity(char *identity, client_list *cl) {
-    pthread_mutex_lock(&cl->mutex);
+    print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (strcmp(cl->clients[i].identity, identity) == 0) {
             pthread_mutex_unlock(&cl->mutex);
@@ -104,7 +113,7 @@ client client_list_get_client_from_identity(char *identity, client_list *cl) {
 int client_list_create_participants_string(client_list *cl, char **participants_string) {
     int num_identified_sockets = 0;
 
-    pthread_mutex_lock(&cl->mutex);
+    print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].identity != NULL) {
             num_identified_sockets++;

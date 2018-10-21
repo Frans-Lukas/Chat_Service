@@ -17,26 +17,24 @@ void server_run_server(int port){
     start_accepter_thread(client_list, server_socket);
     start_heartbeat_thread(port, client_list);
 
-
-
     while(1){
         server_message_forwarding(client_list);
     }
 }
 
-void server_message_forwarding(client_list *client_list_arg) {
-    int num_clients = client_list_arg->num_connected_clients;
+void server_message_forwarding(client_list *clint_list) {
+    int num_clients = clint_list->num_connected_clients;
     int connected_sockets[num_clients];
     int index = 0;
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        client cl = client_list_arg->clients[i];
+        client cl = clint_list->clients[i];
         if(cl.socket != 0){
             connected_sockets[index] = cl.socket;
             index++;
         }
     }
 
-    PDU** responses = socket_read_pdu_from(connected_sockets, client_list_arg->num_connected_clients);
+    PDU** responses = socket_read_pdu_from(connected_sockets, clint_list->num_connected_clients);
 
     for (int i = 0; i < num_clients; ++i) {
         if(responses[i] != NULL && responses[i]->op != 0){
@@ -53,13 +51,13 @@ void server_message_forwarding(client_list *client_list_arg) {
                 case OP_QUIT: {
                     fprintf(stderr, "Recieved QUIT\n");
                     //notify everyone what client left
-                    op_quit_response(client_list_arg, num_clients, connected_sockets, responses, i);
+                    op_quit_response(clint_list, num_clients, connected_sockets, responses, i);
                     break;
                 }
                 case OP_JOIN: {
                     fprintf(stderr, "Recieved JOIN\n");
                     //notify everyone what client joined and send participants to newly connected client
-                    op_join_response(client_list_arg, num_clients, connected_sockets, responses, i);
+                    op_join_response(clint_list, num_clients, connected_sockets, responses, i);
                     break;
                 }
                 default:
@@ -130,13 +128,12 @@ static void* server_keep_accepting_clients(void* args){
     while(1){
         while(cl->num_connected_clients < CLIENT_LIST_MAX_SIZE){
             client clnt;
-            clnt.socket = socket_tcp_get_connecting_socket(server_socket);
+            clnt.socket = socket_tcp_get_connecting_socket_by_accepting(server_socket);
             clnt.identity = NULL;
             fprintf(stderr, "New client joined.\n");
             client_list_add_client(clnt, cl);
         }
     }
-    free(data);
 }
 
 
