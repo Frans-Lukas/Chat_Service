@@ -37,6 +37,6 @@ client client_list_get_client_from_socket_id(int socket_id, client_list *cl);
 
 int client_list_set_identity_to_socket(int socket, char *identity, client_list *cl);
 
-int client_list_create_participants_string(client_list *cl, char* participants_string);
+int client_list_create_participants_string(client_list *cl, char** participants_string);
 
 #endif //CHAT_SERVICE_CLIENT_LIST_H

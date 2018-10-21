@@ -105,10 +105,12 @@ int pdu_reg_serialize(PDU *p, char **data) {
     *data = safe_calloc(1, (size_t) size);
     *data[0] = OP_REG;
     pdu_cpy_chars((*data) + 1, &pdu->server_name_length, 0, 1);
-    pdu->tcp_port = htons(pdu->tcp_port);
-    pdu_cpy_chars((*data) + 2, &pdu->tcp_port, 0, 2);
+    uint16_t* port = calloc(1, 2);
+    pdu_cpy_chars(port, &pdu->tcp_port, 0, 2);
+    *port = htons(*port);
+    //port = htons(port);
+    pdu_cpy_chars((*data) + 2, port, 0, 2);
     pdu_cpy_chars((*data) + 4, build_words((char *) pdu->server_name, 4), 0, pdu->server_name_length);
-
     return size;
 }
 
