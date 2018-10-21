@@ -42,16 +42,19 @@ void server_message_forwarding(client_list *client_list_arg) {
             switch (responses[i]->op){
                 case OP_MESS: {
                     //broadcast message to clients
+                    fprintf(stderr, "Recieved MESS\n");
                     socket_write_pdu_to(responses[i], connected_sockets, num_clients);
                     free(responses[i]);
                     break;
                 }
                 case OP_QUIT: {
+                    fprintf(stderr, "Recieved QUIT\n");
                     //notify everyone what client left
                     op_quit_response(client_list_arg, num_clients, connected_sockets, responses, i);
                     break;
                 }
                 case OP_JOIN: {
+                    fprintf(stderr, "Recieved JOIN\n");
                     //notify everyone what client joined and send participants to newly connected client
                     op_join_response(client_list_arg, num_clients, connected_sockets, responses, i);
                     break;
@@ -113,7 +116,6 @@ static void start_heartbeat_thread(int port, client_list *client_list) {
 
 
     pthread_create(&heart_beat_thread, NULL, &server_start_heart_beat, hb_args);
-   // pthread_join(heart_beat_thread, 0);
 }
 
 

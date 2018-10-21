@@ -16,27 +16,36 @@
 
 
 
+void start_client_interface(int client_socket);
+
 void init_client(){
     char *name_server = "itchy.cs.umu.se";
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
     server_info* server_to_connect_to = let_user_choose_server(server_list);
-    int server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
-    fprintf(stderr, "Connected to server\n");
+    int socket_to_server = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
+    start_client_interface(socket_to_server);
 
-    client_info *client = calloc(1, sizeof(client_info));
+}
 
+void start_client_interface(int client_socket) {
 
-
-    send_join_to_server(server_socket);
-
-
-    while(1){
-
-        read_from_client_stdin(client);
-        write_to_client_stdout(server_socket);
-
-    }
+    //int server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
+//    fprintf(stderr, "Connected to server\n");
+//
+//    client_info *client = calloc(1, sizeof(client_info));
+//
+//
+//
+//    send_join_to_server(server_socket);
+//
+//
+//    while(1){
+//
+//        read_from_client_stdin(client);
+//        write_to_client_stdout(server_socket);
+//
+//    }
 }
 
 void read_from_client_stdin(client_info *client){
