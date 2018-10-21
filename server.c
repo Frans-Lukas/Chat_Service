@@ -8,8 +8,7 @@
 #include "chat_service_client.h"
 
 int main(){
-
-
-    server_run_server(9999);
+    //run_all_tests();
+    server_run_server(1380);
     return 0;
 }

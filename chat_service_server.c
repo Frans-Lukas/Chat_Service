@@ -21,7 +21,6 @@ void server_run_server(int port){
 
     while(1){
         server_message_forwarding(client_list);
-        sleep(2);
     }
 }
 
@@ -41,12 +40,12 @@ void server_message_forwarding(client_list *client_list_arg) {
 
     for (int i = 0; i < num_clients; ++i) {
         if(responses[i] != NULL){
+            fprintf(stderr, "%d\n", responses[i]->op);
             switch (responses[i]->op){
                 case OP_MESS: {
                     //broadcast message to clients
                     fprintf(stderr, "Recieved MESS\n");
                     socket_write_pdu_to(responses[i], connected_sockets, num_clients);
-                    free(responses[i]);
                     break;
                 }
                 case OP_QUIT: {
@@ -64,6 +63,7 @@ void server_message_forwarding(client_list *client_list_arg) {
                 default:
                     break;
             }
+            responses[i] = NULL;
         }
     }
 }
@@ -79,8 +79,11 @@ void op_quit_response(client_list *cl, int num_clients, int *connected_sockets, 
 void op_join_response(client_list *cl, int num_clients, int *connected_sockets, PDU **responses, int i) {
     pdu_join* join = (pdu_join *) responses[i];
     client_list_set_identity_to_socket(connected_sockets[i], (char *) join->identity, cl);
+
     char* participants_string;
-    int num_partici = client_list_create_participants_string(cl, participants_string);
+    int num_partici = client_list_create_participants_string(cl, &participants_string);
+    fprintf(stderr, "particiString = %s\n", participants_string);
+    fprintf(stderr, "num participants = %d\n", cl->num_connected_clients);
     pdu_participants* participants = pdu_participants_create(participants_string, num_partici);
     socket_write_pdu_to((PDU *) participants, &connected_sockets[i], 1);
 
@@ -88,9 +91,6 @@ void op_join_response(client_list *cl, int num_clients, int *connected_sockets, 
     pdu_pjoin* pjoin = pdu_pjoin_create(clie.identity);
     fprintf(stderr, "Client %s joined the server.\n", clie.identity);
     socket_write_pdu_to((PDU *) pjoin, connected_sockets, num_clients);
-    if(num_partici > 0){
-        free(participants_string);
-    }
     free(join);
     free(pjoin);
     free(participants);
@@ -125,15 +125,14 @@ static void* server_keep_accepting_clients(void* args){
     server_accepting_arguments* data = args;
     client_list* cl = data->cl;
     int server_socket = data->server_socket;
-    while(server_socket != -1){
+    while(1){
         while(cl->num_connected_clients < CLIENT_LIST_MAX_SIZE){
             client clnt;
             clnt.socket = socket_tcp_get_connecting_socket(server_socket);
             clnt.identity = NULL;
-            client_list_add_client(clnt, cl);
             fprintf(stderr, "New client joined.\n");
+            client_list_add_client(clnt, cl);
         }
-        sleep(2);
     }
     free(data);
 }
@@ -143,12 +142,12 @@ static void *server_start_heart_beat(void *args){
     server_heart_beat_arguments* heartbeat_args = args;
     int name_server_socket = socket_udp_name_server_socket(
             heartbeat_args->name_server_port, heartbeat_args->name_server_address);
-    reg* reg = pdu_create_reg((int) strlen(heartbeat_args->own_address), heartbeat_args->own_port, heartbeat_args->own_address);
-
+    fprintf(stderr, "Trying to register to nameserver\n");
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
     while(true) {
+        reg* reg = pdu_create_reg((int) strlen(heartbeat_args->own_address), heartbeat_args->own_port, heartbeat_args->own_address);
         socket_write_pdu_to((PDU *) reg, &name_server_socket, 1);
         ack *pdu_ack = NULL;
 

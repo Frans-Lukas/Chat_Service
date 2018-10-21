@@ -125,6 +125,7 @@ char *array_to_string(char *pString[], int list_length) {
     for (int i = 0; i < list_length; ++i) {
         memcpy(string + position_to_memcpy_to, pString[i], strlen(pString[i]) + 1);
         position_to_memcpy_to += strlen(pString[i]) + 1;
+        memcpy(string + position_to_memcpy_to + 1, "\0", 1);
     }
 
     return string;

@@ -113,6 +113,7 @@ int socket_tcp_get_connecting_socket(int socket){
     if(client_socket<0){
         perror_exit("accept()");
     }
+    fprintf(stderr, "accpet is working.\n");
     return client_socket;
 }
 

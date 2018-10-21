@@ -51,6 +51,7 @@ int client_list_remove_client(client c, client_list *cl) {
 client client_list_get_client_from_index(int index, client_list *cl) {
     pthread_mutex_lock(&cl->mutex);
     if (index >= CLIENT_LIST_MAX_SIZE) {
+        pthread_mutex_unlock(&cl->mutex);
         perror_exit("Index out of bounds on client list");
     }
     pthread_mutex_unlock(&cl->mutex);
@@ -61,6 +62,7 @@ client client_list_get_client_from_socket_id(int socket_id, client_list *cl) {
     pthread_mutex_lock(&cl->mutex);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == socket_id) {
+            pthread_mutex_unlock(&cl->mutex);
             return cl->clients[i];
         }
     }
@@ -75,6 +77,7 @@ int client_list_set_identity_to_socket(int socket, char *identity, client_list *
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == socket) {
             cl->clients[i].identity = identity;
+            pthread_mutex_unlock(&cl->mutex);
             return 0;
         }
     }
@@ -88,6 +91,7 @@ client client_list_get_client_from_identity(char *identity, client_list *cl) {
     pthread_mutex_lock(&cl->mutex);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (strcmp(cl->clients[i].identity, identity) == 0) {
+            pthread_mutex_unlock(&cl->mutex);
             return cl->clients[i];
         }
     }
@@ -97,7 +101,7 @@ client client_list_get_client_from_identity(char *identity, client_list *cl) {
     return empty_client;
 }
 
-int client_list_create_participants_string(client_list *cl, char *participants_string) {
+int client_list_create_participants_string(client_list *cl, char **participants_string) {
     int num_identified_sockets = 0;
 
     pthread_mutex_lock(&cl->mutex);
@@ -114,7 +118,7 @@ int client_list_create_participants_string(client_list *cl, char *participants_s
             client_array[i] = cl->clients[i].identity;
         }
     }
-    participants_string = array_to_string(client_array, num_identified_sockets);
+    *participants_string = array_to_string(client_array, num_identified_sockets);
     pthread_mutex_unlock(&cl->mutex);
 
     return num_identified_sockets;

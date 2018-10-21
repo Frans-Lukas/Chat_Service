@@ -89,19 +89,19 @@ void test_deserialize_alive() {
 void test_serialize_reg() {
     reg *pdu = safe_calloc(1, sizeof(reg));
     pdu->pdu.op = OP_REG;
-    pdu->server_name_length = 2;
+    pdu->server_name_length = 5;
     pdu->tcp_port = (uint16_t) 1337;
     pdu->server_name = safe_calloc(1, sizeof(uint32_t));
-    strncpy((char *) pdu->server_name, "ab", 2);
+    strncpy((char *) pdu->server_name, "abbba", 5);
 
     char *data;
     int result = pdu_reg_serialize((PDU *) pdu, &data);
 
-    assert(result == 8);
+    assert(result == 12);
     assert(data[0] == OP_REG);
-    assert(data[1] == 2);
+    assert(data[1] == 5);
     assert(*((uint16_t *) (data + 2)) == htons(1337));
-    assert(strncmp((data + 4), "ab", 2) == 0);
+    assert(strncmp((data + 4), "abbba", 5) == 0);
 }
 
 void test_deserialize_reg() {
