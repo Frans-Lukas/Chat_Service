@@ -31,4 +31,5 @@ void server_message_forwarding(client_list *client_list_arg);
 void op_join_response(client_list *cl, int num_clients, int connected_socket, pdu_join* pdu);
 void op_quit_response(client_list *cl, int num_clients, int connected_socket, pdu_quit* pdu);
 
+
 #endif //CHAT_SERVICE_CHAT_SERVICE_SERVER_H
