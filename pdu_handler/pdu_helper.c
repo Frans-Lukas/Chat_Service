@@ -9,7 +9,8 @@
 uint32_t *build_words(char* input_string, int bytes){
     int string_len = (int) strlen(input_string);
     int number_of_words = get_num_words(string_len, bytes);
-    uint32_t* string_as_4byte = memcpy(safe_calloc((size_t) number_of_words, sizeof(uint32_t)), input_string, (size_t) string_len);
+    uint32_t* string_as_4byte = safe_calloc((size_t) number_of_words, sizeof(uint32_t));
+    pdu_cpy_chars(string_as_4byte, input_string,0 ,(size_t) string_len);
     return string_as_4byte;
 }
 

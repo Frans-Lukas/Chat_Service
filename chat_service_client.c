@@ -19,7 +19,7 @@
 
 void init_client(char* username, char *server_option, char* server_adress, int server_port){
     char *name_server = "itchy.cs.umu.se";
-    char* user_name = "kuba\0";
+    char* user_name = "kuba";
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
     server_info* server_to_connect_to = let_user_choose_server(server_list);
@@ -63,6 +63,9 @@ void* read_from_client_stdin(void* data){
         printf("Enter a message: ");
         while (fgets(buffer, 255, stdin)) /* break with ^D or ^Z */
         {
+            if(strcmp(buffer, "\n") == 0){
+                continue;
+            }
             //text = realloc( text, strlen(text)+1+strlen(buffer) );
             //if( !text ) {
             //ERROR
@@ -74,10 +77,8 @@ void* read_from_client_stdin(void* data){
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
                 return NULL;
             }
-            fprintf(stderr, "");
         }
     }
-    //printf("\ntext:\n%s",text);
 }
 
 void* write_to_client_stdout(void* data){
@@ -112,7 +113,6 @@ void* write_to_client_stdout(void* data){
                 handle_response((pdu_participants *) response[0]);
                 break;
             default:
-                fprintf(stderr, "Something is fishy\n");
                 break;
         }
         sleep(1);
@@ -164,14 +164,10 @@ void print_message(pdu_mess *pdu){
     fprintf(stderr, "time_stamp: %d\n", pdu->timestamp);
 
     fprintf(stderr, "message: ");
-    for(int i=0; i<pdu->message_length; i++){
-        fprintf(stderr, "%c", pdu->message[i]);
-    }
-    fprintf(stderr, "\n");
+    fprintf(stderr, "%s", (char*)pdu->message);
     fprintf(stderr, "client_identity: ");
-    for(int i=0; i<pdu->identity_length; i++){
-        fprintf(stderr, "%c", pdu->client_identity[i]);
-    }
+    fprintf(stderr, "%s", (char*)pdu->client_identity);
+
     fprintf(stderr, "\n\n\n");
 }
 

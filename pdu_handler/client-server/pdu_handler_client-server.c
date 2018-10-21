@@ -105,8 +105,6 @@ pdu_mess *pdu_mess_create(char *identity, char *message) {
     fprintf(stderr, "");
 }
 
-
-
 uint8_t create_checksum(pdu_mess *message){
     int checksum = 0;
     checksum += message->op;
