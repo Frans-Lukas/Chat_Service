@@ -14,9 +14,17 @@
 
 
 
+/**
+ *   TODO
+ * - Finishing shell script
+ * - Try with 255 clients
+ * - fix arguments for client and server
+ * - Comments
+ * - testa testa testa
+ */
 
 
-
+// ./client kubalito ns nameserver.cs.umu.se 1337
 void init_client(char* username, char *server_option, char* server_adress, int server_port){
     char *name_server = "itchy.cs.umu.se";
     char* user_name = "kuba";
@@ -150,8 +158,27 @@ void handle_pjoin(pdu_pjoin *pdu) {
 
 
 void handle_message(pdu_mess *pdu) {
-    print_message(pdu);
+   // print_message(pdu);
+    print_user_message(pdu);
 }
+
+char* from_unix_to_human_time(time_t time){
+    struct tm  ts;
+    char * buf = calloc(80, sizeof(char));
+    // Get current time
+    // time(&now);
+
+    // Format time, "ddd yyyy-mm-dd hh:mm:ss zzz"
+    ts = *localtime(&time);
+    strftime(buf, sizeof(buf), "%H:%M", &ts);
+    return buf;
+}
+
+void print_user_message(pdu_mess *pdu){
+    fprintf(stderr, "[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
+            (char *) pdu->message);
+}
+
 
 void print_message(pdu_mess *pdu){
     fprintf(stderr, "\n\n\nMESSAGE RECEIVED\n");

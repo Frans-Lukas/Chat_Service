@@ -33,13 +33,13 @@ void print_message(pdu_mess *pdu);
 
 server_info *let_user_choose_server(s_list *pList);
 void send_join_to_server(client_info *client);
-
+void print_user_message(pdu_mess* pdu);
 
 void* write_to_client_stdout(void* data);
 
 void* read_from_client_stdin(void* data);
 
-
+char* from_unix_to_human_time(time_t time);
 
 
 #endif //CHAT_SERVICE_CHAT_SERVICE_CLIENT_H
