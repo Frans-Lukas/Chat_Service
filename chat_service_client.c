@@ -72,7 +72,7 @@ void* read_from_client_stdin(void* data){
             //}
             //strcat( text, buffer ); /* note a '\n' is appended here everytime */
             //printf("%s\n", buffer);
-            pdu_mess *mess = pdu_mess_create(client, buffer);
+            pdu_mess *mess = pdu_mess_create(client->identity, buffer);
             if (socket_write_pdu_to((PDU *) mess, &client->server_socket, 1) == -1) {
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
                 return NULL;
@@ -154,6 +154,7 @@ void handle_message(pdu_mess *pdu) {
 }
 
 void print_message(pdu_mess *pdu){
+    fprintf(stderr, "\n\n\nMESSAGE RECEIVED\n");
 
     fprintf(stderr, "identity_length: %d\n", pdu->identity_length);
     fprintf(stderr, "check_sum: %d\n", pdu->checksum);
