@@ -115,7 +115,6 @@ void* write_to_client_stdout(void* data){
             default:
                 break;
         }
-        sleep(1);
     }
 }
 

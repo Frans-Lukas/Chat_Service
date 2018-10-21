@@ -21,6 +21,7 @@ void server_run_server(int port){
 
     while(1){
         server_message_forwarding(client_list);
+        sleep(1);
     }
 }
 
