@@ -51,13 +51,13 @@ void server_message_forwarding(client_list *client_list_arg) {
                 case OP_QUIT: {
                     fprintf(stderr, "Recieved QUIT\n");
                     //notify everyone what client left
-                    op_quit_response(client_list_arg, num_clients, connected_sockets, responses, i);
+                    op_quit_response(client_list_arg, num_clients, connected_sockets[i], (pdu_quit *) responses[i]);
                     break;
                 }
                 case OP_JOIN: {
                     fprintf(stderr, "Recieved JOIN\n");
                     //notify everyone what client joined and send participants to newly connected client
-                    op_join_response(client_list_arg, num_clients, connected_sockets, responses, i);
+                    op_join_response(client_list_arg, num_clients, connected_sockets[i], (pdu_join* )responses[i]);
                     break;
                 }
                 default:
@@ -68,30 +68,29 @@ void server_message_forwarding(client_list *client_list_arg) {
     }
 }
 
-void op_quit_response(client_list *cl, int num_clients, int *connected_sockets, PDU **responses, int i) {
-    client clie = client_list_get_client_from_socket_id(connected_sockets[i], cl);
+void op_quit_response(client_list *cl, int num_clients, int connected_socket, pdu_quit *pdu ) {
+    client clie = client_list_get_client_from_socket_id(connected_socket, cl);
     pdu_pleave* pleave = pdu_pleave_create(clie.identity);
-    socket_write_pdu_to((PDU *) pleave, connected_sockets, num_clients);
+    socket_write_pdu_to((PDU *) pleave, &connected_socket, num_clients);
     free(pleave);
-    free(responses[i]);
+    free(pdu);
 }
 
-void op_join_response(client_list *cl, int num_clients, int *connected_sockets, PDU **responses, int i) {
-    pdu_join* join = (pdu_join *) responses[i];
-    client_list_set_identity_to_socket(connected_sockets[i], (char *) join->identity, cl);
+void op_join_response(client_list *cl, int num_clients, int connected_socket, pdu_join* pdu) {
+    client_list_set_identity_to_socket(connected_socket, (char *) pdu->identity, cl);
 
     char* participants_string;
     int num_partici = client_list_create_participants_string(cl, &participants_string);
     fprintf(stderr, "particiString = %s\n", participants_string);
     fprintf(stderr, "num participants = %d\n", cl->num_connected_clients);
     pdu_participants* participants = pdu_participants_create(participants_string, num_partici);
-    socket_write_pdu_to((PDU *) participants, &connected_sockets[i], 1);
+    socket_write_pdu_to((PDU *) participants, &connected_socket, 1);
 
-    client clie = client_list_get_client_from_socket_id(connected_sockets[i], cl);
+    client clie = client_list_get_client_from_socket_id(connected_socket, cl);
     pdu_pjoin* pjoin = pdu_pjoin_create(clie.identity);
     fprintf(stderr, "Client %s joined the server.\n", clie.identity);
-    socket_write_pdu_to((PDU *) pjoin, connected_sockets, num_clients);
-    free(join);
+    socket_write_pdu_to((PDU *) pjoin, &connected_socket, num_clients);
+    free(pdu);
     free(pjoin);
     free(participants);
 }

@@ -19,7 +19,7 @@
 
 void init_client(char* username, char *server_option, char* server_adress, int server_port){
     char *name_server = "itchy.cs.umu.se";
-    char* user_name = "kuba";
+    char* user_name = "kuba\0";
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
     server_info* server_to_connect_to = let_user_choose_server(server_list);
@@ -46,7 +46,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
 
 
     pthread_create(&reader_thread, NULL, &read_from_client_stdin, client);
-    pthread_create(&writer_thread, NULL, &read_from_client_stdin, &server_socket);
+    pthread_create(&writer_thread, NULL, &write_to_client_stdout, &server_socket);
 
 
     pthread_join(reader_thread, NULL);
@@ -155,7 +155,7 @@ void handle_message(pdu_mess *pdu) {
 }
 
 void print_message(pdu_mess *pdu){
-    fprintf(stderr, "\n\n\nMESSAGE RECEIVED");
+    fprintf(stderr, "\n\n\nMESSAGE RECEIVED\n");
 
     fprintf(stderr, "identity_length: %d\n", pdu->identity_length);
     fprintf(stderr, "check_sum: %d\n", pdu->checksum);

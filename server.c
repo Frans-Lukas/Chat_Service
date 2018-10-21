@@ -10,6 +10,6 @@
 int main(){
 
 
-    server_run_server(10101);
+    server_run_server(4242);
     return 0;
 }
