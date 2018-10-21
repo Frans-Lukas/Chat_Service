@@ -28,13 +28,11 @@ void init_client(char* username, char *server_option, char* server_adress, int s
 
     client_info *client = calloc(1, sizeof(client_info));
 
-
-
     send_join_to_server(server_socket);
 
 
     while(1){
-
+        sleep(1);
         read_from_client_stdin(client);
         write_to_client_stdout(server_socket);
 
@@ -56,7 +54,7 @@ int read_from_client_stdin(client_info *client){
         //}
         //strcat( text, buffer ); /* note a '\n' is appended here everytime */
         //printf("%s\n", buffer);
-        char *identity = "69";
+        char *identity = "kuba";
         pdu_mess * mess = pdu_mess_create(identity, buffer);
         socket_write_pdu_to((PDU*)mess, &client->server_socket, 1);
     }
@@ -71,18 +69,23 @@ int write_to_client_stdout(int server_socket){
 
     switch (response[0]->op){
         case OP_MESS:
+            fprintf(stderr, "Got Message\n");
             handle_message((pdu_mess *) response[0]);
             break;
         case OP_QUIT:
+            fprintf(stderr, "Got quit\n");
             handle_quit((pdu_quit *) response[0]);
             break;
         case OP_PJOIN:
+            fprintf(stderr, "Got pjoin\n");
             handle_pjoin((pdu_pjoin *) response[0]);
             break;
         case OP_PLEAVE:
+            fprintf(stderr, "Got pleave\n");
             handle_pleave((pdu_pleave *) response[0]);
             break;
         case OP_PARTICIPANTS:
+            fprintf(stderr, "Got participants\n");
             handle_response((pdu_participants*) response[0]);
             break;
         default:
@@ -110,7 +113,7 @@ void chat_session(){
 void send_join_to_server(int server_socket){
     char *name = "Kuba";
     pdu_join* pdu = pdu_join_create(name);
-    while( -1 == socket_write_pdu_to((PDU*)pdu, &server_socket, 1));
+    while(-1 == socket_write_pdu_to((PDU*)pdu, &server_socket, 1));
 }
 
 
@@ -172,6 +175,11 @@ server_info *let_user_choose_server(s_list *pList) {
 
 void handle_response(pdu_participants *pdu) {
 
+    fprintf(stderr, "Number of identities: %d\n",pdu->num_identities);
+
+    for(int i=0; i<pdu->num_identities; i++){
+        fprintf(stderr, "%s\n" , (char *) pdu->participant_names);
+    }
 }
 
 
