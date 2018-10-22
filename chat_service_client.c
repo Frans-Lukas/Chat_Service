@@ -30,8 +30,11 @@ void init_client(char* username, char *server_option, char* server_adress, int s
     char* user_name = "kuba";
     int port = 1337;
     s_list *server_list = get_server_list_form_names_server(name_server, port);
+    if(server_list == NULL){
+        perror_exit("Could not reach nameserver!\n");
+    }
     server_info* server_to_connect_to = let_user_choose_server(server_list);
-    fprintf(stderr, "port: %d\n", server_to_connect_to->port);
+    //fprintf(stderr, "port: %d\n", server_to_connect_to->port);
     int server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
 
 
@@ -40,7 +43,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
         perror_exit("could not connect to server.");
     }
 
-    fprintf(stderr, "Connected to server\n");
+    fprintf(stdout, "Connected to server\n");
 
     client_info *client = calloc(1, sizeof(client_info));
 
@@ -68,7 +71,6 @@ void* read_from_client_stdin(void* data){
         //char *text = calloc(1,1);
         char buffer[255];
 
-        printf("Enter a message: ");
         while (fgets(buffer, 255, stdin)) /* break with ^D or ^Z */
         {
             if(strcmp(buffer, "\n") == 0){
@@ -100,24 +102,19 @@ void* write_to_client_stdout(void* data){
 
         switch (response[0]->op) {
             case OP_MESS:
-                fprintf(stderr, "Got Message\n");
                 handle_message((pdu_mess *) response[0]);
                 break;
             case OP_QUIT:
-                fprintf(stderr, "Got quit\n");
                 handle_quit((pdu_quit *) response[0]);
                 return NULL;
                 break;
             case OP_PJOIN:
-                fprintf(stderr, "Got pjoin\n");
                 handle_pjoin((pdu_pjoin *) response[0]);
                 break;
             case OP_PLEAVE:
-                fprintf(stderr, "Got pleave\n");
                 handle_pleave((pdu_pleave *) response[0]);
                 break;
             case OP_PARTICIPANTS:
-                fprintf(stderr, "Got participants\n");
                 handle_response((pdu_participants *) response[0]);
                 break;
             default:
@@ -148,11 +145,11 @@ void send_join_to_server(client_info *client){
 
 
 void handle_pleave(pdu_pleave *pdu) {
-
+    fprintf(stdout, "Client %s left the server.\n", (char *) pdu->client_identity);
 }
 
 void handle_pjoin(pdu_pjoin *pdu) {
-
+    fprintf(stdout, "Client %s joined the server.\n", (char *) pdu->client_identity);
 }
 
 
@@ -175,7 +172,7 @@ char* from_unix_to_human_time(time_t time){
 }
 
 void print_user_message(pdu_mess *pdu){
-    fprintf(stderr, "[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
+    fprintf(stdout, "\n[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
             (char *) pdu->message);
 }
 
@@ -203,13 +200,13 @@ void handle_quit(pdu_quit *pdu) {
 
 
 server_info *let_user_choose_server(s_list *pList) {
-    fprintf(stderr, "Please choose a server to connect to.\n");
+    fprintf(stdout, "Please choose a server to connect to.\n");
     for (int i = 0; i < pList->number_of_servers; ++i) {
-        fprintf(stderr, "%d. %s\n", i, (char*)pList->server_name[i]);
+        fprintf(stdout, "%d. %s\n", i, (char*)pList->server_name[i]);
     }
     int choice;
     scanf("%d", &choice);
-    fprintf(stderr, "Trying to connect to server %s\n.", (char*)pList->server_name[choice]);
+    fprintf(stdout, "Trying to connect to server %s\n.", (char*)pList->server_name[choice]);
     server_info* server_to_connect_to = calloc(1, sizeof(server_info));
     server_to_connect_to->server_name = (char *) pList->server_name[choice];
     server_to_connect_to->port = pList->port[choice];
@@ -219,11 +216,9 @@ server_info *let_user_choose_server(s_list *pList) {
 }
 
 void handle_response(pdu_participants *pdu) {
-
-    fprintf(stderr, "Number of identities: %d\n",pdu->num_identities);
-
+    fprintf(stdout, "Joined server with participants:\n");
     for(int i=0; i<pdu->num_identities; i++){
-        fprintf(stderr, "%s\n" , (char *) pdu->participant_names);
+        fprintf(stdout, "%s\n" , (char *) pdu->participant_names);
     }
 }
 

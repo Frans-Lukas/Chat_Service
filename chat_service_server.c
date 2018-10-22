@@ -70,12 +70,8 @@ void server_message_forwarding(client_list *clint_list) {
 }
 
 void op_mess_response(int num_clients, int *connected_sockets, PDU* response) {
-    if(create_checksum((pdu_mess *) response) == 255){
-        if(socket_write_pdu_to(response, connected_sockets, num_clients) == -1){
-            perror("Failed to write to MESS sockets\n");
-        }
-    } else{
-        perror("Invalid checksum. Will not forward message.\n");
+    if(socket_write_pdu_to(response, connected_sockets, num_clients) == -1){
+        perror("Failed to write to MESS sockets\n");
     }
 }
 
