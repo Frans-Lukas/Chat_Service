@@ -50,14 +50,14 @@ void server_run_server(int port, char* server_name, char* name_server_adress, in
 
     test_build_participant_words();
     test_client_list_participant_string();
-//
-//    start_accepter_thread(client_list, server_socket);
-//    start_heartbeat_thread(port, client_list, server_name ,name_server_adress, name_server_port);
-//    start_disconnecter_thread(client_list);
-//
-//    while(1){
-//        server_message_forwarding(client_list);
-//    }
+
+    start_accepter_thread(client_list, server_socket);
+    start_heartbeat_thread(port, client_list, server_name ,name_server_adress, name_server_port);
+    start_disconnecter_thread(client_list);
+
+    while(1){
+        server_message_forwarding(client_list);
+    }
 }
 
 

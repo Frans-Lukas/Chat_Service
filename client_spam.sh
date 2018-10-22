@@ -6,9 +6,9 @@ numClients=$3
 
 cmake .
 make Client
-END=20
+END=255
 for ((i=1;i<=END;i++)); do
     ./Client Bot$i cs return.cs.umu.se 6969  > /dev/null 2>&1 &
 done
-sleep 5
+sleep 50
 pkill Client -9
