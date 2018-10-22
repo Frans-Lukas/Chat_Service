@@ -41,7 +41,6 @@ s_list *pdu_s_list_deserialize(int fd) {
     pdu->pdu.op = OP_SLIST;
     read_from_fd(fd, &pdu->pad, 1);
     read_from_fd(fd, &pdu->number_of_servers, 2);
-    pdu->number_of_servers = ntohs(pdu->number_of_servers);
 
     pdu->adress = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
     pdu->port = safe_calloc(pdu->number_of_servers, sizeof(uint16_t));
@@ -59,6 +58,7 @@ s_list *pdu_s_list_deserialize(int fd) {
         pdu->server_name[i] = safe_calloc(pdu->server_name_length[i], sizeof(uint8_t));
         read_from_fd(fd, pdu->server_name[i], get_num_words(pdu->server_name_length[i], 4)*4);
     }
+    pdu->number_of_servers = ntohs(pdu->number_of_servers);
     return pdu;
 }
 
