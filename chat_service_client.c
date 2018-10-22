@@ -217,6 +217,7 @@ server_info *let_user_choose_server(s_list *pList) {
     for (int i = 0; i < pList->number_of_servers; ++i) {
         fprintf(stderr, "%d. %s\n", i, (char*)pList->server_name[i]);
     }
+
     int choice;
     scanf("%d", &choice);
     fprintf(stderr, "Trying to connect to server %s\n.", (char*)pList->server_name[choice]);
