@@ -7,9 +7,24 @@
 #include "chat_service_server.h"
 #include "chat_service_client.h"
 
-int main(){
 
 
-    server_run_server(1380);
+/**
+ * Chattservern tar 4 argument i följande ordning:
+ * port
+ * chattservernamn
+ * namnserver-host
+ * namnserver-port
+ */
+
+
+// ./Server 6969 Connect_and_get_rekt itchy.cs.umu.se 1337
+int main(int argc, char *argv[]){
+
+    if(argc != 5){
+        perror_exit("Wrong number of parameters");
+    }
+
+    server_run_server(atoi(argv[1]), argv[2], argv[3], atoi(argv[4]));
     return 0;
 }

@@ -10,12 +10,12 @@
 #include "server-nameserver/pdu_handler_server-nameserver.h"
 #include "socket_handler/socket_interface.h"
 
-void server_run_server(int port){
+void server_run_server(int port, char* server_name, char* name_server_adress, int name_server_port){
     client_list* client_list = client_list_create();
     int server_socket = socket_tcp_server_create(port);
 
     start_accepter_thread(client_list, server_socket);
-    start_heartbeat_thread(port, client_list);
+    start_heartbeat_thread(port, client_list, server_name ,name_server_adress, name_server_port);
 
     while(1){
         server_message_forwarding(client_list);
@@ -111,7 +111,7 @@ static void start_accepter_thread(client_list *client_list, int server_socket) {
     pthread_create(&client_accepter_thread, NULL, &server_keep_accepting_clients, acc_args);
 }
 
-static void start_heartbeat_thread(int port, client_list *client_list) {
+static void start_heartbeat_thread(int port, client_list *client_list, char * server_name ,char * name_server, int name_server_port) {
     server_heart_beat_arguments* hb_args = safe_calloc(1, sizeof(server_heart_beat_arguments));
 
     pthread_t heart_beat_thread;
@@ -119,8 +119,9 @@ static void start_heartbeat_thread(int port, client_list *client_list) {
     hb_args->own_address = calloc(1, 255);
     network_getFQDN(hb_args->own_address, 255);
     hb_args->own_port = port;
-    hb_args->name_server_address = "itchy.cs.umu.se";
-    hb_args->name_server_port = 1337;
+    hb_args->name_server_address = name_server;
+    hb_args->name_server_port = name_server_port;
+    hb_args->own_server_name = server_name;
 
 
     pthread_create(&heart_beat_thread, NULL, &server_start_heart_beat, hb_args);
@@ -152,7 +153,7 @@ static void *server_start_heart_beat(void *args){
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
     while(true) {
-        reg* reg = pdu_create_reg((int) strlen(heartbeat_args->own_address), heartbeat_args->own_port, heartbeat_args->own_address);
+        reg* reg = pdu_create_reg((int) strlen(heartbeat_args->own_server_name), heartbeat_args->own_port, heartbeat_args->own_server_name);
         socket_write_pdu_to((PDU *) reg, &name_server_socket, 1);
         ack *pdu_ack = NULL;
 
