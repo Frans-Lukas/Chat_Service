@@ -85,4 +85,17 @@ get_list *pdu_get_list_deserialize(int fd) {
     return pdu;
 }
 
+int s_list_free(s_list* list) {
+    free(list->port);
+    free(list->adress);
+    for (int i = 0; i < list->number_of_servers; ++i) {
+        free(list->server_name[i]);
+    }
+    free(list->server_name);
+    free(list->server_name_length);
+    free(list->number_of_clients);
+    free(list);
+    return 0;
+}
+
 

@@ -27,6 +27,8 @@ get_list* pdu_create_get_list();
 
 s_list *pdu_s_list_deserialize(int fd);
 
+int s_list_free(s_list* list);
+
 int pdu_s_list_serialize(PDU *p, char **data_to_send);
 
 get_list *pdu_get_list_deserialize(int fd);

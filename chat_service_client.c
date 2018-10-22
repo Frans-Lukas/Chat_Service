@@ -24,6 +24,9 @@
  */
 
 
+
+void client_free(const client_info *client);
+
 // ./client kubalito ns nameserver.cs.umu.se 1337
 void init_client(char* username, char *server_option, char* server_adress, int server_port){
     int server_socket;
@@ -34,15 +37,14 @@ void init_client(char* username, char *server_option, char* server_adress, int s
         s_list *server_list = get_server_list_form_names_server(name_server, port);
         server_info* server_to_connect_to = let_user_choose_server(server_list);
         server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
-
+        s_list_free(server_list);
+        server_info_free(server_to_connect_to);
     } else {
         char *ip = calloc(256, sizeof(char));
         network_hostname_to_ip(server_adress, ip);
         server_socket = socket_tcp_client_create(server_port, ip);
         free(ip);
     }
-
-
 
 
     if(server_socket == -1){
@@ -65,6 +67,18 @@ void init_client(char* username, char *server_option, char* server_adress, int s
     write_to_client_stdout(&server_socket);
 
     pthread_join(reader_thread, NULL);
+    client_free(client);
+}
+
+void client_free(const client_info *client) {
+    free(client->identity);
+    free(client);
+}
+
+void server_info_free(const server_info *server_to_connect_to) {
+    free(server_to_connect_to->server_name);
+    free(server_to_connect_to->address);
+    free(server_to_connect_to);
 }
 
 

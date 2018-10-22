@@ -34,6 +34,7 @@ void print_message(pdu_mess *pdu);
 server_info *let_user_choose_server(s_list *pList);
 void send_join_to_server(client_info *client);
 void print_user_message(pdu_mess* pdu);
+void server_info_free(const server_info *server_to_connect_to);
 
 void* write_to_client_stdout(void* data);
 
