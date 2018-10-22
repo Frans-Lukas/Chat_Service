@@ -18,9 +18,7 @@ client_list *client_list_create() {
 }
 
 int client_list_get_num_connected_clients(client_list* cl){
-    print_lock(cl);
     int size = cl->num_connected_clients;
-    print_unlock(cl);
     return size;
 }
 
@@ -34,6 +32,7 @@ void print_unlock(client_list* cl){
 
 int client_list_add_client(client c, client_list *cl) {
     print_lock(cl);
+
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == 0) {
             cl->clients[i] = c;
@@ -65,6 +64,7 @@ int client_list_remove_client(client c, client_list *cl) {
 
 client client_list_get_client_from_index(int index, client_list *cl) {
     print_lock(cl);
+    fprintf(stderr, "locking mutex\n");
     if (index >= CLIENT_LIST_MAX_SIZE) {
         pthread_mutex_unlock(&cl->mutex);
         perror_exit("Index out of bounds on client list");
