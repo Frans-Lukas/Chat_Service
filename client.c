@@ -13,12 +13,18 @@
 //  namnserver-host eller chattserver-host
 //  namnsserver-port eller chattserver-port
 
-// ./client kubalito ns nameserver.cs.umu.se 1337
+// ./Client Kuba ns itchy.cs.umu.se 1337
 int main(int argc, char *argv[]) {
 
     if(argc != 5){
-        fprintf(stderr, "Wrong amount of parameters");
+        perror_exit("Wrong amount of parameters");
     }
+
+    if(strcmp(argv[2] , "ns")  != 0 && strcmp(argv[2], "cs") != 0){
+        perror_exit("Should be ns or cs");
+    }
+
+
     init_client(argv[1], argv[2], argv[3], atoi(argv[4]));
     return 0;
 }

@@ -26,16 +26,21 @@
 
 // ./client kubalito ns nameserver.cs.umu.se 1337
 void init_client(char* username, char *server_option, char* server_adress, int server_port){
-    char *name_server = "itchy.cs.umu.se";
-    char* user_name = "kuba";
-    int port = 1337;
-    s_list *server_list = get_server_list_form_names_server(name_server, port);
-    if(server_list == NULL){
-        perror_exit("Could not reach nameserver!\n");
+    int server_socket;
+
+    if(strcmp(server_option , "ns") == 0){
+        char *name_server =  "itchy.cs.umu.se";
+        int port = 1337;
+        s_list *server_list = get_server_list_form_names_server(name_server, port);
+        server_info* server_to_connect_to = let_user_choose_server(server_list);
+        server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
+
+    } else {
+        char *ip = calloc(256, sizeof(char));
+        network_hostname_to_ip(server_adress, ip);
+        server_socket = socket_tcp_client_create(server_port, ip);
     }
-    server_info* server_to_connect_to = let_user_choose_server(server_list);
-    //fprintf(stderr, "port: %d\n", server_to_connect_to->port);
-    int server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
+
 
 
 
@@ -48,7 +53,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
     client_info *client = calloc(1, sizeof(client_info));
 
     client->server_socket = server_socket;
-    client->identity = user_name;
+    client->identity = username;
 
     send_join_to_server(client);
 
