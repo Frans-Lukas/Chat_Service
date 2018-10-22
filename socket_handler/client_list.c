@@ -17,6 +17,13 @@ client_list *client_list_create() {
     return cl;
 }
 
+int client_list_get_num_connected_clients(client_list* cl){
+    print_lock(cl);
+    int size = cl->num_connected_clients;
+    print_unlock(cl);
+    return size;
+}
+
 void print_lock(client_list* cl){
     pthread_mutex_lock(&cl->mutex);
 }
@@ -80,11 +87,12 @@ client client_list_get_client_from_socket_id(int socket_id, client_list *cl) {
     return empty_client;
 }
 
-int client_list_set_identity_to_socket(int socket, char *identity, client_list *cl) {
+int client_list_set_identity_to_socket(int socket, char *identity, client_list *cl, int identity_length) {
     print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == socket) {
-            cl->clients[i].identity = identity;
+            cl->clients[i].identity = safe_calloc(sizeof(char), (size_t) identity_length + 1);
+            pdu_cpy_chars(cl->clients[i].identity, identity, 0, (size_t) identity_length);
             pthread_mutex_unlock(&cl->mutex);
             return 0;
         }

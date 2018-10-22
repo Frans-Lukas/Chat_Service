@@ -25,18 +25,18 @@ void server_run_server(int port, char* server_name, char* name_server_adress, in
 }
 
 void server_message_forwarding(client_list *clint_list) {
-    int num_clients = clint_list->num_connected_clients;
+    int num_clients = client_list_get_num_connected_clients(clint_list);
     int connected_sockets[num_clients];
     int index = 0;
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        client cl = clint_list->clients[i];
+        client cl = client_list_get_client_from_index(i, clint_list);
         if(cl.socket != 0){
             connected_sockets[index] = cl.socket;
             index++;
         }
     }
 
-    PDU** responses = socket_read_pdu_from(connected_sockets, clint_list->num_connected_clients);
+    PDU** responses = socket_read_pdu_from(connected_sockets, client_list_get_num_connected_clients(clint_list));
 
     for (int i = 0; i < num_clients; ++i) {
         if(responses[i] != NULL && responses[i]->op != 0){
@@ -63,18 +63,13 @@ void server_message_forwarding(client_list *clint_list) {
                 default:
                     break;
             }
-            responses[i] = NULL;
         }
     }
 }
 
 void op_mess_response(int num_clients, int *connected_sockets, PDU* response) {
-    if(create_checksum((pdu_mess *) response) == 255){
-        if(socket_write_pdu_to(response, connected_sockets, num_clients) == -1){
-            perror("Failed to write to MESS sockets\n");
-        }
-    } else{
-        perror("Invalid checksum. Will not forward message.\n");
+    if(socket_write_pdu_to(response, connected_sockets, num_clients) == -1){
+        perror("Failed to write to MESS sockets\n");
     }
 }
 
@@ -87,7 +82,7 @@ void op_quit_response(client_list *cl, int num_clients, int* connected_socket, p
 }
 
 void op_join_response(client_list *cl, int num_clients, int* connected_sockets, pdu_join* pdu, int index) {
-    client_list_set_identity_to_socket(connected_sockets[index], (char *) pdu->identity, cl);
+    client_list_set_identity_to_socket(connected_sockets[index], (char *) pdu->identity, pdu->identity_length, cl);
     send_participants_list_to_socket(cl, connected_sockets[index]);
     send_pjoin_to_sockets(cl, num_clients, connected_sockets, index);
     free(pdu);
@@ -95,7 +90,13 @@ void op_join_response(client_list *cl, int num_clients, int* connected_sockets, 
 
 void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sockets, int index) {
     client clie = client_list_get_client_from_socket_id(connected_sockets[index], cl);
-    pdu_pjoin* pjoin = pdu_pjoin_create(clie.identity);
+    pdu_pjoin* pjoin;
+    if(clie.identity != NULL){
+        pjoin = pdu_pjoin_create(clie.identity);
+    } else{
+        perror("Unkwon identity tried sending Pjoin.");
+        pjoin = pdu_pjoin_create("Unkown identity");
+    }
     fprintf(stderr, "Client %s joined the server.\n", clie.identity);
     socket_write_pdu_to((PDU *) pjoin, connected_sockets, num_clients);
     free(pjoin);
@@ -145,7 +146,7 @@ static void* server_keep_accepting_clients(void* args){
     client_list* cl = data->cl;
     int server_socket = data->server_socket;
     while(1){
-        while(cl->num_connected_clients < CLIENT_LIST_MAX_SIZE){
+        while(client_list_get_num_connected_clients(cl) < CLIENT_LIST_MAX_SIZE){
             client clnt;
             clnt.socket = socket_tcp_get_connecting_socket_by_accepting(server_socket);
             clnt.identity = NULL;
@@ -166,13 +167,13 @@ static void* server_check_for_disconnected_sockets(void* args){
 }
 
 static void check_for_disconnected_sockets(client_list* cl){
-    client connected_clients[cl->num_connected_clients];
-    int sockets[cl->num_connected_clients];
+    client connected_clients[client_list_get_num_connected_clients(cl)];
+    int sockets[client_list_get_num_connected_clients(cl)];
     int number_of_sockets = 0;
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        if(cl->clients[i].socket != 0){
-            connected_clients[number_of_sockets] = cl->clients[i];
-            sockets[number_of_sockets] = cl->clients[i].socket;
+        if(client_list_get_client_from_index(i, cl).socket != 0){
+            connected_clients[number_of_sockets] = client_list_get_client_from_index(i, cl);
+            sockets[number_of_sockets] = client_list_get_client_from_index(i, cl).socket;
             number_of_sockets++;
         }
     }
@@ -189,9 +190,13 @@ static void check_for_disconnected_sockets(client_list* cl){
     }
     for (int j = 0; j < number_of_sockets; ++j) {
         if (fd[j].revents & POLLRDHUP) {
-            pdu_pleave* pleave = pdu_pleave_create(connected_clients[j].identity);
-            socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets);
+            if(connected_clients[j].identity != NULL){
+                pdu_pleave* pleave = pdu_pleave_create(connected_clients[j].identity);
+                socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets);
+            }
+            int socket_to_close = connected_clients[j].socket;
             client_list_remove_client(connected_clients[j], cl);
+            close(socket_to_close);
             fprintf(stderr, "Disconnected client %s.\n", connected_clients[j].identity);
         }
     }
@@ -223,7 +228,7 @@ static void *server_start_heart_beat(void *args){
         fprintf(stderr, "Server is registered at name server.\n");
         not_reg *not_reg = NULL;
         while (not_reg == NULL) {
-            alive *alive = pdu_create_alive(heartbeat_args->cl->num_connected_clients, id);
+            alive *alive = pdu_create_alive(client_list_get_num_connected_clients(heartbeat_args->cl), id);
             socket_write_pdu_to((PDU *) alive, &name_server_socket, 1);
             not_reg = socket_read_not_reg_from_udp(name_server_socket);
             sleep(2);

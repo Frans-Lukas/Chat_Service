@@ -17,7 +17,7 @@ typedef struct PDU {
 } PDU;
 
 
-uint32_t *build_words(char *input_string, int bytes);
+uint32_t *build_words(char *input_string, int bytes, int string_len);
 
 int get_num_words(int string_len, int bytes);
 
