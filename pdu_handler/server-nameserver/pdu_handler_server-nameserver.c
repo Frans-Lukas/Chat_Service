@@ -8,7 +8,7 @@ reg *pdu_create_reg(int server_name_length, int tcp_port, char *server_name) {
     pdu->pdu.op = OP_REG;
     pdu->server_name_length = (uint8_t) server_name_length;
     pdu->tcp_port = (uint16_t) tcp_port;
-    pdu->server_name = build_words(server_name, 4);
+    pdu->server_name = build_words(server_name, 4, pdu->server_name_length);
     return pdu;
 }
 
@@ -110,7 +110,10 @@ int pdu_reg_serialize(PDU *p, char **data) {
     *port = htons(*port);
     //port = htons(port);
     pdu_cpy_chars((*data) + 2, port, 0, 2);
-    pdu_cpy_chars((*data) + 4, build_words((char *) pdu->server_name, 4), 0, pdu->server_name_length);
+    free(port);
+    uint32_t * temp = build_words((char *) pdu->server_name, 4, pdu->server_name_length);
+    pdu_cpy_chars((*data) + 4, temp, 0, pdu->server_name_length);
+    free(temp);
     return size;
 }
 

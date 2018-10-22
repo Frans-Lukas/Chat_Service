@@ -32,7 +32,7 @@ pdu_join *pdu_join_create(char *identity) {
         perror_exit("identity length is too long. Needs to be less than 255 characters");
     }
     pdu->identity_length = (uint8_t) strlen(identity);
-    pdu->identity = build_words(identity, 4);
+    pdu->identity = build_words(identity, 4, pdu->identity_length);
 }
 
 int pdu_join_serialize(PDU *join_pdu, char **data_to_send) {
@@ -51,9 +51,8 @@ pdu_join *pdu_join_deserialize(int fd) {
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
     read_from_fd(fd, &pdu_to_return->padding, 2);
     uint8_t length = pdu_to_return->identity_length;
-    char *identity = safe_calloc(1, pdu_to_return->identity_length);
-    read_from_fd(fd, identity, pdu_to_return->identity_length);
-    pdu_to_return->identity = string_to_words(identity, length);
+    pdu_to_return->identity = safe_calloc(sizeof(uint32_t), (size_t) get_num_words(length, 4));
+    read_from_fd(fd, pdu_to_return->identity, length);
     return pdu_to_return;
 }
 
@@ -99,8 +98,8 @@ pdu_mess *pdu_mess_create(char *identity, char *message) {
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->message_length = (uint16_t) strlen(message);
     pdu->timestamp = (uint32_t) time(NULL);
-    pdu->message = build_words(message, 4);
-    pdu->client_identity = build_words(identity, 4);
+    pdu->message = build_words(message, 4, pdu->message_length);
+    pdu->client_identity = build_words(identity, 4, pdu->identity_length);
     pdu->checksum = create_checksum(pdu);
     fprintf(stderr, "");
 }
@@ -184,7 +183,7 @@ pdu_pleave *pdu_pleave_create(char *identity) {
     pdu->op = OP_PLEAVE;
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->timestamp = (uint32_t) time(NULL);
-    pdu->client_identity = build_words(identity, 4);
+    pdu->client_identity = build_words(identity, 4, pdu->identity_length);
 }
 
 
@@ -217,7 +216,7 @@ pdu_pjoin *pdu_pjoin_create(char *identity) {
     pdu->op = OP_PJOIN;
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->timestamp = (uint32_t) time(NULL);
-    pdu->client_identity = build_words(identity, 4);
+    pdu->client_identity = build_words(identity, 4, pdu->identity_length);
 }
 
 pdu_pjoin *pdu_pjoin_deserialize(int fd) {
@@ -258,7 +257,7 @@ uint32_t *build_participant_words(char *participants, int num_participants) {
         size += strlen(currpos);
         currpos += size + 1;
     }
-    uint32_t *words = safe_calloc(sizeof(uint32_t), (size_t) get_num_words((int) size, 4));
+    uint32_t *words = safe_calloc(sizeof(uint32_t), (size_t) get_num_words((int) size, 4) * 4);
     size_t pos = 0;
     for (int i = 0; i < num_participants; ++i) {
         memcpy(((char *) words) + pos, participants + pos, strlen(participants + pos) + 1);

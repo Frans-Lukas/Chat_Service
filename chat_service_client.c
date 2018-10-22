@@ -25,7 +25,6 @@
 
 
 
-void client_free(const client_info *client);
 
 // ./client kubalito ns nameserver.cs.umu.se 1337
 void init_client(char* username, char *server_option, char* server_adress, int server_port){
@@ -53,9 +52,9 @@ void init_client(char* username, char *server_option, char* server_adress, int s
 
     fprintf(stdout, "Connected to server\n");
 
-    client_info *client = calloc(1, sizeof(client_info));
+    client *client = calloc(1, sizeof(client));
 
-    client->server_socket = server_socket;
+    client->socket = server_socket;
     client->identity = username;
 
     send_join_to_server(client);
@@ -70,12 +69,12 @@ void init_client(char* username, char *server_option, char* server_adress, int s
     client_free(client);
 }
 
-void client_free(const client_info *client) {
+void client_free(client *client) {
     free(client->identity);
     free(client);
 }
 
-void server_info_free(const server_info *server_to_connect_to) {
+void server_info_free(server_info *server_to_connect_to) {
     free(server_to_connect_to->server_name);
     free(server_to_connect_to->address);
     free(server_to_connect_to);
@@ -83,7 +82,7 @@ void server_info_free(const server_info *server_to_connect_to) {
 
 
 void* read_from_client_stdin(void* data){
-    client_info *client = (client_info *) data;
+    client *client = data;
     while(1) {
         //char *text = calloc(1,1);
         char buffer[255];
@@ -99,7 +98,7 @@ void* read_from_client_stdin(void* data){
             //strcat( text, buffer ); /* note a '\n' is appended here everytime */
             //printf("%s\n", buffer);
             pdu_mess *mess = pdu_mess_create(client->identity, buffer);
-            if (socket_write_pdu_to((PDU *) mess, &client->server_socket, 1) == -1) {
+            if (socket_write_pdu_to((PDU *) mess, &client->socket, 1) == -1) {
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
                 return NULL;
             }
@@ -124,7 +123,6 @@ void* write_to_client_stdout(void* data){
             case OP_QUIT:
                 handle_quit((pdu_quit *) response[0]);
                 return NULL;
-                break;
             case OP_PJOIN:
                 handle_pjoin((pdu_pjoin *) response[0]);
                 break;
@@ -137,6 +135,7 @@ void* write_to_client_stdout(void* data){
             default:
                 break;
         }
+        usleep(200);
     }
 }
 
@@ -155,9 +154,9 @@ void chat_session(){
 }
 
 
-void send_join_to_server(client_info *client){
+void send_join_to_server(client *client){
     pdu_join* pdu = pdu_join_create(client->identity);
-    while(-1 == socket_write_pdu_to((PDU*)pdu, &client->server_socket, 1));
+    while(-1 == socket_write_pdu_to((PDU*)pdu, &client->socket, 1));
 }
 
 

@@ -12,6 +12,7 @@ int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
         if (0 > socket_single_write_to(socket[i], data, pdu_size)) {
             return -1;
         }
+        free(data);
     }
     return 0;
 }
@@ -30,13 +31,13 @@ PDU **socket_read_pdu_from(int *sockets, int number_of_sockets) {
         fprintf(stderr, "poll() error");
         return NULL;
     }
-    PDU **data = safe_calloc((size_t) number_of_sockets, sizeof(PDU));
+    PDU **data = safe_calloc((size_t) number_of_sockets, sizeof(PDU*));
     for (int j = 0; j < number_of_sockets; ++j) {
         if (fd[j].revents & POLLRDHUP) {
             fprintf(stderr, "Tried writing to disconnected socket.\n");
         } else if (fd[j].revents & POLLIN) {
             data[j] = pdu_deserialize_next(sockets[j]);
-        } else {
+        } else{
             data[j] = NULL;
         }
     }

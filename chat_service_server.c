@@ -63,7 +63,6 @@ void server_message_forwarding(client_list *clint_list) {
                 default:
                     break;
             }
-            responses[i] = NULL;
         }
     }
 }
@@ -83,7 +82,7 @@ void op_quit_response(client_list *cl, int num_clients, int* connected_socket, p
 }
 
 void op_join_response(client_list *cl, int num_clients, int* connected_sockets, pdu_join* pdu, int index) {
-    client_list_set_identity_to_socket(connected_sockets[index], (char *) pdu->identity, cl);
+    client_list_set_identity_to_socket(connected_sockets[index], (char *) pdu->identity, pdu->identity_length, cl);
     send_participants_list_to_socket(cl, connected_sockets[index]);
     send_pjoin_to_sockets(cl, num_clients, connected_sockets, index);
     free(pdu);
@@ -91,7 +90,13 @@ void op_join_response(client_list *cl, int num_clients, int* connected_sockets, 
 
 void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sockets, int index) {
     client clie = client_list_get_client_from_socket_id(connected_sockets[index], cl);
-    pdu_pjoin* pjoin = pdu_pjoin_create(clie.identity);
+    pdu_pjoin* pjoin;
+    if(clie.identity != NULL){
+        pjoin = pdu_pjoin_create(clie.identity);
+    } else{
+        perror("Unkwon identity tried sending Pjoin.");
+        pjoin = pdu_pjoin_create("Unkown identity");
+    }
     fprintf(stderr, "Client %s joined the server.\n", clie.identity);
     socket_write_pdu_to((PDU *) pjoin, connected_sockets, num_clients);
     free(pjoin);
@@ -189,7 +194,9 @@ static void check_for_disconnected_sockets(client_list* cl){
                 pdu_pleave* pleave = pdu_pleave_create(connected_clients[j].identity);
                 socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets);
             }
+            int socket_to_close = connected_clients[j].socket;
             client_list_remove_client(connected_clients[j], cl);
+            close(socket_to_close);
             fprintf(stderr, "Disconnected client %s.\n", connected_clients[j].identity);
         }
     }
