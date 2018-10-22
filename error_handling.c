@@ -1,3 +1,5 @@
+#include <fcntl.h>
+#include <errno.h>
 #include "error_handling.h"
 
 
@@ -12,4 +14,8 @@ void* safe_calloc(size_t num_size, size_t size){
         perror_exit("Could not allocate memory.");
     }
     return ptr;
+}
+
+int fd_is_valid(int fd) {
+    return fcntl(fd, F_GETFD) != -1 || errno != EBADF;
 }

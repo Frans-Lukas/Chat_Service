@@ -38,30 +38,32 @@ void server_message_forwarding(client_list *clint_list) {
 
     PDU** responses = socket_read_pdu_from(connected_sockets, client_list_get_num_connected_clients(clint_list));
 
-    for (int i = 0; i < num_clients; ++i) {
-        if(responses[i] != NULL && responses[i]->op != 0){
-            fprintf(stderr, "opcode: %d\n", responses[i]->op);
-            switch (responses[i]->op){
-                case OP_MESS: {
-                    //broadcast message to clients
-                    fprintf(stderr, "Recieved MESS\n");
-                    op_mess_response(num_clients, connected_sockets, responses[i]);
-                    break;
+    if(responses != NULL){
+        for (int i = 0; i < num_clients; ++i) {
+            if(responses[i] != NULL && responses[i]->op != 0){
+                fprintf(stderr, "opcode: %d\n", responses[i]->op);
+                switch (responses[i]->op){
+                    case OP_MESS: {
+                        //broadcast message to clients
+                        fprintf(stderr, "Recieved MESS\n");
+                        op_mess_response(num_clients, connected_sockets, responses[i]);
+                        break;
+                    }
+                    case OP_QUIT: {
+                        fprintf(stderr, "Recieved QUIT\n");
+                        //notify everyone what client left
+                        op_quit_response(clint_list, num_clients, connected_sockets, (pdu_quit *) responses[i], i);
+                        break;
+                    }
+                    case OP_JOIN: {
+                        fprintf(stderr, "Recieved JOIN\n");
+                        //notify everyone what client joined and send participants to newly connected client
+                        op_join_response(clint_list, num_clients, connected_sockets, (pdu_join* )responses[i], i);
+                        break;
+                    }
+                    default:
+                        break;
                 }
-                case OP_QUIT: {
-                    fprintf(stderr, "Recieved QUIT\n");
-                    //notify everyone what client left
-                    op_quit_response(clint_list, num_clients, connected_sockets, (pdu_quit *) responses[i], i);
-                    break;
-                }
-                case OP_JOIN: {
-                    fprintf(stderr, "Recieved JOIN\n");
-                    //notify everyone what client joined and send participants to newly connected client
-                    op_join_response(clint_list, num_clients, connected_sockets, (pdu_join* )responses[i], i);
-                    break;
-                }
-                default:
-                    break;
             }
         }
     }
