@@ -37,6 +37,7 @@ void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sock
 static void* server_check_for_disconnected_sockets(void* args);
 static void check_for_disconnected_sockets(client_list* cl);
 static void start_disconnecter_thread(client_list *client_list);
+void free_response(PDU *responses);
 
 
 #endif //CHAT_SERVICE_CHAT_SERVICE_SERVER_H

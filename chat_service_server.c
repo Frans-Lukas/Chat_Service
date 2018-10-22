@@ -2,6 +2,8 @@
 // Created by c16fld on 2018-10-17.
 //
 #define _GNU_SOURCE
+
+
 #include <socket_handler/socket_helper.h>
 #include <pthread.h>
 #include <pdu_handler/pdu_helper.h>
@@ -78,32 +80,64 @@ void server_message_forwarding(client_list *clint_list) {
 
     if(responses != NULL){
         for (int i = 0; i < num_clients; ++i) {
-            if(responses[i] != NULL && responses[i]->op != 0){
-                fprintf(stderr, "opcode: %d\n", responses[i]->op);
-                switch (responses[i]->op){
-                    case OP_MESS: {
-                        //broadcast message to clients
-                        fprintf(stderr, "Recieved MESS\n");
-                        op_mess_response(num_clients, connected_sockets, responses[i]);
-                        break;
+            if(responses[i] != NULL){
+                if(responses[i]->op != 0){
+                    switch (responses[i]->op){
+                        case OP_MESS: {
+                            //broadcast message to clients
+                            fprintf(stderr, "Recieved MESS\n");
+                            op_mess_response(num_clients, connected_sockets, responses[i]);
+                            break;
+                        }
+                        case OP_QUIT: {
+                            fprintf(stderr, "Recieved QUIT\n");
+                            //notify everyone what client left
+                            op_quit_response(clint_list, num_clients, connected_sockets, (pdu_quit *) responses[i], i);
+                            break;
+                        }
+                        case OP_JOIN: {
+                            fprintf(stderr, "Recieved JOIN\n");
+                            //notify everyone what client joined and send participants to newly connected client
+                            op_join_response(clint_list, num_clients, connected_sockets, (pdu_join* )responses[i], i);
+                            break;
+                        }
+                        default:
+                            break;
                     }
-                    case OP_QUIT: {
-                        fprintf(stderr, "Recieved QUIT\n");
-                        //notify everyone what client left
-                        op_quit_response(clint_list, num_clients, connected_sockets, (pdu_quit *) responses[i], i);
-                        break;
-                    }
-                    case OP_JOIN: {
-                        fprintf(stderr, "Recieved JOIN\n");
-                        //notify everyone what client joined and send participants to newly connected client
-                        op_join_response(clint_list, num_clients, connected_sockets, (pdu_join* )responses[i], i);
-                        break;
-                    }
-                    default:
-                        break;
+                    free_response(responses[i]);
+                } else{
+                    free(responses[i]);
                 }
             }
         }
+    }
+    free(responses);
+}
+
+void free_response(PDU *responses) {
+    switch (responses->op){
+        case OP_MESS: {
+            //broadcast message to clients
+            pdu_mess* pdu = (pdu_mess *) responses;
+            free(pdu->client_identity);
+            free(pdu->message);
+            free(pdu);
+            break;
+        }
+        case OP_QUIT: {
+            //notify everyone what client left
+            pdu_quit* pdu = (pdu_quit *) responses;
+            free(pdu);
+            break;
+        }
+        case OP_JOIN: {
+            pdu_join* pdu = (pdu_join*) responses;
+            free(pdu);
+            //notify everyone what client joined and send participants to newly connected client
+            break;
+        }
+        default:
+            break;
     }
 }
 
@@ -118,14 +152,12 @@ void op_quit_response(client_list *cl, int num_clients, int* connected_socket, p
     pdu_pleave* pleave = pdu_pleave_create(clie.identity);
     socket_write_pdu_to((PDU *) pleave, connected_socket, num_clients);
     free(pleave);
-    free(pdu);
 }
 
 void op_join_response(client_list *cl, int num_clients, int* connected_sockets, pdu_join* pdu, int index) {
     client_list_set_identity_to_socket(connected_sockets[index], (char *) pdu->identity, cl ,pdu->identity_length);
     send_participants_list_to_socket(cl, connected_sockets[index]);
     send_pjoin_to_sockets(cl, num_clients, connected_sockets, index);
-    free(pdu);
 }
 
 void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sockets, int index) {
@@ -144,9 +176,12 @@ void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sock
 
 void send_participants_list_to_socket(client_list *cl, int socket) {
     char* participants_string;
-    int num_partici = client_list_create_participants_string(cl, &participants_string);
-    pdu_participants* participants = pdu_participants_create(participants_string, num_partici);
+    int* length = calloc(1, sizeof(int));
+    int num_partici = client_list_create_participants_string(cl, &participants_string, length);
+    pdu_participants* participants = pdu_participants_create(participants_string, num_partici, *length);
     socket_write_pdu_to((PDU *) participants, &socket, 1);
+    free(participants->participant_names);
+    free(participants);
     free(participants_string);
 }
 
@@ -236,7 +271,7 @@ static void check_for_disconnected_sockets(client_list* cl){
             }
             int socket_to_close = connected_clients[j].socket;
             client_list_remove_client(connected_clients[j], cl);
-            close(socket_to_close);
+            //close(socket_to_close);
             fprintf(stderr, "Disconnected client %s.\n", connected_clients[j].identity);
         }
     }

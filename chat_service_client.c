@@ -136,7 +136,6 @@ void* write_to_client_stdout(void* data){
             default:
                 break;
         }
-        usleep(200);
     }
 }
 

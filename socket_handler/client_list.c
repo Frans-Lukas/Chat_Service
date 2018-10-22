@@ -117,7 +117,7 @@ client client_list_get_client_from_identity(char *identity, client_list *cl) {
     return empty_client;
 }
 
-int client_list_create_participants_string(client_list *cl, char **participants_string) {
+int client_list_create_participants_string(client_list *cl, char **participants_string, int* size) {
     int num_identified_sockets = 0;
 
     print_lock(cl);
@@ -135,7 +135,7 @@ int client_list_create_participants_string(client_list *cl, char **participants_
         }
     }
 
-    *participants_string = array_to_string(client_array, num_identified_sockets);
+    *participants_string = array_to_string(client_array, num_identified_sockets, size);
 
     pthread_mutex_unlock(&cl->mutex);
     return num_identified_sockets;

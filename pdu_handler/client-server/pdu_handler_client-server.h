@@ -98,9 +98,9 @@ pdu_pjoin *pdu_pjoin_deserialize(int fd);
 
 int pdu_pjoin_serialize(PDU *pjoin_data, char **data_to_send);
 
-pdu_participants *pdu_participants_create(char *participants, int num_participants);
+pdu_participants *pdu_participants_create(char *participants, int num_participants, int string_length);
 
-uint32_t *build_participant_words(char *participants, int num_participants);
+uint32_t *build_participant_words(char *participants, int num_participants, int size);
 
 size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants);
 

@@ -63,11 +63,11 @@ pdu_join *pdu_join_deserialize(int fd) {
  * example string participants = "Anna\0Petter\0Lisa" num_participants = 3
  * @return
  */
-pdu_participants *pdu_participants_create(char *participants, int num_participants) {
+pdu_participants *pdu_participants_create(char *participants, int num_participants, int string_length) {
     pdu_participants *pdu = safe_calloc(1, sizeof(pdu_participants));
     pdu->pdu.op = OP_PARTICIPANTS;
     pdu->num_identities = (uint8_t) num_participants;
-    pdu->participant_names = build_participant_words(participants, num_participants);
+    pdu->participant_names = build_participant_words(participants, num_participants, string_length);
     pdu->length = (uint16_t) get_size_of_participants(pdu->participant_names, pdu->num_identities);
 }
 
@@ -80,16 +80,8 @@ size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants
     return size;
 }
 
-uint32_t *build_participant_words(char *participants, int num_participants) {
-    size_t size = 0;
-    char *currpos = participants;
-    for (int i = 0; i < num_participants; ++i) {
-        if(currpos != NULL){
-            size += strlen(currpos) + 1;
-            currpos += size;
-        }
-    }
-    uint32_t *words = safe_calloc(sizeof(uint32_t), (size_t) get_num_words((int) size, 4));
+uint32_t *build_participant_words(char *participants, int num_participants, int size) {
+    uint32_t *words = safe_calloc(sizeof(uint32_t), (size_t) get_num_words(size, 4));
     size_t pos = 0;
     for (int i = 0; i < num_participants; ++i) {
         memcpy(((char *) words) + pos, participants + pos, strlen(participants + pos) + 1);

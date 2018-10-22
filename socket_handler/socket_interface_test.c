@@ -75,7 +75,7 @@ void test_socket_interface_deserialize_works(){
 void test_socket_interface_serialize_works(){
     char* string = "pe\0pe\0";
     char* real_serialized_pdu;
-    pdu_participants* pdu = pdu_participants_create(string, 2);
+    pdu_participants* pdu = pdu_participants_create(string, 2, 6);
     htons(pdu->length);
     pdu_serialize((PDU *) pdu, &real_serialized_pdu);
     assert(real_serialized_pdu[0] == OP_PARTICIPANTS);
