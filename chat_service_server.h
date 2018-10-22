@@ -25,12 +25,18 @@ typedef struct server_heart_beat_arguments{
 static void* server_keep_accepting_clients(void* args);
 void server_run_server(int port, char* server_name, char* name_server_adress, int name_server_port);
 static void *server_start_heart_beat(void *args);
-static ack* socket_read_ack_from_udp(int socket);
+ack* socket_read_ack_from_udp(int socket);
 static void start_accepter_thread(client_list *client_list, int server_socket);
 static void start_heartbeat_thread(int port, client_list *client_list, char* server_name ,char* name_server, int name_server_port);
 void server_message_forwarding(client_list *client_list_arg);
-void op_join_response(client_list *cl, int num_clients, int connected_socket, pdu_join* pdu);
-void op_quit_response(client_list *cl, int num_clients, int connected_socket, pdu_quit* pdu);
+void op_join_response(client_list *cl, int num_clients, int* connected_sockets, pdu_join* pdu, int index);
+void op_quit_response(client_list *cl, int num_clients, int* connected_socket, pdu_quit *pdu, int i);
+void op_mess_response(int num_clients, int *connected_sockets, PDU* response);
+void send_participants_list_to_socket(client_list *cl, int socket);
+void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sockets, int index);
+static void* server_check_for_disconnected_sockets(void* args);
+static void check_for_disconnected_sockets(client_list* cl);
+static void start_disconnecter_thread(client_list *client_list);
 
 
 #endif //CHAT_SERVICE_CHAT_SERVICE_SERVER_H
