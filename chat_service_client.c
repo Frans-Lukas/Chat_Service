@@ -84,19 +84,19 @@ void server_info_free(server_info *server_to_connect_to) {
 void* read_from_client_stdin(void* data){
     client *client = data;
     while(1) {
-        //char *text = calloc(1,1);
+    //    char *text = calloc(1,1);
         char buffer[255];
         while (fgets(buffer, 255, stdin)) /* break with ^D or ^Z */
         {
             if(strcmp(buffer, "\n") == 0){
                 continue;
             }
-            //text = realloc( text, strlen(text)+1+strlen(buffer) );
-            //if( !text ) {
-            //ERROR
-            //}
-            //strcat( text, buffer ); /* note a '\n' is appended here everytime */
-            //printf("%s\n", buffer);
+//            text = realloc( text, strlen(text)+1+strlen(buffer) );
+//            if( !text ) {
+//            ERROR
+//            }
+//            strcat( text, buffer ); /* note a '\n' is appended here everytime */
+//            printf("%s\n", buffer);
             pdu_mess *mess = pdu_mess_create(client->identity, buffer);
             if (socket_write_pdu_to((PDU *) mess, &client->socket, 1) == -1) {
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
@@ -104,6 +104,7 @@ void* read_from_client_stdin(void* data){
             }
             usleep(200);
         }
+        //f&printf(stderr,@)
     }
 }
 

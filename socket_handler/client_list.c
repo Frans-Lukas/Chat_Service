@@ -134,8 +134,9 @@ int client_list_create_participants_string(client_list *cl, char **participants_
             client_array[i] = cl->clients[i].identity;
         }
     }
-    *participants_string = array_to_string(client_array, num_identified_sockets);
-    pthread_mutex_unlock(&cl->mutex);
 
+    *participants_string = array_to_string(client_array, num_identified_sockets);
+
+    pthread_mutex_unlock(&cl->mutex);
     return num_identified_sockets;
 }

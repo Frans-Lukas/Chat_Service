@@ -20,7 +20,7 @@
 
 // ./Server 6969 Connect_and_get_rekt itchy.cs.umu.se 1337
 int main(int argc, char *argv[]){
-    run_all_tests();
+    //run_all_tests();
 
     if(argc != 5){
         perror_exit("Wrong number of parameters");

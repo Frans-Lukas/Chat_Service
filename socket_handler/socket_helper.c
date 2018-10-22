@@ -118,7 +118,10 @@ int socket_tcp_get_connecting_socket_by_accepting(int socket){
 }
 
 int socket_single_write_to(int socket, char* message, int data_size) {
-    return (int) send(socket, message, (size_t) data_size, 0);
+    if(fd_is_valid(socket)){
+        return (int) send(socket, message, (size_t) data_size, 0);
+    }
+    return -1;
 }
 
 

@@ -71,6 +71,34 @@ pdu_participants *pdu_participants_create(char *participants, int num_participan
     pdu->length = (uint16_t) get_size_of_participants(pdu->participant_names, pdu->num_identities);
 }
 
+size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants) {
+    size_t size = 0;
+    char *names = (char *) participants;
+    for (int i = 0; i < num_participants; ++i) {
+        size += strlen(names + size);
+    }
+    return size;
+}
+
+uint32_t *build_participant_words(char *participants, int num_participants) {
+    size_t size = 0;
+    char *currpos = participants;
+    for (int i = 0; i < num_participants; ++i) {
+        if(currpos != NULL){
+            size += strlen(currpos) + 1;
+            currpos += size;
+        }
+    }
+    uint32_t *words = safe_calloc(sizeof(uint32_t), (size_t) get_num_words((int) size, 4));
+    size_t pos = 0;
+    for (int i = 0; i < num_participants; ++i) {
+        memcpy(((char *) words) + pos, participants + pos, strlen(participants + pos) + 1);
+        pos += strlen(participants + pos) + 1;
+        memcpy(((char *) words) + pos, "\0", 1);
+    }
+    return words;
+}
+
 int pdu_participants_serialize(PDU *pdu, char** data_to_send) {
     pdu_participants *pdu_partici = (pdu_participants *) pdu;
     htons(pdu_partici->length);
@@ -241,27 +269,3 @@ int pdu_pjoin_serialize(PDU *pjoin_data, char** data_to_send) {
     return size;
 }
 
-size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants) {
-    size_t size = 0;
-    char *names = (char *) participants;
-    for (int i = 0; i < num_participants; ++i) {
-        size += strlen(names + size) + 1;
-    }
-    return size;
-}
-
-uint32_t *build_participant_words(char *participants, int num_participants) {
-    size_t size = 0;
-    char *currpos = participants;
-    for (int i = 0; i < num_participants; ++i) {
-        size += strlen(currpos);
-        currpos += size + 1;
-    }
-    uint32_t *words = safe_calloc(sizeof(uint32_t), (size_t) get_num_words((int) size, 4) * 4);
-    size_t pos = 0;
-    for (int i = 0; i < num_participants; ++i) {
-        memcpy(((char *) words) + pos, participants + pos, strlen(participants + pos) + 1);
-        pos += strlen(participants + pos) + 1;
-    }
-    return words;
-}
