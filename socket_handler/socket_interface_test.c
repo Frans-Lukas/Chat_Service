@@ -28,7 +28,7 @@ void* test_socket_pdu_read_tcp(void *data){
         pdu = socket_read_pdu_from(&socket_to_read_from, 1);
     }
     pdu_join* real_pdu = (pdu_join *) pdu[0];
-    assert(real_pdu->op == OP_JOIN);
+    assert(real_pdu->pdu.op == OP_JOIN);
     assert(strncmp((char*)real_pdu->identity, "Kubadoo", real_pdu->identity_length) == 0);
 }
 
@@ -64,7 +64,7 @@ void test_socket_interface_deserialize_works(){
     char* string = "an\0pe";
     int fd = open_fd("../pdu_handler/client-server/pdu_participants_test/data.pdu");
     pdu_participants* deserialized_pdu = (pdu_participants *) pdu_deserialize_next(fd);
-    assert(deserialized_pdu->op == OP_PARTICIPANTS);
+    assert(deserialized_pdu->pdu.op == OP_PARTICIPANTS);
     assert(deserialized_pdu->num_identities == 2);
     htons(deserialized_pdu->length);
     assert(deserialized_pdu->length == 5);

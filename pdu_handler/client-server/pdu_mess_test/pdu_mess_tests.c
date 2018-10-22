@@ -36,7 +36,7 @@ void assert_deserialize_pdu_mess_works() {
     pdu_mess* deserialized_pdu = pdu_mess_deserialize(fd);
     htons(deserialized_pdu->message_length);
     htonl(deserialized_pdu->timestamp);
-    assert(deserialized_pdu->op == OP_MESS);
+    assert(deserialized_pdu->pdu.op == OP_MESS);
     assert(deserialized_pdu->identity_length == strlen(identity));
     assert(deserialized_pdu->message_length == strlen(message));
     assert(strcmp((char*)deserialized_pdu->message, message) == 0);
@@ -49,7 +49,7 @@ void assert_pdu_mess_create_works() {
     char* identity = "Tester";
     char* message = "Hello, world!";
     pdu_mess* pdu = pdu_mess_create(identity, message);
-    assert(pdu->op == OP_MESS);
+    assert(pdu->pdu.op == OP_MESS);
     assert(pdu->identity_length == strlen(identity));
     assert(pdu->message_length == strlen(message));
     assert(strncmp((char*)pdu->message, message, pdu->message_length) == 0);

@@ -18,27 +18,27 @@
 #define MAX_IDENTITY_LENGTH 255
 
 typedef struct pdu_join {
-    op_code op;
+    PDU pdu;
     uint8_t identity_length;
     uint16_t padding;
     uint32_t *identity;
 } pdu_join;
 
 typedef struct pdu_participants {
-    op_code op;
+    PDU pdu;
     uint8_t num_identities;
     uint16_t length;
     uint32_t *participant_names;
 } pdu_participants;
 
 typedef struct pdu_quit {
-    op_code op;
+    PDU pdu;
     uint8_t pad1;
     uint16_t pad2;
 } pdu_quit;
 
 typedef struct pdu_mess {
-    op_code op;
+    PDU pdu;
     uint8_t padding_op;
     uint8_t identity_length;
     uint8_t checksum;
@@ -50,7 +50,7 @@ typedef struct pdu_mess {
 } pdu_mess;
 
 typedef struct pdu_pleave {
-    op_code op;
+    PDU pdu;
     uint8_t identity_length;
     uint16_t padding_identity_length;
     uint32_t timestamp;
@@ -59,12 +59,11 @@ typedef struct pdu_pleave {
 } pdu_pleave;
 
 typedef struct pdu_pjoin {
-    op_code op;
+    PDU pdu;
     uint8_t identity_length;
     uint16_t padding_identity_length;
     uint32_t timestamp;
     uint32_t *client_identity;
-
 } pdu_pjoin;
 
 pdu_quit *pdu_quit_create();
