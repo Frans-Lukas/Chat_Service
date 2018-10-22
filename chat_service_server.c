@@ -9,22 +9,60 @@
 #include <pdu_handler/pdu_helper.h>
 #include <pdu_handler/server-nameserver/pdu_handler_server-nameserver.h>
 #include <pdu_handler/client-server/pdu_handler_client-server.h>
+#include <assert.h>
 #include "chat_service_server.h"
 #include "server-nameserver/pdu_handler_server-nameserver.h"
 #include "socket_handler/socket_interface.h"
+
+void test_build_participant_words(){
+    char *kuba = "kubelito\0frasse\0";
+
+    char *participants = (char *) build_participant_words(kuba, 2);
+
+    fprintf(stderr, "PARTICIPANT TEST \n\n ");
+    for(int i = 0; i < 16 ; i++){
+        fprintf(stderr, "%c", (char)participants[i]);
+    }
+    //fprintf(stderr, "%s", participants);
+    fprintf(stderr, "\n\n\n****** \n\n ");
+
+}
+
+void test_client_list_participant_string(){
+    client_list * cl = client_list_create();
+    char *participants_list = calloc(2, sizeof(char*));
+
+    client  kuba = {0};
+    kuba.identity = "Kubelito";
+    kuba.socket = 5;
+    client frasse = {0};
+    frasse.identity = "Frasselito";
+    frasse.socket = 7;
+
+    client_list_add_client(kuba, cl);
+    client_list_add_client(frasse, cl);
+    int num_of_participants = client_list_create_participants_string(cl, &participants_list);
+    assert(num_of_participants == 2);
+}
+
 
 void server_run_server(int port, char* server_name, char* name_server_adress, int name_server_port){
     client_list* client_list = client_list_create();
     int server_socket = socket_tcp_server_create(port);
 
-    start_accepter_thread(client_list, server_socket);
-    start_heartbeat_thread(port, client_list, server_name ,name_server_adress, name_server_port);
-    start_disconnecter_thread(client_list);
-
-    while(1){
-        server_message_forwarding(client_list);
-    }
+    test_build_participant_words();
+    test_client_list_participant_string();
+//
+//    start_accepter_thread(client_list, server_socket);
+//    start_heartbeat_thread(port, client_list, server_name ,name_server_adress, name_server_port);
+//    start_disconnecter_thread(client_list);
+//
+//    while(1){
+//        server_message_forwarding(client_list);
+//    }
 }
+
+
 
 void server_message_forwarding(client_list *clint_list) {
     int num_clients = client_list_get_num_connected_clients(clint_list);

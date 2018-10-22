@@ -118,7 +118,7 @@ char *array_to_string(char *pString[], int list_length, int* length) {
     for (int j = 0; j < list_length; ++j) {
         size_to_allocate += strlen(pString[j]);
     }
-    size_to_allocate += list_length + 1;
+    size_to_allocate += list_length;
     char *string = safe_calloc(sizeof(char), size_to_allocate);
     *length = (int) size_to_allocate;
     size_t position_to_memcpy_to = 0;
