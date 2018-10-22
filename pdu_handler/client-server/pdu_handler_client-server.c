@@ -6,20 +6,20 @@
 
 pdu_quit *pdu_quit_create() {
     pdu_quit *pdu = safe_calloc(1, sizeof(pdu_quit));
-    pdu->op = OP_QUIT;
+    pdu->pdu.op = OP_QUIT;
     return pdu;
 }
 
 pdu_quit *pdu_quit_deserialize(int fd) {
     pdu_quit *pdu_to_return = safe_calloc(1, sizeof(pdu_quit));
-    pdu_to_return->op = OP_QUIT;
+    pdu_to_return->pdu.op = OP_QUIT;
     return pdu_to_return;
 }
 
 int pdu_quit_serialize(PDU *join_pdu, char **data_to_send) {
     pdu_quit *pdu = (pdu_quit *) join_pdu;
     *data_to_send = safe_calloc(1, sizeof(pdu_quit));
-    memcpy(*data_to_send, &pdu->op, 1);
+    memcpy(*data_to_send, &pdu->pdu.op, 1);
     memcpy(*data_to_send + 1, &pdu->pad1, 1);
     memcpy(*data_to_send + 2, &pdu->pad2, 2);
     return sizeof(pdu_quit);
@@ -27,7 +27,7 @@ int pdu_quit_serialize(PDU *join_pdu, char **data_to_send) {
 
 pdu_join *pdu_join_create(char *identity) {
     pdu_join *pdu = safe_calloc(1, sizeof(pdu_join));
-    pdu->op = OP_JOIN;
+    pdu->pdu.op = OP_JOIN;
     if (strlen(identity) > MAX_IDENTITY_LENGTH) {
         perror_exit("identity length is too long. Needs to be less than 255 characters");
     }
@@ -37,7 +37,7 @@ pdu_join *pdu_join_create(char *identity) {
 
 int pdu_join_serialize(PDU *join_pdu, char **data_to_send) {
     pdu_join *pdu = (pdu_join *) join_pdu;
-    int size_of_data = sizeof(pdu_join) + get_num_words(pdu->identity_length, 4) * 4;
+    int size_of_data = sizeof(pdu_join) + get_num_words(pdu->identity_length, 4) * 4 - 8;
     *data_to_send = safe_calloc(1, (size_t) size_of_data);
     *data_to_send[0] = OP_JOIN;
     pdu_cpy_chars(*data_to_send + 1, &pdu->identity_length, 0, 1);
@@ -47,7 +47,7 @@ int pdu_join_serialize(PDU *join_pdu, char **data_to_send) {
 
 pdu_join *pdu_join_deserialize(int fd) {
     pdu_join *pdu_to_return = safe_calloc(1, sizeof(pdu_join));
-    pdu_to_return->op = OP_JOIN;
+    pdu_to_return->pdu.op = OP_JOIN;
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
     read_from_fd(fd, &pdu_to_return->padding, 2);
     uint8_t length = pdu_to_return->identity_length;
@@ -65,7 +65,7 @@ pdu_join *pdu_join_deserialize(int fd) {
  */
 pdu_participants *pdu_participants_create(char *participants, int num_participants) {
     pdu_participants *pdu = safe_calloc(1, sizeof(pdu_participants));
-    pdu->op = OP_PARTICIPANTS;
+    pdu->pdu.op = OP_PARTICIPANTS;
     pdu->num_identities = (uint8_t) num_participants;
     pdu->participant_names = build_participant_words(participants, num_participants);
     pdu->length = (uint16_t) get_size_of_participants(pdu->participant_names, pdu->num_identities);
@@ -83,7 +83,7 @@ int pdu_participants_serialize(PDU *pdu, char** data_to_send) {
 
 pdu_participants *pdu_participants_deserialize(int fd) {
     pdu_participants *pdu_to_return = safe_calloc(1, sizeof(pdu_participants));
-    pdu_to_return->op = OP_PARTICIPANTS;
+    pdu_to_return->pdu.op = OP_PARTICIPANTS;
     read_from_fd(fd, &pdu_to_return->num_identities, 1);
     read_from_fd(fd, &pdu_to_return->length, 2);
     pdu_to_return->participant_names = safe_calloc(sizeof(uint32_t), (size_t) get_num_words(pdu_to_return->length, 4));
@@ -94,7 +94,7 @@ pdu_participants *pdu_participants_deserialize(int fd) {
 
 pdu_mess *pdu_mess_create(char *identity, char *message) {
     pdu_mess *pdu = safe_calloc(1, sizeof(pdu_mess));
-    pdu->op = OP_MESS;
+    pdu->pdu.op = OP_MESS;
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->message_length = (uint16_t) strlen(message);
     pdu->timestamp = (uint32_t) time(NULL);
@@ -106,7 +106,7 @@ pdu_mess *pdu_mess_create(char *identity, char *message) {
 
 uint8_t create_checksum(pdu_mess *message){
     int checksum = 0;
-    checksum += message->op;
+    checksum += message->pdu.op;
     checksum += message->padding_op;
     checksum += message->identity_length;
     checksum += message->checksum;
@@ -151,7 +151,7 @@ int pdu_mess_serialize(PDU *pdu, char** data_to_send) {
 
 pdu_mess *pdu_mess_deserialize(int fd) {
     pdu_mess *pdu_to_return = safe_calloc(1, sizeof(pdu_mess));
-    pdu_to_return->op = OP_MESS;
+    pdu_to_return->pdu.op = OP_MESS;
     read_from_fd(fd, &pdu_to_return->padding_op, 1);
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
     read_from_fd(fd, &pdu_to_return->checksum, 1);
@@ -180,7 +180,7 @@ bool pdu_mess_is_valid(PDU *pdu) {
 //
 pdu_pleave *pdu_pleave_create(char *identity) {
     pdu_pleave *pdu = safe_calloc(1, sizeof(pdu_pleave));
-    pdu->op = OP_PLEAVE;
+    pdu->pdu.op = OP_PLEAVE;
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->timestamp = (uint32_t) time(NULL);
     pdu->client_identity = build_words(identity, 4, pdu->identity_length);
@@ -189,7 +189,7 @@ pdu_pleave *pdu_pleave_create(char *identity) {
 
 pdu_pleave *pdu_pleave_deserialize(int fd) {
     pdu_pleave *pdu_to_return = safe_calloc(1, sizeof(pdu_pleave));
-    pdu_to_return->op = OP_PLEAVE;
+    pdu_to_return->pdu.op = OP_PLEAVE;
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
     read_from_fd(fd, &pdu_to_return->padding_identity_length, 2);
     read_from_fd(fd, &pdu_to_return->timestamp, 4);
@@ -213,7 +213,7 @@ int pdu_pleave_serialize(PDU *pleave_data, char** data_to_send) {
 
 pdu_pjoin *pdu_pjoin_create(char *identity) {
     pdu_pjoin *pdu = safe_calloc(1, sizeof(pdu_pjoin));
-    pdu->op = OP_PJOIN;
+    pdu->pdu.op = OP_PJOIN;
     pdu->identity_length = (uint8_t) strlen(identity);
     pdu->timestamp = (uint32_t) time(NULL);
     pdu->client_identity = build_words(identity, 4, pdu->identity_length);
@@ -221,7 +221,7 @@ pdu_pjoin *pdu_pjoin_create(char *identity) {
 
 pdu_pjoin *pdu_pjoin_deserialize(int fd) {
     pdu_pjoin *pdu_to_return = safe_calloc(1, sizeof(pdu_pjoin));
-    pdu_to_return->op = OP_PJOIN;
+    pdu_to_return->pdu.op = OP_PJOIN;
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
     read_from_fd(fd, &pdu_to_return->padding_identity_length, 2);
     read_from_fd(fd, &pdu_to_return->timestamp, 4);

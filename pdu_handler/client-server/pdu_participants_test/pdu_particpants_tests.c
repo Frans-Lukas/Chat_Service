@@ -10,7 +10,7 @@ void assert_pdu_participants_create_works() {
     char* names = "Anna\0Petter\0Lisa";
     pdu_participants* pdu = pdu_participants_create(names, 3);
     char* participant_names = (char*) pdu->participant_names;
-    assert(pdu->op == OP_PARTICIPANTS);
+    assert(pdu->pdu.op == OP_PARTICIPANTS);
     assert(pdu->num_identities == 3);
     assert(strcmp(participant_names, "Anna") == 0);
     assert(strcmp(&participant_names[5], "Petter") == 0);
@@ -39,7 +39,7 @@ void assert_deserialize_pdu_participants_works() {
     int op;
     read_from_fd(fd, &op, 1);
     pdu_participants* deserialized_pdu = pdu_participants_deserialize(fd);
-    assert(deserialized_pdu->op == OP_PARTICIPANTS);
+    assert(deserialized_pdu->pdu.op == OP_PARTICIPANTS);
     assert(deserialized_pdu->num_identities == 2);
     htons(deserialized_pdu->length);
     assert(deserialized_pdu->length == 5);

@@ -10,7 +10,7 @@ void run_pdu_pjoin_tests() {
 
 void assert_pdu_pjoin_create_works(){
     pdu_pjoin* pdu = pdu_pjoin_create("Anna");
-    assert(pdu->op == OP_PJOIN);
+    assert(pdu->pdu.op == OP_PJOIN);
     assert(pdu->identity_length == 4);
     assert(strcmp((char*)pdu->client_identity, "Anna") == 0);
     free(pdu);
@@ -33,7 +33,7 @@ void assert_deserialize_pdu_pjoin_works(){
     read_from_fd(fd, &op, 1);
     pdu_pjoin* deserialized_pdu = pdu_pjoin_deserialize(fd);
     //add same padding as mock pdu to make sure string compare works
-    assert(deserialized_pdu->op == OP_PJOIN);
+    assert(deserialized_pdu->pdu.op == OP_PJOIN);
     assert(deserialized_pdu->identity_length == 4);
     ntohl(deserialized_pdu->timestamp);
     assert(deserialized_pdu->timestamp == 5);

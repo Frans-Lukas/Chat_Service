@@ -10,12 +10,16 @@
 #include <stdbool.h>
 #include "../error_handling.h"
 
+#ifndef __FREEFUNC
+#define __FREEFUNC
+typedef void memFreeFunc(void*);
+#endif
+
 typedef uint8_t op_code;
 
 typedef struct PDU {
     op_code op;
 } PDU;
-
 
 uint32_t *build_words(char *input_string, int bytes, int string_len);
 

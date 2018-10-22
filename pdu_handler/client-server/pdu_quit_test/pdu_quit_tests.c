@@ -19,6 +19,6 @@ void assert_serialize_pdu_quit_works() {
 
 void assert_pdu_quit_create_works() {
     pdu_quit* pdu = pdu_quit_create();
-    assert(pdu->op == OP_QUIT);
+    assert(pdu->pdu.op == OP_QUIT);
 }
 
