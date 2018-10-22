@@ -8,5 +8,8 @@ cmake .
 make Client
 END=20
 for ((i=1;i<=END;i++)); do
-    ./Client BotBotterino$i cs long.cs.umu.se 6969  > /dev/null 2>&1 &
+    ./Client Bot$i cs return.cs.umu.se 6969  > /dev/null 2>&1 &
+    sleep 1
 done
+sleep 5
+pkill Client -9

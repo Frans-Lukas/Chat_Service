@@ -17,6 +17,13 @@ client_list *client_list_create() {
     return cl;
 }
 
+int client_list_get_num_connected_clients(client_list* cl){
+    print_lock(cl);
+    int size = cl->num_connected_clients;
+    print_unlock(cl);
+    return size;
+}
+
 void print_lock(client_list* cl){
     pthread_mutex_lock(&cl->mutex);
 }

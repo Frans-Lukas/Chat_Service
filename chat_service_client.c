@@ -39,6 +39,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
         char *ip = calloc(256, sizeof(char));
         network_hostname_to_ip(server_adress, ip);
         server_socket = socket_tcp_client_create(server_port, ip);
+        free(ip);
     }
 
 
@@ -58,15 +59,12 @@ void init_client(char* username, char *server_option, char* server_adress, int s
     send_join_to_server(client);
 
     pthread_t reader_thread;
-    pthread_t writer_thread;
 
 
     pthread_create(&reader_thread, NULL, &read_from_client_stdin, client);
-    pthread_create(&writer_thread, NULL, &write_to_client_stdout, &server_socket);
-
+    write_to_client_stdout(&server_socket);
 
     pthread_join(reader_thread, NULL);
-    pthread_join(writer_thread, NULL);
 }
 
 
@@ -75,7 +73,6 @@ void* read_from_client_stdin(void* data){
     while(1) {
         //char *text = calloc(1,1);
         char buffer[255];
-
         while (fgets(buffer, 255, stdin)) /* break with ^D or ^Z */
         {
             if(strcmp(buffer, "\n") == 0){
@@ -92,6 +89,7 @@ void* read_from_client_stdin(void* data){
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
                 return NULL;
             }
+            usleep(200);
         }
     }
 }
