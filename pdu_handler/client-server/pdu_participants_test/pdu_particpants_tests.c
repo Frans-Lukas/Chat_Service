@@ -8,7 +8,7 @@ void run_pdu_participants_tests() {
 
 void assert_pdu_participants_create_works() {
     char* names = "Anna\0Petter\0Lisa";
-    pdu_participants* pdu = pdu_participants_create(names, 3);
+    pdu_participants* pdu = pdu_participants_create(names, 3, 16);
     char* participant_names = (char*) pdu->participant_names;
     assert(pdu->pdu.op == OP_PARTICIPANTS);
     assert(pdu->num_identities == 3);
@@ -22,7 +22,7 @@ void assert_pdu_participants_create_works() {
 void assert_serialize_pdu_participants_works() {
     char* string = "pe\0pe\0";
     char* real_serialized_pdu;
-    pdu_participants* pdu = pdu_participants_create(string, 2);
+    pdu_participants* pdu = pdu_participants_create(string, 2, 6);
     htons(pdu->length);
     pdu_participants_serialize((PDU *) pdu, &real_serialized_pdu);
     assert(real_serialized_pdu[0] == OP_PARTICIPANTS);

@@ -113,14 +113,14 @@ uint32_t *string_to_words(char *string, int size) {
     return words;
 }
 
-char *array_to_string(char *pString[], int list_length) {
+char *array_to_string(char *pString[], int list_length, int* length) {
     size_t size_to_allocate = 0;
     for (int j = 0; j < list_length; ++j) {
         size_to_allocate += strlen(pString[j]);
     }
     size_to_allocate += list_length + 1;
     char *string = safe_calloc(sizeof(char), size_to_allocate);
-
+    *length = (int) size_to_allocate;
     size_t position_to_memcpy_to = 0;
     for (int i = 0; i < list_length; ++i) {
         memcpy(string + position_to_memcpy_to, pString[i], strlen(pString[i]));

@@ -31,7 +31,7 @@ int pdu_serialize(PDU* pdu, char** data_ptr);
 
 PDU* pdu_deserialize_next(int fd);
 
-char *array_to_string(char *pString[], int list_length);
+char *array_to_string(char *pString[], int list_length, int* size);
 
 bool data_is_divisible_by_four(char *data);
 

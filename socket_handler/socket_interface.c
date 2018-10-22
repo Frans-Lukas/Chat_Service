@@ -5,7 +5,8 @@
 #include "socket_interface.h"
 #include "client_list.h"
 
-int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {struct pollfd fd[number_of_sockets];
+int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
+    struct pollfd fd[number_of_sockets];
     for (int i = 0; i < number_of_sockets; ++i) {
         fd[i].fd = socket[i];
         fd[i].events = POLLRDHUP;
@@ -23,8 +24,8 @@ int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {struct po
             if (0 > socket_single_write_to(socket[i], data, pdu_size)) {
                 return -1;
             }
+            free(data);
         }
-        //free(data);
     }
     return 0;
 }
