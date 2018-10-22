@@ -12,6 +12,7 @@
 
 typedef struct client {
     int socket;
+    bool is_connected;
     char *identity;
 } client;
 

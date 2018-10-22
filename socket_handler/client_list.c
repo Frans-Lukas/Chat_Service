@@ -19,7 +19,6 @@ client_list *client_list_create() {
 
 void print_lock(client_list* cl){
     pthread_mutex_lock(&cl->mutex);
-    fprintf(stderr, "locking mutex\n");
 }
 void print_unlock(client_list* cl){
     pthread_mutex_unlock(&cl->mutex);
