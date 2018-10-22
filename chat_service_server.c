@@ -82,7 +82,7 @@ void op_quit_response(client_list *cl, int num_clients, int* connected_socket, p
 }
 
 void op_join_response(client_list *cl, int num_clients, int* connected_sockets, pdu_join* pdu, int index) {
-    client_list_set_identity_to_socket(connected_sockets[index], (char *) pdu->identity, pdu->identity_length, cl);
+    client_list_set_identity_to_socket(connected_sockets[index], (char *) pdu->identity, cl ,pdu->identity_length);
     send_participants_list_to_socket(cl, connected_sockets[index]);
     send_pjoin_to_sockets(cl, num_clients, connected_sockets, index);
     free(pdu);
