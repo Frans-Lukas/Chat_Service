@@ -14,38 +14,6 @@
 #include "server-nameserver/pdu_handler_server-nameserver.h"
 #include "socket_handler/socket_interface.h"
 
-void test_build_participant_words(){
-    char *kuba = "kubelito\0frasse\0";
-
-    char *participants = (char *) build_participant_words(kuba, 2, 16);
-
-    fprintf(stderr, "PARTICIPANT TEST \n\n ");
-    for(int i = 0; i < 16 ; i++){
-        fprintf(stderr, "%c", (char)participants[i]);
-    }
-    //fprintf(stderr, "%s", participants);
-    fprintf(stderr, "\n\n\n****** \n\n ");
-
-}
-
-void test_client_list_participant_string(){
-    client_list * cl = client_list_create();
-    char *participants_list = calloc(2, sizeof(char*));
-
-    client  kuba = {0};
-    kuba.identity = "Kubelito";
-    kuba.socket = 5;
-    client frasse = {0};
-    frasse.identity = "Frasselito";
-    frasse.socket = 7;
-
-    client_list_add_client(kuba, cl);
-    client_list_add_client(frasse, cl);
-    int* test = calloc(1, sizeof(int));
-    int num_of_participants = client_list_create_participants_string(cl, &participants_list, test);
-    assert(num_of_participants == 2);
-}
-
 
 void server_run_server(int port, char* server_name, char* name_server_adress, int name_server_port){
     client_list* client_list = client_list_create();
@@ -66,8 +34,12 @@ void server_message_forwarding(client_list *clint_list) {
     int num_clients = client_list_get_num_connected_clients(clint_list);
     int connected_sockets[num_clients];
     int index = 0;
+    int size = clint_list->num_connected_clients;
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         client cl = clint_list->clients[i];
+        if(size == index){
+            break;
+        }
         if(cl.socket != 0){
             connected_sockets[index] = cl.socket;
             index++;

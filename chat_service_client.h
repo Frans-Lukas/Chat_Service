@@ -17,7 +17,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
 s_list* get_server_list_form_names_server(char *name_server_adress, int name_server_port);
 void print_s_list(s_list *s);
 char *format_to_ip(uint32_t *adress);
-void handle_response(pdu_participants *pdu );
+void handle_participants(pdu_participants *pdu);
 void handle_quit(pdu_quit *pParticipants);
 
 void handle_message(pdu_mess *pParticipants);
