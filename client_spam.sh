@@ -10,5 +10,5 @@ END=255
 for ((i=1;i<=END;i++)); do
     ./Client Bot$i cs return.cs.umu.se 6969  > /dev/null 2>&1 &
 done
-sleep 50
+sleep 3
 pkill Client -9

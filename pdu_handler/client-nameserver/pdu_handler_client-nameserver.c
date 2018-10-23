@@ -32,7 +32,7 @@ int pdu_s_list_serialize(PDU *p, char **data) {
 //    pdu_cpy_chars(*data + 10, &pdu->number_of_clients, 0, 1);
 //    pdu_cpy_chars(*data + 11, &pdu->server_name_length, 0, 1);
 //    pdu_cpy_chars(*data + 12, &pdu->server_name, 0, (size_t) pdu->server_name_length);
-
+    fprintf(stderr, "Should not be here");
     return 1;
 }
 
