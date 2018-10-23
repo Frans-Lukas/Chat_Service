@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
     if(argc != 5){
         perror_exit("Wrong number of parameters");
     }
-    run_all_tests();
-    //server_run_server(atoi(argv[1]), argv[2], argv[3], atoi(argv[4]));
+    //run_all_tests();
+    server_run_server(atoi(argv[1]), argv[2], argv[3], atoi(argv[4]));
     return 0;
 }

@@ -82,7 +82,7 @@ size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants
 }
 
 uint32_t *build_participant_words(char *participants, int num_participants, int size) {
-    uint32_t *words = safe_calloc(sizeof(uint32_t), (size_t) get_num_words(size, 4));
+    uint32_t *words = safe_calloc(1, (size_t) get_num_words(size, 4) * 4 + 1);
     size_t pos = 0;
     for (int i = 0; i < num_participants; ++i) {
         memcpy(((char *) words) + pos, participants + pos, strlen(participants + pos) + 1);
