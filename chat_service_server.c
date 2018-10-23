@@ -14,9 +14,6 @@
 #include "server-nameserver/pdu_handler_server-nameserver.h"
 #include "socket_handler/socket_interface.h"
 
-
-
-
 void server_run_server(int port, char* server_name, char* name_server_adress, int name_server_port){
     client_list* client_list = client_list_create();
     int server_socket = socket_tcp_server_create(port);
@@ -29,8 +26,6 @@ void server_run_server(int port, char* server_name, char* name_server_adress, in
         server_message_forwarding(client_list);
     }
 }
-
-
 
 void server_message_forwarding(client_list *clint_list) {
     int num_clients = client_list_get_num_connected_clients(clint_list);
