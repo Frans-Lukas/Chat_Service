@@ -76,6 +76,7 @@ size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants
     char *names = (char *) participants;
     for (int i = 0; i < num_participants; ++i) {
         size += strlen(names + size);
+        size++;
     }
     return size;
 }
