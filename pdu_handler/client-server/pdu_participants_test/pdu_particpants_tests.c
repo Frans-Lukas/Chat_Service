@@ -81,3 +81,14 @@ void test_client_list_participant_string(){
     int num_of_participants = client_list_create_participants_string(cl, &participants_list, test);
     assert(num_of_participants == 2);
 }
+
+void test_array_to_string(){
+    char *pList[3];
+
+    pList[0] = "Kuba1\0";
+    pList[1] = "Kuba2\0";
+    pList[2] = "Kuba3\0";
+
+
+    //array_to_string();
+}

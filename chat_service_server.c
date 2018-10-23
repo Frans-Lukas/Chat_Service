@@ -15,6 +15,8 @@
 #include "socket_handler/socket_interface.h"
 
 
+
+
 void server_run_server(int port, char* server_name, char* name_server_adress, int name_server_port){
     client_list* client_list = client_list_create();
     int server_socket = socket_tcp_server_create(port);
