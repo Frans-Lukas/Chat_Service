@@ -6,32 +6,19 @@
 #include "client_list.h"
 
 int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
-    struct pollfd fd[number_of_sockets];
-    for (int i = 0; i < number_of_sockets; ++i) {
-        fd[i].fd = socket[i];
-        fd[i].events = POLLRDHUP;
-    }
-    int timeout;
-    timeout = 1000;
-    if (0 > poll(fd, (nfds_t) number_of_sockets, timeout)) {
-        fprintf(stderr, "poll() error");
-        return NULL;
-    }
     for (int i = 0; i < number_of_sockets; i++) {
-        if(fd[i].revents != POLLRDHUP){
-            char *data;
-            int pdu_size = pdu_serialize(pdu, &data);
-            if (0 > socket_single_write_to(socket[i], data, pdu_size)) {
-                return -1;
-            }
-            free(data);
+        char *data;
+        int pdu_size = pdu_serialize(pdu, &data);
+        if (0 > socket_single_write_to(socket[i], data, pdu_size)) {
+            return -1;
         }
+        free(data);
+
     }
     return 0;
 }
 
 PDU **socket_read_pdu_from(int *sockets, int number_of_sockets) {
-
     //if poll says socket is readable, read from socket.
     struct pollfd fd[number_of_sockets];
     for (int i = 0; i < number_of_sockets; ++i) {
@@ -39,7 +26,7 @@ PDU **socket_read_pdu_from(int *sockets, int number_of_sockets) {
         fd[i].events = POLLIN | POLLRDHUP;
     }
     int timeout;
-    timeout = 1000;
+    timeout = 100;
     if (0 > poll(fd, (nfds_t) number_of_sockets, timeout)) {
         fprintf(stderr, "poll() error");
         return NULL;

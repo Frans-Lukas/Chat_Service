@@ -8,5 +8,6 @@ void run_pdu_participants_tests();
 void assert_pdu_participants_create_works();
 void assert_serialize_pdu_participants_works();
 void assert_deserialize_pdu_participants_works();
-
+void test_client_list_participant_string();
+void test_build_participant_words();
 #endif //CHAT_SERVICE_PDU_PARTICPANTS_TESTS_H

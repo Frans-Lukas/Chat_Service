@@ -52,21 +52,19 @@ void init_client(char* username, char *server_option, char* server_adress, int s
 
     fprintf(stdout, "Connected to server\n");
 
-    client *client = calloc(1, sizeof(client));
+    client client = {0};
+    client.identity = username;
+    client.socket = server_socket;
 
-    client->socket = server_socket;
-    client->identity = username;
-
-    send_join_to_server(client);
+    send_join_to_server(&client);
 
     pthread_t reader_thread;
 
 
-    pthread_create(&reader_thread, NULL, &read_from_client_stdin, client);
+    pthread_create(&reader_thread, NULL, &read_from_client_stdin, &client);
     write_to_client_stdout(&server_socket);
 
     pthread_join(reader_thread, NULL);
-    client_free(client);
 }
 
 void client_free(client *client) {
@@ -102,7 +100,6 @@ void* read_from_client_stdin(void* data){
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
                 return NULL;
             }
-            usleep(200);
         }
         //f&printf(stderr,@)
     }
@@ -116,7 +113,6 @@ void* write_to_client_stdout(void* data){
         while (response == NULL || response[0] == NULL) {
             response = socket_read_pdu_from(&server_socket, 1);
         }
-
         switch (response[0]->op) {
             case OP_MESS:
                 handle_message((pdu_mess *) response[0]);
@@ -131,7 +127,7 @@ void* write_to_client_stdout(void* data){
                 handle_pleave((pdu_pleave *) response[0]);
                 break;
             case OP_PARTICIPANTS:
-                handle_response((pdu_participants *) response[0]);
+                //handle_participants((pdu_participants *) response[0]);
                 break;
             default:
                 break;
@@ -161,11 +157,15 @@ void send_join_to_server(client *client){
 
 
 void handle_pleave(pdu_pleave *pdu) {
+    char* to_print = calloc(1, pdu->identity_length + 1);
+    strncat(to_print, (char *) pdu->client_identity, pdu->identity_length);
     fprintf(stdout, "Client %s left the server.\n", (char *) pdu->client_identity);
 }
 
 void handle_pjoin(pdu_pjoin *pdu) {
-    fprintf(stdout, "Client %s joined the server.\n", (char *) pdu->client_identity);
+    char* to_print = calloc(1, pdu->identity_length + 1);
+    strncat(to_print, (char *) pdu->client_identity, pdu->identity_length);
+    fprintf(stdout, "Client %s joined the server.\n", to_print);
 }
 
 
@@ -232,10 +232,14 @@ server_info *let_user_choose_server(s_list *pList) {
     return server_to_connect_to;
 }
 
-void handle_response(pdu_participants *pdu) {
+void handle_participants(pdu_participants *pdu) {
     fprintf(stdout, "Joined server with participants:\n");
+    char* currptr = (char *) pdu->participant_names;
     for(int i=0; i<pdu->num_identities; i++){
-        fprintf(stdout, "%s\n" , (char *) pdu->participant_names);
+        fprintf(stdout, "%s\n" , currptr);
+        if(i < pdu->num_identities - 1){
+            currptr += strlen(currptr);
+        }
     }
 }
 

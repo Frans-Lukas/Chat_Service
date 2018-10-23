@@ -85,3 +85,4 @@ void test_socket_interface_serialize_works(){
     assert(strncmp(real_serialized_pdu + 7, string, 2) == 0);
     free(real_serialized_pdu);
 }
+
