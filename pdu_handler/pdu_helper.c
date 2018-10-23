@@ -7,7 +7,7 @@
 #include "pdu_helper.h"
 
 uint32_t *build_words(char *input_string, int bytes, int string_len) {
-    int number_of_words = get_num_words(string_len, bytes);
+    int number_of_words = get_num_words(string_len + 1, bytes);
     uint32_t *string_as_4byte = safe_calloc((size_t) number_of_words, sizeof(uint32_t));
     pdu_cpy_chars(string_as_4byte, input_string, 0, (size_t) string_len);
     return string_as_4byte;
@@ -70,7 +70,9 @@ int pdu_serialize(PDU *pdu, char **data_ptr) {
 
 PDU *pdu_deserialize_next(int fd) {
     uint8 opcode = 0;
-    read(fd, &opcode, 1);
+    if(read(fd, &opcode, 1) < 0){
+        return NULL;
+    }
     switch (opcode) {
         case OP_JOIN:
             return (PDU *) pdu_join_deserialize(fd);
@@ -86,14 +88,8 @@ PDU *pdu_deserialize_next(int fd) {
             return (PDU *) pdu_participants_deserialize(fd);
         case OP_SLIST:
             return (PDU *) pdu_s_list_deserialize(fd);
-        case OP_GETLIST:
-            return (PDU *) pdu_get_list_deserialize(fd);
-        case OP_REG:
-            return (PDU *) pdu_reg_deserialize(fd);
         case OP_ACK:
             return (PDU *) pdu_ack_deserialize(fd);
-        case OP_ALIVE:
-            return (PDU *) pdu_alive_deserialize(fd);
         case OP_NOTREG:
             return (PDU *) pdu_not_reg_deserialize(fd);
         default:
