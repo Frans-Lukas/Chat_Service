@@ -16,9 +16,6 @@
 
 /**
  *   TODO
- * - Finishing shell script
- * - Try with 255 clients
- * - fix arguments for client and server
  * - Comments
  * - testa testa testa
  */
@@ -28,12 +25,10 @@
 
 // ./client kubalito ns nameserver.cs.umu.se 1337
 void init_client(char* username, char *server_option, char* server_adress, int server_port){
-    int server_socket;
+    int server_socket = 0;
 
     if(strcmp(server_option , "ns") == 0){
-        char *name_server =  "itchy.cs.umu.se";
-        int port = 1337;
-        s_list *server_list = get_server_list_form_names_server(name_server, port);
+        s_list *server_list = get_server_list_form_names_server(server_adress, server_port);
         server_info* server_to_connect_to = let_user_choose_server(server_list);
         server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
         s_list_free(server_list);

@@ -80,3 +80,14 @@ void test_client_list_participant_string(){
     assert(strcmp(participants_list, "Kubelito") == 0);
     assert(strcmp(participants_list + 9, "Frasselito") == 0);
 }
+
+void test_array_to_string(){
+    char *pList[3];
+
+    pList[0] = "Kuba1\0";
+    pList[1] = "Kuba2\0";
+    pList[2] = "Kuba3\0";
+
+
+    //array_to_string();
+}
