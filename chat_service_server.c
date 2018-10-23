@@ -17,7 +17,7 @@
 void test_build_participant_words(){
     char *kuba = "kubelito\0frasse\0";
 
-    char *participants = (char *) build_participant_words(kuba, 2);
+    char *participants = (char *) build_participant_words(kuba, 2, 16);
 
     fprintf(stderr, "PARTICIPANT TEST \n\n ");
     for(int i = 0; i < 16 ; i++){
@@ -41,7 +41,8 @@ void test_client_list_participant_string(){
 
     client_list_add_client(kuba, cl);
     client_list_add_client(frasse, cl);
-    int num_of_participants = client_list_create_participants_string(cl, &participants_list);
+    int* test = calloc(1, sizeof(int));
+    int num_of_participants = client_list_create_participants_string(cl, &participants_list, test);
     assert(num_of_participants == 2);
 }
 
@@ -49,9 +50,6 @@ void test_client_list_participant_string(){
 void server_run_server(int port, char* server_name, char* name_server_adress, int name_server_port){
     client_list* client_list = client_list_create();
     int server_socket = socket_tcp_server_create(port);
-
-    test_build_participant_words();
-    test_client_list_participant_string();
 
     start_accepter_thread(client_list, server_socket);
     start_heartbeat_thread(port, client_list, server_name ,name_server_adress, name_server_port);
@@ -69,7 +67,7 @@ void server_message_forwarding(client_list *clint_list) {
     int connected_sockets[num_clients];
     int index = 0;
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        client cl = client_list_get_client_from_index(i, clint_list);
+        client cl = clint_list->clients[i];
         if(cl.socket != 0){
             connected_sockets[index] = cl.socket;
             index++;
@@ -246,9 +244,9 @@ static void check_for_disconnected_sockets(client_list* cl){
     int sockets[client_list_get_num_connected_clients(cl)];
     int number_of_sockets = 0;
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        if(client_list_get_client_from_index(i, cl).socket != 0){
-            connected_clients[number_of_sockets] = client_list_get_client_from_index(i, cl);
-            sockets[number_of_sockets] = client_list_get_client_from_index(i, cl).socket;
+        if(cl->clients[i].socket != 0){
+            connected_clients[number_of_sockets] = cl->clients[i];
+            sockets[number_of_sockets] = cl->clients[i].socket;
             number_of_sockets++;
         }
     }
