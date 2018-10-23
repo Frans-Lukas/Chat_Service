@@ -76,12 +76,13 @@ size_t get_size_of_participants(uint32_t *participants, uint8_t num_participants
     char *names = (char *) participants;
     for (int i = 0; i < num_participants; ++i) {
         size += strlen(names + size);
+        size++;
     }
     return size;
 }
 
 uint32_t *build_participant_words(char *participants, int num_participants, int size) {
-    uint32_t *words = safe_calloc(sizeof(uint32_t), (size_t) get_num_words(size, 4));
+    uint32_t *words = safe_calloc(1, (size_t) get_num_words(size, 4) * 4 + 1);
     size_t pos = 0;
     for (int i = 0; i < num_participants; ++i) {
         memcpy(((char *) words) + pos, participants + pos, strlen(participants + pos) + 1);
@@ -121,7 +122,6 @@ pdu_mess *pdu_mess_create(char *identity, char *message) {
     pdu->message = build_words(message, 4, pdu->message_length);
     pdu->client_identity = build_words(identity, 4, pdu->identity_length);
     pdu->checksum = create_checksum(pdu);
-    fprintf(stderr, "");
 }
 
 uint8_t create_checksum(pdu_mess *message){
@@ -138,11 +138,12 @@ uint8_t create_checksum(pdu_mess *message){
     checksum += ((uint8_t*)&message->timestamp)[1];
     checksum += ((uint8_t*)&message->timestamp)[2];
     checksum += ((uint8_t*)&message->timestamp)[3];
+
     for (int i = 0; i < message->message_length; ++i) {
-        checksum += message->message[i];
+        checksum += ((char*)message->message)[i];
     }
     for (int j = 0; j < message->identity_length; ++j) {
-        checksum += message->client_identity[j];
+        checksum += ((char*)message->client_identity)[j];
     }
     checksum = checksum % 255;
     return ~(uint8_t)checksum;
@@ -155,12 +156,14 @@ size_t pdu_mess_size(pdu_mess *mess) {
 
 int pdu_mess_serialize(PDU *pdu, char** data_to_send) {
     pdu_mess *pdu_message = (pdu_mess *) pdu;
-    htons(pdu_message->message_length);
-    htonl(pdu_message->timestamp);
 
     int size = (int) pdu_mess_size(pdu_message);
     *data_to_send = safe_calloc(sizeof(char), pdu_mess_size(pdu_message));
+    htons(pdu_message->message_length);
+    htonl(pdu_message->timestamp);
     pdu_cpy_chars(*data_to_send, pdu_message, 0, 12);
+    ntohs(pdu_message->message_length);
+    ntohl(pdu_message->timestamp);
     pdu_cpy_chars(*data_to_send + 12, pdu_message->message, 0,
                   (size_t) get_num_words(pdu_message->message_length, 4) * 4);
     pdu_cpy_chars(*data_to_send + 12 + get_num_words(pdu_message->message_length, 4) * 4, pdu_message->client_identity,

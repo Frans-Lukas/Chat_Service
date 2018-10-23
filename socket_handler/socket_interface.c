@@ -9,6 +9,7 @@ int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
     for (int i = 0; i < number_of_sockets; i++) {
         char *data;
         int pdu_size = pdu_serialize(pdu, &data);
+
         if (0 > socket_single_write_to(socket[i], data, pdu_size)) {
             return -1;
         }
@@ -23,7 +24,7 @@ PDU **socket_read_pdu_from(int *sockets, int number_of_sockets) {
     struct pollfd fd[number_of_sockets];
     for (int i = 0; i < number_of_sockets; ++i) {
         fd[i].fd = sockets[i];
-        fd[i].events = POLLIN | POLLRDHUP;
+        fd[i].events = POLLIN;
     }
     int timeout;
     timeout = 100;
@@ -33,9 +34,7 @@ PDU **socket_read_pdu_from(int *sockets, int number_of_sockets) {
     }
     PDU **data = safe_calloc((size_t) number_of_sockets, sizeof(PDU*));
     for (int j = 0; j < number_of_sockets; ++j) {
-        if (fd[j].revents & POLLRDHUP) {
-            //don't do anything.
-        } else if (fd[j].revents & POLLIN) {
+        if (fd[j].revents & POLLIN) {
             data[j] = pdu_deserialize_next(sockets[j]);
         } else{
             data[j] = NULL;

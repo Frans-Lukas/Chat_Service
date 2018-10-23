@@ -57,11 +57,8 @@ void test_build_participant_words(){
 
     char *participants = (char *) build_participant_words(kuba, 2, 16);
 
-    for(int i = 0; i < 16 ; i++){
-        fprintf(stderr, "%c", (char)participants[i]);
-    }
     assert(strcmp(participants, "kubelito") == 0);
-    assert(strcmp(participants + 8, "frasse") == 0);
+    assert(strcmp(participants + 9, "frasse") == 0);
 }
 
 void test_client_list_participant_string(){
@@ -77,9 +74,11 @@ void test_client_list_participant_string(){
 
     client_list_add_client(kuba, cl);
     client_list_add_client(frasse, cl);
-    int* test = calloc(1, sizeof(int));
-    int num_of_participants = client_list_create_participants_string(cl, &participants_list, test);
+    int* size = calloc(1, sizeof(int));
+    int num_of_participants = client_list_create_participants_string(cl, &participants_list, size);
     assert(num_of_participants == 2);
+    assert(strcmp(participants_list, "Kubelito") == 0);
+    assert(strcmp(participants_list + 9, "Frasselito") == 0);
 }
 
 void test_array_to_string(){

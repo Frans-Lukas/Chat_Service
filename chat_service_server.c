@@ -47,11 +47,9 @@ void server_message_forwarding(client_list *clint_list) {
             index++;
         }
     }
-
     PDU** responses = socket_read_pdu_from(connected_sockets, client_list_get_num_connected_clients(clint_list));
-
     if(responses != NULL){
-        for (int i = 0; i < num_clients; ++i) {
+        for (int i = 0; i < index; ++i) {
             if(responses[i] != NULL){
                 if(responses[i]->op != 0){
                     switch (responses[i]->op){
@@ -108,7 +106,13 @@ void free_response(PDU *responses) {
             //notify everyone what client joined and send participants to newly connected client
             break;
         }
+        case OP_REG: {
+            reg* pdu = (reg *) responses;
+            free(pdu->server_name);
+            free(pdu);
+        }
         default:
+            free(responses);
             break;
     }
 }

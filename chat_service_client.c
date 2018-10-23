@@ -84,19 +84,12 @@ void* read_from_client_stdin(void* data){
             if(strcmp(buffer, "\n") == 0){
                 continue;
             }
-//            text = realloc( text, strlen(text)+1+strlen(buffer) );
-//            if( !text ) {
-//            ERROR
-//            }
-//            strcat( text, buffer ); /* note a '\n' is appended here everytime */
-//            printf("%s\n", buffer);
             pdu_mess *mess = pdu_mess_create(client->identity, buffer);
             if (socket_write_pdu_to((PDU *) mess, &client->socket, 1) == -1) {
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
                 return NULL;
             }
         }
-        //f&printf(stderr,@)
     }
 }
 
@@ -122,7 +115,7 @@ void* write_to_client_stdout(void* data){
                 handle_pleave((pdu_pleave *) response[0]);
                 break;
             case OP_PARTICIPANTS:
-                //handle_participants((pdu_participants *) response[0]);
+                handle_participants((pdu_participants *) response[0]);
                 break;
             default:
                 break;
@@ -183,8 +176,13 @@ char* from_unix_to_human_time(time_t time){
 }
 
 void print_user_message(pdu_mess *pdu){
-    fprintf(stdout, "\n[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
-            (char *) pdu->message);
+    if(pdu->timestamp == 0 || pdu->message_length > 255){
+        perror("Invalid message recieved\n");
+    } else{
+        //print_message(pdu);
+        fprintf(stdout, "\n[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
+                (char *) pdu->message);
+    }
 }
 
 
