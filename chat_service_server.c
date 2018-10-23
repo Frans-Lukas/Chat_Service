@@ -20,7 +20,6 @@ void server_run_server(int port, char* server_name, char* name_server_adress, in
 
     start_accepter_thread(client_list, server_socket);
     start_heartbeat_thread(port, client_list, server_name ,name_server_adress, name_server_port);
-    start_disconnecter_thread(client_list);
 
     while(1){
         server_message_forwarding(client_list);
@@ -42,7 +41,7 @@ void server_message_forwarding(client_list *clint_list) {
             index++;
         }
     }
-    PDU** responses = socket_read_pdu_from(connected_sockets, client_list_get_num_connected_clients(clint_list));
+    PDU** responses = socket_read_pdu_from(connected_sockets, client_list_get_num_connected_clients(clint_list), clint_list);
     if(responses != NULL){
         for (int i = 0; i < index; ++i) {
             if(responses[i] != NULL){
@@ -51,7 +50,9 @@ void server_message_forwarding(client_list *clint_list) {
                         case OP_MESS: {
                             //broadcast message to clients
                             fprintf(stderr, "Recieved MESS\n");
-                            op_mess_response(num_clients, connected_sockets, responses[i]);
+                            if(create_checksum((pdu_mess *) responses[i]) == 255){
+                                op_mess_response(num_clients, connected_sockets, responses[i]);
+                            }
                             break;
                         }
                         case OP_QUIT: {
@@ -235,7 +236,7 @@ static void check_for_disconnected_sockets(client_list* cl){
         return;
     }
     for (int j = 0; j < number_of_sockets; ++j) {
-        if (fd[j].revents & POLLRDHUP) {
+        if (fd[j].revents == POLLRDHUP) {
             if(connected_clients[j].identity != NULL){
                 pdu_pleave* pleave = pdu_pleave_create(connected_clients[j].identity);
                 socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets);

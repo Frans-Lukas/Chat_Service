@@ -28,7 +28,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
     int server_socket = 0;
 
     if(strcmp(server_option , "ns") == 0){
-        s_list *server_list = get_server_list_form_names_server(server_adress, server_port);
+        s_list *server_list = get_server_list_from_names_server(server_adress, server_port);
         server_info* server_to_connect_to = let_user_choose_server(server_list);
         server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
         s_list_free(server_list);
@@ -99,7 +99,7 @@ void* write_to_client_stdout(void* data){
     while(1) {
         PDU **response = NULL;
         while (response == NULL || response[0] == NULL) {
-            response = socket_read_pdu_from(&server_socket, 1);
+            response = socket_read_pdu_from(&server_socket, 1, NULL);
         }
         switch (response[0]->op) {
             case OP_MESS:
@@ -170,7 +170,7 @@ void print_message(pdu_mess *pdu){
     fprintf(stderr, "identity_length: %d\n", pdu->identity_length);
     fprintf(stderr, "check_sum: %d\n", pdu->checksum);
     fprintf(stderr, "message_length: %d\n", pdu->message_length);
-    fprintf(stderr, "padding_message_length: %d\n", pdu->padding_message_length);
+    fprintf(stderr, "padding: %d\n", pdu->padding);
     fprintf(stderr, "time_stamp: %d\n", pdu->timestamp);
 
     fprintf(stderr, "message: ");
@@ -245,12 +245,12 @@ char *format_to_ip(uint32_t *adress){
 }
 
 
-s_list* get_server_list_form_names_server(char *name_server_adress, int name_server_port){
+s_list* get_server_list_from_names_server(char *name_server_adress, int name_server_port){
     int server_name_socket = create_tcp_name_server_socket(name_server_port, name_server_adress);
     get_list* get_list = pdu_create_get_list();
     while(-1 == socket_write_pdu_to((PDU *) get_list, &server_name_socket, 1));
     PDU** response = NULL;
-    while(NULL == (response = socket_read_pdu_from(&server_name_socket, 1)));
+    while(NULL == (response = socket_read_pdu_from(&server_name_socket, 1, NULL)));
     return (s_list *) response[0];
 }
 

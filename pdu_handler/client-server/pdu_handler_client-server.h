@@ -43,7 +43,7 @@ typedef struct pdu_mess {
     uint8_t identity_length;
     uint8_t checksum;
     uint16_t message_length;
-    uint16_t padding_message_length;
+    uint16_t padding;
     uint32_t timestamp;
     uint32_t *message;
     uint32_t *client_identity;

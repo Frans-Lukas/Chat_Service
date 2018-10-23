@@ -14,7 +14,7 @@ typedef struct server_info{
 } server_info;
 
 void init_client(char* username, char *server_option, char* server_adress, int server_port);
-s_list* get_server_list_form_names_server(char *name_server_adress, int name_server_port);
+s_list* get_server_list_from_names_server(char *name_server_adress, int name_server_port);
 void print_s_list(s_list *s);
 char *format_to_ip(uint32_t *adress);
 void handle_participants(pdu_participants *pdu);
