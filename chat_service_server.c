@@ -245,7 +245,7 @@ static void check_for_disconnected_sockets(client_list* cl){
             }
             int socket_to_close = connected_clients[j].socket;
             client_list_remove_client(connected_clients[j], cl);
-            //close(socket_to_close);
+            close(socket_to_close);
             fprintf(stderr, "Disconnected client %s.\n", connected_clients[j].identity);
         }
     }

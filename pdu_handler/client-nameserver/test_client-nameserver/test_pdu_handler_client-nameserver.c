@@ -5,9 +5,7 @@
 
 
 void run_all_client_nameserver_test() {
-    test_serialize_s_list();
     test_deserialize_s_list();
-    test_serialize_get_list();
     test_deserialize_get_list();
 }
 
@@ -51,7 +49,6 @@ void test_deserialize_s_list() {
 
     assert(pdu->pdu.op == OP_SLIST);
     assert(pdu->number_of_servers == ntohs(2));
-
 
     assert(*((uint8_t *) (&pdu->adress[0]) + 0) == 251);
     assert(*((uint8_t *) (&pdu->adress[0]) + 1) == 252);

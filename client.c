@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
         perror_exit("Should be ns or cs");
     }
 
+    //run_all_tests();
 
     init_client(argv[1], argv[2], argv[3], atoi(argv[4]));
     return 0;

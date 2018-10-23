@@ -121,7 +121,6 @@ reg* pdu_reg_deserialize(int fd) {
     reg* pdu = safe_calloc(1, sizeof(reg));
     pdu->pdu.op = OP_REG;
     read_from_fd(fd, &pdu->server_name_length, 1);
-    fprintf(stderr, "ello\n");
     read_from_fd(fd, &pdu->tcp_port, 2);
     pdu->tcp_port = ntohs(pdu->tcp_port);
     int size = get_num_words(pdu->server_name_length, 4);

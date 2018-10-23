@@ -6,7 +6,7 @@ numClients=$3
 
 cmake .
 make Client
-END=255
+END=250
 for ((i=1;i<=END;i++)); do
     ./Client Bot$i cs silverfox.cs.umu.se 6969  > /dev/null 2>&1 &
 done

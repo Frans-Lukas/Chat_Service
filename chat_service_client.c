@@ -73,7 +73,7 @@ void client_free(client *client) {
 }
 
 void server_info_free(server_info *server_to_connect_to) {
-    free(server_to_connect_to->server_name);
+    //free(server_to_connect_to->server_name);
     free(server_to_connect_to->address);
     free(server_to_connect_to);
 }
@@ -128,26 +128,10 @@ void* write_to_client_stdout(void* data){
     }
 }
 
-
-
-
-void chat_session(){
-
-    //Medans sessionen är alive
-
-    //Läs meddelande ifall det finns något att läsa
-
-    // Skriv meddelande ifall det finns något att skriva
-
-
-}
-
-
 void send_join_to_server(client *client){
     pdu_join* pdu = pdu_join_create(client->identity);
     while(-1 == socket_write_pdu_to((PDU*)pdu, &client->socket, 1));
 }
-
 
 void handle_pleave(pdu_pleave *pdu) {
     char* to_print = calloc(1, pdu->identity_length + 1);
@@ -161,19 +145,13 @@ void handle_pjoin(pdu_pjoin *pdu) {
     fprintf(stdout, "Client %s joined the server.\n", to_print);
 }
 
-
-
 void handle_message(pdu_mess *pdu) {
-   // print_message(pdu);
     print_user_message(pdu);
 }
 
 char* from_unix_to_human_time(time_t time){
     struct tm  ts;
     char * buf = calloc(80, sizeof(char));
-    // Get current time
-    // time(&now);
-
     // Format time, "ddd yyyy-mm-dd hh:mm:ss zzz"
     ts = *localtime(&time);
     strftime(buf, sizeof(buf), "%H:%M", &ts);
@@ -216,12 +194,20 @@ void handle_quit(pdu_quit *pdu) {
 server_info *let_user_choose_server(s_list *pList) {
     fprintf(stdout, "Please choose a server to connect to.\n");
     for (int i = 0; i < pList->number_of_servers; ++i) {
-        fprintf(stdout, "%d. %s\n", i, (char*)pList->server_name[i]);
+        fprintf(stdout, "%d. ", i);
+        for (int j = 0; j < pList->server_name_length[i]; ++j) {
+            fprintf(stdout, "%c", ((char*)pList->server_name[i])[j]);
+        }
+        fprintf(stdout, "\n");
     }
 
     int choice;
     scanf("%d", &choice);
-    fprintf(stdout, "Trying to connect to server %s\n.", (char*)pList->server_name[choice]);
+    fprintf(stdout, "Trying to connect to server ");
+    for (int j = 0; j < pList->server_name_length[choice]; ++j) {
+        fprintf(stdout, "%c", ((char*)pList->server_name[choice])[j]);
+    }
+    fprintf(stdout, "\n");
     server_info* server_to_connect_to = calloc(1, sizeof(server_info));
     server_to_connect_to->server_name = (char *) pList->server_name[choice];
     server_to_connect_to->port = pList->port[choice];
@@ -235,9 +221,7 @@ void handle_participants(pdu_participants *pdu) {
     char* currptr = (char *) pdu->participant_names;
     for(int i=0; i<pdu->num_identities; i++){
         fprintf(stdout, "%s\n" , currptr);
-        if(i < pdu->num_identities - 1){
-            currptr += strlen(currptr);
-        }
+        currptr += strlen(currptr) + 1;
     }
 }
 
