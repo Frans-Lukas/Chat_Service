@@ -164,11 +164,13 @@ void free_response(PDU *responses) {
             reg *pdu = (reg *) responses;
             free(pdu->server_name);
             free(pdu);
+            break;
         }
         case OP_PJOIN: {
             pdu_pjoin *pdu = (pdu_pjoin *) responses;
             free(pdu->client_identity);
             free(pdu);
+            break;
         }
         case OP_PLEAVE: {
             pdu_pleave *pdu = (pdu_pleave *) responses;
@@ -176,6 +178,7 @@ void free_response(PDU *responses) {
                 free(pdu->client_identity);
             }
             free(pdu);
+            break;
         }
         case OP_PARTICIPANTS: {
             pdu_participants *pdu = (pdu_participants *) responses;
@@ -183,6 +186,7 @@ void free_response(PDU *responses) {
                 free(pdu->participant_names);
             }
             free(pdu);
+            break;
         }
         default:
             //free(responses);
