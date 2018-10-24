@@ -30,7 +30,7 @@ PDU **socket_read_pdu_from(int *sockets, int number_of_sockets, client_list* cl)
         fd[i].events = POLLIN | POLLRDHUP;
     }
     int timeout;
-    timeout = 10;
+    timeout = 100;
     if (0 > poll(fd, (nfds_t) number_of_sockets, timeout)) {
         fprintf(stderr, "poll() error");
         return NULL;
