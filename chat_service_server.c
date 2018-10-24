@@ -187,13 +187,6 @@ static void start_accepter_thread(client_list *client_list, int server_socket) {
     pthread_create(&client_accepter_thread, NULL, &server_keep_accepting_clients, acc_args);
 }
 
-
-static void start_disconnecter_thread(client_list *client_list) {
-    pthread_t client_dsiconnecter_thread;
-    pthread_create(&client_dsiconnecter_thread, NULL, &server_check_for_disconnected_sockets, client_list);
-}
-
-
 static void start_heartbeat_thread(int port, client_list *client_list, char * server_name ,char * name_server, int name_server_port) {
     server_heart_beat_arguments* hb_args = safe_calloc(1, sizeof(server_heart_beat_arguments));
     pthread_t heart_beat_thread;
@@ -230,51 +223,6 @@ static void* server_keep_accepting_clients(void* args){
     }
 }
 
-
-static void* server_check_for_disconnected_sockets(void* args){
-    client_list* cl = args;
-
-    while(1){
-        check_for_disconnected_sockets(cl);
-        sleep(3);
-    }
-}
-
-static void check_for_disconnected_sockets(client_list* cl){
-    client connected_clients[client_list_get_num_connected_clients(cl)];
-    int sockets[client_list_get_num_connected_clients(cl)];
-    int number_of_sockets = 0;
-    for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        if(cl->clients[i].socket != 0){
-            connected_clients[number_of_sockets] = cl->clients[i];
-            sockets[number_of_sockets] = cl->clients[i].socket;
-            number_of_sockets++;
-        }
-    }
-    struct pollfd fd[number_of_sockets];
-    for (int i = 0; i < number_of_sockets; ++i) {
-        fd[i].fd = connected_clients[i].socket;
-        fd[i].events = POLLRDHUP;
-    }
-    int timeout;
-    timeout = 1000;
-    if (0 > poll(fd, (nfds_t) number_of_sockets, timeout)) {
-        fprintf(stderr, "poll() error");
-        return;
-    }
-    for (int j = 0; j < number_of_sockets; ++j) {
-        if (fd[j].revents == POLLRDHUP) {
-            if(connected_clients[j].identity != NULL){
-                pdu_pleave* pleave = pdu_pleave_create(connected_clients[j].identity);
-                socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets);
-            }
-            int socket_to_close = connected_clients[j].socket;
-            client_list_remove_client(connected_clients[j], cl);
-            close(socket_to_close);
-            fprintf(stderr, "Disconnected client %s.\n", connected_clients[j].identity);
-        }
-    }
-}
 
 
 

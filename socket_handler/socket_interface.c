@@ -12,7 +12,6 @@ int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
     for (int i = 0; i < number_of_sockets; i++) {
         uint8_t *data;
         int pdu_size = pdu_serialize(pdu, (char **) &data);
-
         if (0 > socket_single_write_to(socket[i], (char *) data, pdu_size)) {
             free(data);
             return -1;
@@ -54,23 +53,21 @@ void disconnect_client_from_client_list(client_list *cl, int socket) {
     if(cl == NULL){
         return;
     }
-    client connected_clients[client_list_get_num_connected_clients(cl)];
     int sockets[client_list_get_num_connected_clients(cl)];
     int number_of_sockets = 0;
 
     print_lock(cl);
 
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        if(cl->clients[i].socket != 0 && cl->clients[i].socket != socket){
-            connected_clients[number_of_sockets] = cl->clients[i];
+        if(cl->clients[i].socket != 0){
             sockets[number_of_sockets] = cl->clients[i].socket;
             number_of_sockets++;
         }
     }
     print_unlock(cl);
     client clint = client_list_get_client_from_socket_id(socket, cl);
-    fprintf(stderr, "Disconnected client %s.\n", clint.identity);
     print_lock(cl);
+    fprintf(stderr, "Disconnected client %s.\n", clint.identity);
     if(clint.identity != NULL){
         pdu_pleave* pleave = pdu_pleave_create(clint.identity);
         if(socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets) == -1){
