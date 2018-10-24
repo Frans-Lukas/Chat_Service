@@ -15,10 +15,10 @@ void test_serialize_s_list() {
 //    char *test_data;
 //    pdu->pdu.op = OP_SLIST;
 //    pdu->number_of_servers = 420;
-//    *(uint8_t *) (&pdu->adress) = 251;
-//    *((uint8_t *) (&pdu->adress) + 1) = 252;
-//    *((uint8_t *) (&pdu->adress) + 2) = 253;
-//    *((uint8_t *) (&pdu->adress) + 3) = 254;
+//    *(uint8_t *) (&pdu->address) = 251;
+//    *((uint8_t *) (&pdu->address) + 1) = 252;
+//    *((uint8_t *) (&pdu->address) + 2) = 253;
+//    *((uint8_t *) (&pdu->address) + 3) = 254;
 //    pdu->port = 7331;
 //    pdu->number_of_clients = 9;
 //    pdu->server_name_length = 8;

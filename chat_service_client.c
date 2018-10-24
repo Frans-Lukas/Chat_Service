@@ -211,7 +211,7 @@ server_info *let_user_choose_server(s_list *pList) {
     server_info* server_to_connect_to = calloc(1, sizeof(server_info));
     server_to_connect_to->server_name = (char *) pList->server_name[choice];
     server_to_connect_to->port = pList->port[choice];
-    server_to_connect_to->address = format_to_ip(&pList->adress[choice]);
+    server_to_connect_to->address = format_to_ip(&pList->address[choice]);
 
     return server_to_connect_to;
 }
@@ -231,8 +231,8 @@ void print_s_list(s_list* s){
     fprintf(stderr, "number of servers = %d\n\n\n", s->number_of_servers);
 
     for(int i=0; i < s->number_of_servers; i++){
-        fprintf(stderr, "adress[%d] = %d.%d.%d.%d\n", i, *((uint8_t *) (&s->adress[i]) + 0), *((uint8_t *) (&s->adress[i]) + 1),
-                *((uint8_t *) (&s->adress[i]) + 2), *((uint8_t *) (&s->adress[i]) + 3));
+        fprintf(stderr, "address[%d] = %d.%d.%d.%d\n", i, *((uint8_t *) (&s->address[i]) + 0), *((uint8_t *) (&s->address[i]) + 1),
+                *((uint8_t *) (&s->address[i]) + 2), *((uint8_t *) (&s->address[i]) + 3));
         fprintf(stderr, "port[%d] = %d\n", i, s->port[i]);
         fprintf(stderr, "number_of_clients[%d] = %d\n", i, s->number_of_clients[i]);
         fprintf(stderr, "server_name_length[%d] = %d\n", i, s->server_name_length[i]);

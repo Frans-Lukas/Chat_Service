@@ -115,7 +115,9 @@ uint32_t *string_to_words(char *string, int size) {
 char *array_to_string(char *pString[], int list_length, int* length) {
     size_t size_to_allocate = 0;
     for (int j = 0; j < list_length; ++j) {
-        size_to_allocate += strlen(pString[j]);
+        if(pString[j] != NULL){
+            size_to_allocate += strlen(pString[j]);
+        }
     }
     size_to_allocate += list_length;
     char *string = safe_calloc(sizeof(char), size_to_allocate + 1);

@@ -16,7 +16,7 @@ typedef struct s_list {
     PDU pdu;
     uint8_t pad;
     uint16_t number_of_servers;
-    uint32_t* adress;
+    uint32_t* address;
     uint16_t* port;
     uint8_t* number_of_clients;
     uint8_t* server_name_length;
