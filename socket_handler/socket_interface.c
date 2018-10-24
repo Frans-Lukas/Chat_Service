@@ -70,7 +70,7 @@ void disconnect_client_from_client_list(client_list *cl, int socket) {
     if(clint.identity != NULL){
         pdu_pleave* pleave = pdu_pleave_create(clint.identity);
         if(socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets) == -1){
-            fprintf(stderr, "Socket is disconnected. Could not write to it. DW :)\n");
+            //fprintf(stderr, "Socket is disconnected. Could not write to it. DW :)\n");
         }
         free(pleave->client_identity);
         free(pleave);

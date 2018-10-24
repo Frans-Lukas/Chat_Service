@@ -157,18 +157,21 @@ void op_quit_response(client_list *cl, int num_clients, int *connected_socket, p
     client clie = client_list_get_client_from_socket_id(connected_socket[i], cl);
     pdu_pleave *pleave = pdu_pleave_create(clie.identity);
     socket_write_pdu_to((PDU *) pleave, connected_socket, num_clients);
+    free(pleave->client_identity);
     free(pleave);
 }
 
 void op_join_response(client_list *cl, int num_clients, int *connected_sockets, pdu_join *pdu, int index) {
 
     if(pdu->identity_length == 0 || pdu->identity == NULL){
-        pdu_mess* welcome_message = pdu_mess_create("", "Don't join with invalid name!");
-        welcome_message->timestamp = (uint32_t) time(NULL);
-        welcome_message->checksum = 0;
-        welcome_message->checksum = create_checksum(welcome_message);
-        socket_write_pdu_to((PDU *) welcome_message, connected_sockets, num_clients);
+        pdu_mess* invalid_name_message = pdu_mess_create("", "Don't join with invalid name!");
+        invalid_name_message->timestamp = (uint32_t) time(NULL);
+        invalid_name_message->checksum = 0;
+        invalid_name_message->checksum = create_checksum(invalid_name_message);
+        socket_write_pdu_to((PDU *) invalid_name_message, connected_sockets, num_clients);
         disconnect_client_from_client_list(cl, connected_sockets[index]);
+        free(invalid_name_message->message);
+        free(invalid_name_message);
         return;
     }
 
@@ -176,11 +179,14 @@ void op_join_response(client_list *cl, int num_clients, int *connected_sockets, 
     send_participants_list_to_socket(cl, connected_sockets[index]);
     send_pjoin_to_sockets(cl, num_clients, connected_sockets, index);
 
-    pdu_mess* welcome_message = pdu_mess_create("", "Welcome!.");
+    pdu_mess* welcome_message = pdu_mess_create("", "\033[31;42mWelcome!.\033[0m");
     welcome_message->timestamp = (uint32_t) time(NULL);
     welcome_message->checksum = 0;
     welcome_message->checksum = create_checksum(welcome_message);
     socket_write_pdu_to((PDU *) welcome_message, connected_sockets, num_clients);
+    free(welcome_message->client_identity);
+    free(welcome_message->message);
+    free(welcome_message);
 }
 
 void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sockets, int index) {

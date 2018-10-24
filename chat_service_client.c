@@ -189,7 +189,7 @@ void free_response(PDU *responses) {
             break;
         }
         default:
-            //free(responses);
+            free(responses);
             break;
     }
 }
@@ -197,6 +197,8 @@ void free_response(PDU *responses) {
 void send_join_to_server(client *client) {
     pdu_join *pdu = pdu_join_create(client->identity);
     while (-1 == socket_write_pdu_to((PDU *) pdu, &client->socket, 1));
+    free(pdu->identity);
+    free(pdu);
 }
 
 void handle_pleave(pdu_pleave *pdu) {
@@ -234,7 +236,9 @@ void print_user_message(pdu_mess *pdu) {
     if (pdu->timestamp == 0 || pdu->message_length > 65535 || pdu->message_length == 0) {
         perror("Invalid message recieved\n");
     } else if(pdu->identity_length == 0){
-        fprintf(stdout, "\n[%s] ", from_unix_to_human_time(pdu->timestamp));
+        char* human_time = from_unix_to_human_time(pdu->timestamp);
+        fprintf(stdout, "\n[%s] ", human_time);
+        free(human_time);
         fprintf(stdout, "SERVER_MESSAGE : ");
         print_num_chars((char *) pdu->message, pdu->message_length);
         fprintf(stdout, "\n");
