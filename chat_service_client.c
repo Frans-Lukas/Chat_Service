@@ -2,6 +2,7 @@
 #include <pdu_handler/client-nameserver/pdu_handler_client-nameserver.h>
 #include <pdu_handler/client-server/pdu_handler_client-server.h>
 #include <pthread.h>
+#include <errno.h>
 #include "chat_service_client.h"
 #include "socket_helper.h"
 #include "socket_interface.h"
@@ -15,9 +16,10 @@
 
 
 /**
- *   TODO
- * - Comments
- * - testa testa testa
+ * TODO
+ * Client-Disconnect
+ * SKickar OP.code 0
+ * Fixa alla fakkin errors
  */
 
 
@@ -77,7 +79,6 @@ void server_info_free(server_info *server_to_connect_to) {
 void* read_from_client_stdin(void* data){
     client *client = data;
     while(1) {
-    //    char *text = calloc(1,1);
         char buffer[255];
         while (fgets(buffer, 255, stdin)) /* break with ^D or ^Z */
         {
@@ -86,7 +87,9 @@ void* read_from_client_stdin(void* data){
             }
             pdu_mess *mess = pdu_mess_create(client->identity, buffer);
             if (socket_write_pdu_to((PDU *) mess, &client->socket, 1) == -1) {
+
                 fprintf(stderr, "socket_write_pdu_to mess failed\n");
+                fprintf(stderr, " Value of errno: %d\n ", errno);
                 return NULL;
             }
         }
@@ -154,7 +157,7 @@ char* from_unix_to_human_time(time_t time){
 }
 
 void print_user_message(pdu_mess *pdu){
-    if(pdu->timestamp == 0 || pdu->message_length > 255){
+    if(pdu->timestamp == 0 || pdu->message_length > 65535){
         perror("Invalid message recieved\n");
     } else{
         //print_message(pdu);

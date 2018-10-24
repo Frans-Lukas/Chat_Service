@@ -1,3 +1,4 @@
+#include <errno.h>
 #include "socket_helper.h"
 
 
@@ -120,6 +121,7 @@ int socket_single_write_to(int socket, char* message, int data_size) {
     if(fd_is_valid(socket)){
         return (int) send(socket, message, (size_t) data_size, MSG_NOSIGNAL);
     }
+    fprintf(stderr, " Value of errno: %d\n ", errno);
     return -1;
 }
 

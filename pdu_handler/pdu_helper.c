@@ -14,6 +14,9 @@ uint32_t *build_words(char *input_string, int bytes, int string_len) {
 }
 
 int get_num_words(int string_len, int bytes) {
+    if(string_len == 0){
+        return 0;
+    }
     return string_len < bytes ? 1 : (string_len / bytes) + (string_len % bytes > 0 ? 1 : 0);
 }
 

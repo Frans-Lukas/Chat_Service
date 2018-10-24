@@ -116,11 +116,10 @@ pdu_participants *pdu_participants_deserialize(int fd) {
 pdu_mess *pdu_mess_create(char *identity, char *message) {
     pdu_mess *pdu = safe_calloc(1, sizeof(pdu_mess));
     pdu->pdu.op = OP_MESS;
-    pdu->identity_length = (uint8_t) strlen(identity);
+    pdu->identity_length = 0;
     pdu->message_length = (uint16_t) strlen(message);
-    pdu->timestamp = (uint32_t) time(NULL);
+    pdu->timestamp = 0;
     pdu->message = build_words(message, 4, pdu->message_length);
-    pdu->client_identity = build_words(identity, 4, pdu->identity_length);
     pdu->checksum = create_checksum(pdu);
 }
 
