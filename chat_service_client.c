@@ -132,6 +132,7 @@ void *write_to_client_stdout(void *data) {
                 break;
         }
         free_response(response[0]);
+        free(response);
     }
 }
 
@@ -171,12 +172,16 @@ void free_response(PDU *responses) {
         }
         case OP_PLEAVE: {
             pdu_pleave *pdu = (pdu_pleave *) responses;
-            free(pdu->client_identity);
+            if(pdu->client_identity != NULL && pdu->identity_length > 0){
+                free(pdu->client_identity);
+            }
             free(pdu);
         }
         case OP_PARTICIPANTS: {
             pdu_participants *pdu = (pdu_participants *) responses;
-            free(pdu->participant_names);
+            if(pdu->num_identities > 0 && pdu->length > 0 && pdu->participant_names != NULL){
+                free(pdu->participant_names);
+            }
             free(pdu);
         }
         default:
