@@ -167,7 +167,7 @@ void print_user_message(pdu_mess *pdu){
     if(pdu->timestamp == 0 || pdu->message_length > 65535 || pdu->message_length == 0){
         perror("Invalid message recieved\n");
     } else{
-        fprintf(stdout, "\n[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
+        fprintf(stderr, "\n[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
                 (char *) pdu->message);
         //fflush(stdout);
     }

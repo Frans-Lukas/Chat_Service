@@ -130,9 +130,11 @@ int client_list_create_participants_string(client_list *cl, char **participants_
 
     char *client_array[num_identified_sockets];
 
+    int index = 0;
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].identity != NULL  && cl->clients[i].socket != 0) {
-            client_array[i] = cl->clients[i].identity;
+            client_array[index] = cl->clients[i].identity;
+            index++;
         }
     }
 

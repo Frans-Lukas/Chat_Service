@@ -69,18 +69,21 @@ void disconnect_client_from_client_list(client_list *cl, int socket) {
     }
     print_unlock(cl);
     client clint = client_list_get_client_from_socket_id(socket, cl);
+    fprintf(stderr, "Disconnected client %s.\n", clint.identity);
     print_lock(cl);
     if(clint.identity != NULL){
         pdu_pleave* pleave = pdu_pleave_create(clint.identity);
         if(socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets) == -1){
             fprintf(stderr, "Failed to write to socket.\n");
         }
+        free(pleave->client_identity);
+        free(pleave);
+
     }
     int socket_to_close = clint.socket;
     print_unlock(cl);
     client_list_remove_client(clint, cl);
     close(socket_to_close);
-    fprintf(stderr, "Disconnected client %s.\n", clint.identity);
 }
 
 ack *socket_read_ack_from_udp(int socket) {
