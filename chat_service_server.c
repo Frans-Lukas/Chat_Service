@@ -113,6 +113,7 @@ void free_response(PDU *responses) {
 }
 
 void op_mess_response(int num_clients, int *connected_sockets, PDU* response) {
+    ((pdu_mess*)response)->timestamp = (uint32_t) time(NULL);
     if(socket_write_pdu_to(response, connected_sockets, num_clients) == -1){
         perror("Failed to write to MESS sockets\n");
     }

@@ -20,6 +20,7 @@
  * Client-Disconnect
  * SKickar OP.code 0
  * Fixa alla fakkin errors
+ * Fixa så att vid pjoin så sparar vi identitet tsm med en socket
  */
 
 
@@ -160,7 +161,6 @@ void print_user_message(pdu_mess *pdu){
     if(pdu->timestamp == 0 || pdu->message_length > 65535){
         perror("Invalid message recieved\n");
     } else{
-        //print_message(pdu);
         fprintf(stdout, "\n[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
                 (char *) pdu->message);
     }

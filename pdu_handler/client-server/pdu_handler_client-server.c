@@ -37,7 +37,7 @@ pdu_join *pdu_join_create(char *identity) {
 
 int pdu_join_serialize(PDU *join_pdu, char **data_to_send) {
     pdu_join *pdu = (pdu_join *) join_pdu;
-    int size_of_data = sizeof(pdu_join) + get_num_words(pdu->identity_length, 4) * 4 - 8;
+    int size_of_data = 4 + (get_num_words(pdu->identity_length, 4) * 4);
     *data_to_send = safe_calloc(1, (size_t) size_of_data);
     *data_to_send[0] = OP_JOIN;
     pdu_cpy_chars(*data_to_send + 1, &pdu->identity_length, 0, 1);
@@ -109,7 +109,7 @@ pdu_participants *pdu_participants_deserialize(int fd) {
     read_from_fd(fd, &pdu_to_return->length, 2);
     pdu_to_return->participant_names = safe_calloc(sizeof(uint32_t), (size_t) get_num_words(pdu_to_return->length, 4));
     read_from_fd(fd, pdu_to_return->participant_names, get_num_words(pdu_to_return->length, 4) * 4);
-    ntohs(pdu_to_return->length);
+    pdu_to_return->length = ntohs(pdu_to_return->length);
     return pdu_to_return;
 }
 
@@ -149,8 +149,7 @@ uint8_t create_checksum(pdu_mess *message){
 }
 
 size_t pdu_mess_size(pdu_mess *mess) {
-    return sizeof(pdu_mess) + get_num_words(mess->message_length, 4) * 4 + get_num_words(mess->identity_length, 4) * 4 -
-           2 * sizeof(uint32_t);
+    return (size_t) (12 + (get_num_words(mess->message_length, 4) * 4) + (get_num_words(mess->identity_length, 4) * 4));
 }
 
 int pdu_mess_serialize(PDU *pdu, char** data_to_send) {
@@ -158,11 +157,11 @@ int pdu_mess_serialize(PDU *pdu, char** data_to_send) {
 
     int size = (int) pdu_mess_size(pdu_message);
     *data_to_send = safe_calloc(sizeof(char), pdu_mess_size(pdu_message));
-    htons(pdu_message->message_length);
-    htonl(pdu_message->timestamp);
+    pdu_message->message_length = htons(pdu_message->message_length);
+    pdu_message->timestamp = htonl(pdu_message->timestamp);
     pdu_cpy_chars(*data_to_send, pdu_message, 0, 12);
-    ntohs(pdu_message->message_length);
-    ntohl(pdu_message->timestamp);
+    pdu_message->message_length = ntohs(pdu_message->message_length);
+    pdu_message->timestamp = ntohl(pdu_message->timestamp);
     pdu_cpy_chars(*data_to_send + 12, pdu_message->message, 0,
                   (size_t) get_num_words(pdu_message->message_length, 4) * 4);
     pdu_cpy_chars(*data_to_send + 12 + get_num_words(pdu_message->message_length, 4) * 4, pdu_message->client_identity,
@@ -180,14 +179,14 @@ pdu_mess *pdu_mess_deserialize(int fd) {
     read_from_fd(fd, &pdu_to_return->message_length, 2);
     read_from_fd(fd, &pdu_to_return->padding_message_length, 2);
     read_from_fd(fd, &pdu_to_return->timestamp, 4);
+    pdu_to_return->message_length = ntohs(pdu_to_return->message_length);
+    pdu_to_return->timestamp = ntohl(pdu_to_return->timestamp);
     size_t message_size = (size_t) get_num_words(pdu_to_return->message_length, 4) * 4;
     pdu_to_return->message = safe_calloc(1, message_size);
     read_from_fd(fd, pdu_to_return->message, (int) message_size);
     size_t identity_size = (size_t) get_num_words(pdu_to_return->identity_length, 4) * 4;
     pdu_to_return->client_identity = safe_calloc(1, identity_size);
     read_from_fd(fd, pdu_to_return->client_identity, (int) identity_size);
-    ntohs(pdu_to_return->message_length);
-    ntohl(pdu_to_return->timestamp);
     return pdu_to_return;
 }
 
@@ -217,7 +216,7 @@ pdu_pleave *pdu_pleave_deserialize(int fd) {
     read_from_fd(fd, &pdu_to_return->timestamp, 4);
     pdu_to_return->client_identity = safe_calloc(1, pdu_to_return->identity_length);
     read_from_fd(fd, pdu_to_return->client_identity, pdu_to_return->identity_length);
-    ntohl(pdu_to_return->timestamp);
+    pdu_to_return->timestamp = ntohl(pdu_to_return->timestamp);
     return pdu_to_return;
 }
 
@@ -249,7 +248,7 @@ pdu_pjoin *pdu_pjoin_deserialize(int fd) {
     read_from_fd(fd, &pdu_to_return->timestamp, 4);
     pdu_to_return->client_identity = safe_calloc(1, pdu_to_return->identity_length);
     read_from_fd(fd, pdu_to_return->client_identity, pdu_to_return->identity_length);
-    ntohl(pdu_to_return->timestamp);
+    pdu_to_return->timestamp = ntohl(pdu_to_return->timestamp);
     return pdu_to_return;
 }
 
