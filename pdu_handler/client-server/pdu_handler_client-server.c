@@ -260,7 +260,7 @@ pdu_pjoin *pdu_pjoin_deserialize(int fd) {
 int pdu_pjoin_serialize(PDU *pjoin_data, char** data_to_send) {
     pdu_pjoin *pdu = (pdu_pjoin *) pjoin_data;
     pdu->timestamp = htonl(pdu->timestamp);
-    int size = 8 + get_num_words(pdu->identity_length, 4);
+    int size = 8 + get_num_words(pdu->identity_length, 4) * 4;
     *data_to_send = safe_calloc(sizeof(char), (size_t) size);
     pdu_cpy_chars(*data_to_send, pdu, 0, 8);
     pdu_cpy_chars(*data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
