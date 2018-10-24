@@ -101,7 +101,7 @@ alive *pdu_alive_deserialize(int fd) {
 
 int pdu_reg_serialize(PDU *p, char **data) {
     reg* pdu = (reg*)p;
-    int size = 4 + get_num_words(pdu->server_name_length, 4) * 4;
+    int size = 4 + (get_num_words(pdu->server_name_length, 4) * 4);
     *data = safe_calloc(1, (size_t) size);
     *data[0] = OP_REG;
     pdu_cpy_chars((*data) + 1, &pdu->server_name_length, 0, 1);
