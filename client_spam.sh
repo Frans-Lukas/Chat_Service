@@ -6,7 +6,7 @@ numClients=$3
 
 cmake .
 make Client
-END=255
+END=260
 for ((i=1;i<=END;i++)); do
     ./Client Bot$i cs short.cs.umu.se 6969 < first_message_before_exit.txt > /dev/null 2>&1 &
 done

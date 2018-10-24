@@ -188,9 +188,11 @@ pdu_mess *pdu_mess_deserialize(int fd) {
     read_from_fd(fd, pdu_to_return->message, (int) message_size);
 
     size_t identity_size = (size_t) get_num_words(pdu_to_return->identity_length, 4) * 4;
-    pdu_to_return->client_identity = safe_calloc(1, identity_size);
 
-    read_from_fd(fd, pdu_to_return->client_identity, (int) identity_size);
+    if(identity_size != 0){
+        pdu_to_return->client_identity = safe_calloc(1, identity_size);
+        read_from_fd(fd, pdu_to_return->client_identity, (int) identity_size);
+    }
 
     return pdu_to_return;
 }
