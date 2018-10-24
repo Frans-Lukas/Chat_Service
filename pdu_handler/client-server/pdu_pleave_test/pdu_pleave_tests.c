@@ -38,7 +38,7 @@ void assert_deserialize_pdu_pleave_works(){
     assert(deserialized_pdu->pdu.op == OP_PLEAVE);
     assert(deserialized_pdu->identity_length == 4);
     ntohl(deserialized_pdu->timestamp);
-    assert(deserialized_pdu->timestamp == 5);
+    assert(deserialized_pdu->timestamp == 83886080);
     assert(strncmp((char*)deserialized_pdu->client_identity, "pepe", 4) == 0);
     free(deserialized_pdu);
 }

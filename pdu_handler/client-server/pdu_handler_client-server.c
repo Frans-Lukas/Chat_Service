@@ -94,10 +94,11 @@ uint32_t *build_participant_words(char *participants, int num_participants, int 
 
 int pdu_participants_serialize(PDU *pdu, char** data_to_send) {
     pdu_participants *pdu_partici = (pdu_participants *) pdu;
-    htons(pdu_partici->length);
     int size = (sizeof(pdu_participants) + ( get_num_words(pdu_partici->length, 4)) * 4);
     *data_to_send = safe_calloc(sizeof(char), (size_t) size);
+    pdu_partici->length = htons(pdu_partici->length);
     pdu_cpy_chars(*data_to_send, pdu_partici, 0, 4);
+    pdu_partici->length = htons(pdu_partici->length);
     memcpy(*data_to_send + 4, pdu_partici->participant_names, (size_t) get_num_words(pdu_partici->length, 4) * 4);
     return size;
 }
@@ -131,8 +132,8 @@ uint8_t create_checksum(pdu_mess *message){
     checksum += message->checksum;
     checksum += ((uint8_t*)&message->message_length)[0];
     checksum += ((uint8_t*)&message->message_length)[1];
-    checksum += ((uint8_t*)&message->padding_message_length)[0];
-    checksum += ((uint8_t*)&message->padding_message_length)[1];
+    checksum += ((uint8_t*)&message->padding)[0];
+    checksum += ((uint8_t*)&message->padding)[1];
     checksum += ((uint8_t*)&message->timestamp)[0];
     checksum += ((uint8_t*)&message->timestamp)[1];
     checksum += ((uint8_t*)&message->timestamp)[2];
@@ -173,20 +174,24 @@ int pdu_mess_serialize(PDU *pdu, char** data_to_send) {
 pdu_mess *pdu_mess_deserialize(int fd) {
     pdu_mess *pdu_to_return = safe_calloc(1, sizeof(pdu_mess));
     pdu_to_return->pdu.op = OP_MESS;
+
     read_from_fd(fd, &pdu_to_return->padding_op, 1);
     read_from_fd(fd, &pdu_to_return->identity_length, 1);
     read_from_fd(fd, &pdu_to_return->checksum, 1);
     read_from_fd(fd, &pdu_to_return->message_length, 2);
-    read_from_fd(fd, &pdu_to_return->padding_message_length, 2);
+    read_from_fd(fd, &pdu_to_return->padding, 2);
     read_from_fd(fd, &pdu_to_return->timestamp, 4);
     pdu_to_return->message_length = ntohs(pdu_to_return->message_length);
     pdu_to_return->timestamp = ntohl(pdu_to_return->timestamp);
     size_t message_size = (size_t) get_num_words(pdu_to_return->message_length, 4) * 4;
     pdu_to_return->message = safe_calloc(1, message_size);
     read_from_fd(fd, pdu_to_return->message, (int) message_size);
+
     size_t identity_size = (size_t) get_num_words(pdu_to_return->identity_length, 4) * 4;
     pdu_to_return->client_identity = safe_calloc(1, identity_size);
+
     read_from_fd(fd, pdu_to_return->client_identity, (int) identity_size);
+
     return pdu_to_return;
 }
 
@@ -222,7 +227,7 @@ pdu_pleave *pdu_pleave_deserialize(int fd) {
 
 int pdu_pleave_serialize(PDU *pleave_data, char** data_to_send) {
     pdu_pleave *pdu = (pdu_pleave *) pleave_data;
-    htonl(pdu->timestamp);
+    pdu->timestamp = htonl(pdu->timestamp);
     int size = sizeof(pdu_pleave) + pdu->identity_length;
     *data_to_send = safe_calloc(sizeof(char), (size_t) size);
     pdu_cpy_chars(*data_to_send, pdu, 0, 8);
@@ -254,7 +259,7 @@ pdu_pjoin *pdu_pjoin_deserialize(int fd) {
 
 int pdu_pjoin_serialize(PDU *pjoin_data, char** data_to_send) {
     pdu_pjoin *pdu = (pdu_pjoin *) pjoin_data;
-    htonl(pdu->timestamp);
+    pdu->timestamp = htonl(pdu->timestamp);
     int size = sizeof(pdu_pjoin) + pdu->identity_length;
     *data_to_send = safe_calloc(sizeof(char), size);
     pdu_cpy_chars(*data_to_send, pdu, 0, 8);

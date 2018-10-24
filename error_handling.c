@@ -5,7 +5,7 @@
 
 void perror_exit(char msg[]) {
     perror(msg);
-    exit(1);
+    exit(11);
 }
 
 void* safe_calloc(size_t num_size, size_t size){

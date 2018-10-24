@@ -164,8 +164,12 @@ int open_fd(char *path) {
 }
 
 void read_from_fd(int fd, void *destination, int size) {
+    if(size == 0){
+        return;
+    }
     if (read(fd, destination, (size_t) size) < 0) {
-        perror_exit("read()");
+        perror("could not read from fd in read_from_fd\n");
+        return;
     }
 }
 

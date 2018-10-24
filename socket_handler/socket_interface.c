@@ -1,7 +1,10 @@
 //
 // Created by c16fld on 2018-10-05.
 //
+#define _GNU_SOURCE
 
+
+#include <pdu_handler/client-server/pdu_handler_client-server.h>
 #include "socket_interface.h"
 #include "client_list.h"
 
@@ -19,28 +22,61 @@ int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
     return 0;
 }
 
-PDU **socket_read_pdu_from(int *sockets, int number_of_sockets) {
+PDU **socket_read_pdu_from(int *sockets, int number_of_sockets, client_list* cl) {
     //if poll says socket is readable, read from socket.
     struct pollfd fd[number_of_sockets];
     for (int i = 0; i < number_of_sockets; ++i) {
         fd[i].fd = sockets[i];
-        fd[i].events = POLLIN;
+        fd[i].events = POLLIN | POLLRDHUP;
     }
     int timeout;
-    timeout = 100;
+    timeout = 10;
     if (0 > poll(fd, (nfds_t) number_of_sockets, timeout)) {
         fprintf(stderr, "poll() error");
         return NULL;
     }
     PDU **data = safe_calloc((size_t) number_of_sockets, sizeof(PDU*));
     for (int j = 0; j < number_of_sockets; ++j) {
-        if (fd[j].revents & POLLIN) {
+        if(fd[j].revents & POLLRDHUP){
+            disconnect_client_from_client_list(cl, fd[j].fd);
+        } else if (fd[j].revents & POLLIN) {
             data[j] = pdu_deserialize_next(sockets[j]);
         } else{
             data[j] = NULL;
         }
     }
     return data;
+}
+
+void disconnect_client_from_client_list(client_list *cl, int socket) {
+    if(cl == NULL){
+        return;
+    }
+    client connected_clients[client_list_get_num_connected_clients(cl)];
+    int sockets[client_list_get_num_connected_clients(cl)];
+    int number_of_sockets = 0;
+
+    print_lock(cl);
+
+    for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
+        if(cl->clients[i].socket != 0){
+            connected_clients[number_of_sockets] = cl->clients[i];
+            sockets[number_of_sockets] = cl->clients[i].socket;
+            number_of_sockets++;
+        }
+    }
+    print_unlock(cl);
+    client clint = client_list_get_client_from_socket_id(socket, cl);
+    print_lock(cl);
+    if(clint.identity != NULL){
+        pdu_pleave* pleave = pdu_pleave_create(clint.identity);
+        socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets);
+    }
+    int socket_to_close = clint.socket;
+    print_unlock(cl);
+    client_list_remove_client(clint, cl);
+    close(socket_to_close);
+    fprintf(stderr, "Disconnected client %s.\n", clint.identity);
 }
 
 ack *socket_read_ack_from_udp(int socket) {

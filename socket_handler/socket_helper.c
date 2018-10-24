@@ -12,7 +12,7 @@ void *socket_read_from(void *socket) {
         if(len==0){//EOF - socket is closed
             return 0;
         } else if(len<0){//error code
-            perror_exit("read()");
+            return 0;
         } else {
             //Print the data that was read from the socket to stdout.
             fwrite(buf, sizeof(char), len, stdout);
