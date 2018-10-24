@@ -30,11 +30,12 @@ PDU **socket_read_pdu_from(int *sockets, int number_of_sockets, client_list* cl)
         fd[i].events = POLLIN | POLLRDHUP;
     }
     int timeout;
-    timeout = 100;
+    timeout = 1;
     if (0 > poll(fd, (nfds_t) number_of_sockets, timeout)) {
         fprintf(stderr, "poll() error");
         return NULL;
     }
+
     PDU **data = safe_calloc((size_t) number_of_sockets, sizeof(PDU*));
     for (int j = 0; j < number_of_sockets; ++j) {
         if(fd[j].revents & POLLRDHUP){
@@ -42,6 +43,7 @@ PDU **socket_read_pdu_from(int *sockets, int number_of_sockets, client_list* cl)
         } else if (fd[j].revents & POLLIN) {
             data[j] = pdu_deserialize_next(sockets[j]);
         } else{
+            //free(data);
             data[j] = NULL;
         }
     }

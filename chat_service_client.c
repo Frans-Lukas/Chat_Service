@@ -34,7 +34,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
         s_list *server_list = get_server_list_from_names_server(server_adress, server_port);
         server_info* server_to_connect_to = let_user_choose_server(server_list);
         server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
-        s_list_free(server_list);
+        //s_list_free(server_list);
         server_info_free(server_to_connect_to);
     } else {
         char *ip = calloc(256, sizeof(char));
