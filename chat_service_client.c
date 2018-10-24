@@ -154,7 +154,7 @@ char* from_unix_to_human_time(time_t time){
 }
 
 void print_user_message(pdu_mess *pdu){
-    if(pdu->timestamp == 0 || pdu->message_length > 255){
+    if(pdu->timestamp == 0 || pdu->message_length > 65535){
         perror("Invalid message recieved\n");
     } else{
         //print_message(pdu);

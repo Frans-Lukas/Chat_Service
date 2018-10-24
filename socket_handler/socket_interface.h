@@ -20,6 +20,6 @@ int socket_tcp_server_create(int port);
 int socket_udp_name_server_socket(int port, char* server_name);
 not_reg* socket_read_not_reg_from_udp(int socket);
 int socket_tcp_client_create(int port, char* address);
-void disconnect_client_from_client_list(client_list *cl, int j);
+void disconnect_client_from_client_list(client_list *cl, int index);
 int create_tcp_name_server_socket(int port, char* server_name);
 #endif //CHAT_SERVICE_SOCKET_INTERFACE_H
