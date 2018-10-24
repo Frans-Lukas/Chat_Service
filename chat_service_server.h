@@ -34,9 +34,6 @@ void op_quit_response(client_list *cl, int num_clients, int* connected_socket, p
 void op_mess_response(int num_clients, int *connected_sockets, PDU* response, int i, client_list* cl);
 void send_participants_list_to_socket(client_list *cl, int socket);
 void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sockets, int index);
-static void* server_check_for_disconnected_sockets(void* args);
-static void check_for_disconnected_sockets(client_list* cl);
-static void start_disconnecter_thread(client_list *client_list);
 void free_response(PDU *responses);
 
 
