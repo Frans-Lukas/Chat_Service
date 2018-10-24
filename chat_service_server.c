@@ -98,6 +98,7 @@ void free_response(PDU *responses) {
         }
         case OP_JOIN: {
             pdu_join* pdu = (pdu_join*) responses;
+            free(pdu->identity);
             free(pdu);
             //notify everyone what client joined and send participants to newly connected client
             break;
@@ -118,9 +119,16 @@ void op_mess_response(int num_clients, int *connected_sockets, PDU* response, in
     pdu_mess* mess = (pdu_mess *) response;
     mess->timestamp = (uint32_t) time(NULL);
     client clie = client_list_get_client_from_socket_id(connected_sockets[i], cl);
-    mess->identity_length = (uint8_t) strlen(clie.identity);
-    mess->client_identity = calloc(sizeof(uint32_t), (size_t) get_num_words(mess->identity_length, 4));
-    pdu_cpy_chars(mess->client_identity, clie.identity, 0, mess->identity_length);
+    if(clie.identity != NULL){
+        mess->identity_length = (uint8_t) strlen(clie.identity);
+        mess->client_identity = calloc(sizeof(uint32_t), (size_t) get_num_words(mess->identity_length, 4));
+        pdu_cpy_chars(mess->client_identity, clie.identity, 0, mess->identity_length);
+    } else{
+        char* unkown_identity = "Unkown Identity\0";
+        mess->identity_length = (uint8_t) strlen(unkown_identity);
+        mess->client_identity = calloc(sizeof(uint32_t), (size_t) get_num_words(mess->identity_length, 4));
+        pdu_cpy_chars(mess->client_identity, unkown_identity, 0, mess->identity_length);
+    }
     if(socket_write_pdu_to(response, connected_sockets, num_clients) == -1){
         perror("Failed to write to MESS sockets\n");
     }
@@ -150,6 +158,10 @@ void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sock
     }
     fprintf(stderr, "Client %s joined the server.\n", clie.identity);
     socket_write_pdu_to((PDU *) pjoin, connected_sockets, num_clients);
+
+    if(pjoin->client_identity != NULL){
+        free(pjoin->client_identity);
+    }
     free(pjoin);
 }
 
@@ -158,8 +170,11 @@ void send_participants_list_to_socket(client_list *cl, int socket) {
     int* length = calloc(1, sizeof(int));
     int num_partici = client_list_create_participants_string(cl, &participants_string, length);
     pdu_participants* participants = pdu_participants_create(participants_string, num_partici, *length);
+    free(length);
     socket_write_pdu_to((PDU *) participants, &socket, 1);
-    free(participants->participant_names);
+    if(participants->participant_names != NULL){
+        free(participants->participant_names);
+    }
     free(participants);
     free(participants_string);
 }
@@ -204,8 +219,13 @@ static void* server_keep_accepting_clients(void* args){
             client clnt;
             clnt.socket = socket_tcp_get_connecting_socket_by_accepting(server_socket);
             clnt.identity = NULL;
-            fprintf(stderr, "New client joined.\n");
-            client_list_add_client(clnt, cl);
+            if(client_list_get_num_connected_clients(cl) >= 255){
+                close(clnt.socket);
+                fprintf(stderr, "Server full, disconnecting newly connected socket.\n");
+            } else{
+                fprintf(stderr, "New client joined.\n");
+                client_list_add_client(clnt, cl);
+            }
         }
     }
 }
@@ -284,6 +304,7 @@ static void *server_start_heart_beat(void *args){
         while (not_reg == NULL) {
             alive *alive = pdu_create_alive(client_list_get_num_connected_clients(heartbeat_args->cl), id);
             socket_write_pdu_to((PDU *) alive, &name_server_socket, 1);
+            free(alive);
             not_reg = socket_read_not_reg_from_udp(name_server_socket);
             sleep(2);
 
