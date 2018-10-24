@@ -51,7 +51,7 @@ void server_message_forwarding(client_list *clint_list) {
                             //broadcast message to clients
                             fprintf(stderr, "Recieved MESS\n");
                             if(create_checksum((pdu_mess *) responses[i]) == 255){
-                                op_mess_response(num_clients, connected_sockets, responses[i]);
+                                op_mess_response(num_clients, connected_sockets, responses[i], i, clint_list);
                             }
                             break;
                         }
@@ -113,8 +113,14 @@ void free_response(PDU *responses) {
     }
 }
 
-void op_mess_response(int num_clients, int *connected_sockets, PDU* response) {
-    ((pdu_mess*)response)->timestamp = (uint32_t) time(NULL);
+void op_mess_response(int num_clients, int *connected_sockets, PDU* response, int i, client_list* cl) {
+
+    pdu_mess* mess = (pdu_mess *) response;
+    mess->timestamp = (uint32_t) time(NULL);
+    client clie = client_list_get_client_from_socket_id(connected_sockets[i], cl);
+    mess->identity_length = (uint8_t) strlen(clie.identity);
+    mess->client_identity = calloc(sizeof(uint32_t), (size_t) get_num_words(mess->identity_length, 4));
+    pdu_cpy_chars(mess->client_identity, clie.identity, 0, mess->identity_length);
     if(socket_write_pdu_to(response, connected_sockets, num_clients) == -1){
         perror("Failed to write to MESS sockets\n");
     }

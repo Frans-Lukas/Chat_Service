@@ -22,7 +22,7 @@ int pdu_quit_serialize(PDU *join_pdu, char **data_to_send) {
     memcpy(*data_to_send, &pdu->pdu.op, 1);
     memcpy(*data_to_send + 1, &pdu->pad1, 1);
     memcpy(*data_to_send + 2, &pdu->pad2, 2);
-    return sizeof(pdu_quit);
+    return 4;
 }
 
 pdu_join *pdu_join_create(char *identity) {
@@ -94,7 +94,7 @@ uint32_t *build_participant_words(char *participants, int num_participants, int 
 
 int pdu_participants_serialize(PDU *pdu, char** data_to_send) {
     pdu_participants *pdu_partici = (pdu_participants *) pdu;
-    int size = (sizeof(pdu_participants) + ( get_num_words(pdu_partici->length, 4)) * 4);
+    int size = 4 + get_num_words(pdu_partici->length, 4) * 4;
     *data_to_send = safe_calloc(sizeof(char), (size_t) size);
     pdu_partici->length = htons(pdu_partici->length);
     pdu_cpy_chars(*data_to_send, pdu_partici, 0, 4);
@@ -228,7 +228,7 @@ pdu_pleave *pdu_pleave_deserialize(int fd) {
 int pdu_pleave_serialize(PDU *pleave_data, char** data_to_send) {
     pdu_pleave *pdu = (pdu_pleave *) pleave_data;
     pdu->timestamp = htonl(pdu->timestamp);
-    int size = sizeof(pdu_pleave) + pdu->identity_length;
+    int size = 8 + get_num_words(pdu->identity_length, 4) * 4;
     *data_to_send = safe_calloc(sizeof(char), (size_t) size);
     pdu_cpy_chars(*data_to_send, pdu, 0, 8);
     pdu_cpy_chars(*data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
@@ -260,8 +260,8 @@ pdu_pjoin *pdu_pjoin_deserialize(int fd) {
 int pdu_pjoin_serialize(PDU *pjoin_data, char** data_to_send) {
     pdu_pjoin *pdu = (pdu_pjoin *) pjoin_data;
     pdu->timestamp = htonl(pdu->timestamp);
-    int size = sizeof(pdu_pjoin) + pdu->identity_length;
-    *data_to_send = safe_calloc(sizeof(char), size);
+    int size = 8 + get_num_words(pdu->identity_length, 4) * 4;
+    *data_to_send = safe_calloc(sizeof(char), (size_t) size);
     pdu_cpy_chars(*data_to_send, pdu, 0, 8);
     pdu_cpy_chars(*data_to_send + 8, pdu->client_identity, 0, (size_t) get_num_words(pdu->identity_length, 4) * 4);
     return size;
