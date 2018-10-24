@@ -31,7 +31,7 @@ static void start_heartbeat_thread(int port, client_list *client_list, char* ser
 void server_message_forwarding(client_list *client_list_arg);
 void op_join_response(client_list *cl, int num_clients, int* connected_sockets, pdu_join* pdu, int index);
 void op_quit_response(client_list *cl, int num_clients, int* connected_socket, pdu_quit *pdu, int i);
-void op_mess_response(int num_clients, int *connected_sockets, PDU* response);
+void op_mess_response(int num_clients, int *connected_sockets, PDU* response, int i, client_list* cl);
 void send_participants_list_to_socket(client_list *cl, int socket);
 void send_pjoin_to_sockets(client_list *cl, int num_clients, int *connected_sockets, int index);
 static void* server_check_for_disconnected_sockets(void* args);

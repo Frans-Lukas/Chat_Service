@@ -135,13 +135,15 @@ void send_join_to_server(client *client){
 void handle_pleave(pdu_pleave *pdu) {
     char* to_print = calloc(1, pdu->identity_length + 1);
     strncat(to_print, (char *) pdu->client_identity, pdu->identity_length);
-    fprintf(stdout, "Client %s left the server.\n", (char *) pdu->client_identity);
+    fprintf(stdout, "Client %s left the server.\n", to_print);
+    free(to_print);
 }
 
 void handle_pjoin(pdu_pjoin *pdu) {
     char* to_print = calloc(1, pdu->identity_length + 1);
     strncat(to_print, (char *) pdu->client_identity, pdu->identity_length);
     fprintf(stdout, "Client %s joined the server.\n", to_print);
+    free(to_print);
 }
 
 void handle_message(pdu_mess *pdu) {
@@ -158,7 +160,7 @@ char* from_unix_to_human_time(time_t time){
 }
 
 void print_user_message(pdu_mess *pdu){
-    if(pdu->timestamp == 0 || pdu->message_length > 65535){
+    if(pdu->timestamp == 0 || pdu->message_length > 65535 || pdu->message_length == 0){
         perror("Invalid message recieved\n");
     } else{
         fprintf(stdout, "\n[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
