@@ -4,11 +4,11 @@
 #include "pdu_handler_client-nameserver.h"
 
 
-//s_list* pdu_s_list_create(int number_of_servers, char adress[], int port[], int number_of_clients[], int server_name_length[]){
+//s_list* pdu_s_list_create(int number_of_servers, char address[], int port[], int number_of_clients[], int server_name_length[]){
 //    s_list* pdu = calloc(1, sizeof(s_list));
 //    pdu->pdu.op = OP_SLIST;
 //    pdu->number_of_servers = (uint16_t)number_of_servers;
-//    pdu->adress = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
+//    pdu->address = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
 //    pdu->port = safe_calloc(pdu->number_of_servers, sizeof(uint16_t));
 //    pdu->number_of_clients = safe_calloc(pdu->number_of_servers, sizeof(uint8_t));
 //    pdu->server_name_length = safe_calloc(pdu->number_of_servers, sizeof(uint8_t));
@@ -26,7 +26,7 @@ int pdu_s_list_serialize(PDU *p, char **data) {
 //    *data[0] = OP_SLIST;
 //    pdu->number_of_servers = htons(pdu->number_of_servers);
 //    pdu_cpy_chars(*data + 2, &pdu->number_of_servers, 0, 2);
-//    pdu_cpy_chars(*data + 4, &pdu->adress, 0, 4);
+//    pdu_cpy_chars(*data + 4, &pdu->address, 0, 4);
 //    pdu->port = htons(pdu->port);
 //    pdu_cpy_chars(*data + 8, &pdu->port, 0, 2);
 //    pdu_cpy_chars(*data + 10, &pdu->number_of_clients, 0, 1);
@@ -43,7 +43,7 @@ s_list *pdu_s_list_deserialize(int fd) {
     read_from_fd(fd, &pdu->number_of_servers, 2);
     pdu->number_of_servers = ntohs(pdu->number_of_servers);
 
-    pdu->adress = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
+    pdu->address = safe_calloc(pdu->number_of_servers, sizeof(uint32_t));
     pdu->port = safe_calloc(pdu->number_of_servers, sizeof(uint16_t));
     pdu->number_of_clients = safe_calloc(pdu->number_of_servers, sizeof(uint8_t));
     pdu->server_name_length = safe_calloc(pdu->number_of_servers, sizeof(uint8_t));
@@ -52,7 +52,7 @@ s_list *pdu_s_list_deserialize(int fd) {
 
 
     for(int i=0; i<pdu->number_of_servers; i++){
-        read_from_fd(fd, &pdu->adress[i], 4);
+        read_from_fd(fd, &pdu->address[i], 4);
         read_from_fd(fd, &pdu->port[i], 2);
         pdu->port[i] = ntohs(pdu->port[i]);
         read_from_fd(fd, &pdu->number_of_clients[i], 1);
@@ -88,7 +88,7 @@ get_list *pdu_get_list_deserialize(int fd) {
 
 int s_list_free(s_list* list) {
     free(list->port);
-    free(list->adress);
+    free(list->address);
     for (int i = 0; i < list->number_of_servers; ++i) {
         free(list->server_name[i]);
     }

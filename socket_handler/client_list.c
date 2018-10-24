@@ -51,6 +51,7 @@ int client_list_remove_client(client c, client_list *cl) {
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (cl->clients[i].socket == c.socket) {
             cl->clients[i].socket = 0;
+            free(cl->clients[i].identity);
             cl->clients[i].identity = NULL;
             cl->num_connected_clients--;
             print_unlock(cl);
@@ -122,16 +123,18 @@ int client_list_create_participants_string(client_list *cl, char **participants_
 
     print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        if (cl->clients[i].identity != NULL) {
+        if (cl->clients[i].identity != NULL && cl->clients[i].socket != 0) {
             num_identified_sockets++;
         }
     }
 
     char *client_array[num_identified_sockets];
 
+    int index = 0;
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        if (cl->clients[i].identity != NULL) {
-            client_array[i] = cl->clients[i].identity;
+        if (cl->clients[i].identity != NULL  && cl->clients[i].socket != 0) {
+            client_array[index] = cl->clients[i].identity;
+            index++;
         }
     }
 
