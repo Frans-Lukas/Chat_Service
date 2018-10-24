@@ -9,16 +9,16 @@
 #include "client_list.h"
 
 int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
+    int returnValue = 0;
     for (int i = 0; i < number_of_sockets; i++) {
         uint8_t *data;
         int pdu_size = pdu_serialize(pdu, (char **) &data);
-        if (0 > socket_single_write_to(socket[i], (char *) data, pdu_size)) {
-            free(data);
-            return -1;
+        if (fd_is_valid(socket[i]) && 0 > socket_single_write_to(socket[i], (char *) data, pdu_size)) {
+            returnValue = -1;
         }
         free(data);
     }
-    return 0;
+    return returnValue;
 }
 
 PDU **socket_read_pdu_from(int *sockets, int number_of_sockets, client_list* cl) {
@@ -34,7 +34,6 @@ PDU **socket_read_pdu_from(int *sockets, int number_of_sockets, client_list* cl)
         fprintf(stderr, "poll() error");
         return NULL;
     }
-
     PDU **data = safe_calloc((size_t) number_of_sockets, sizeof(PDU*));
     for (int j = 0; j < number_of_sockets; ++j) {
         if(fd[j].revents & POLLRDHUP){
@@ -53,13 +52,13 @@ void disconnect_client_from_client_list(client_list *cl, int socket) {
     if(cl == NULL){
         return;
     }
-    int sockets[client_list_get_num_connected_clients(cl)];
+    int sockets[client_list_get_num_connected_clients(cl) - 1];
     int number_of_sockets = 0;
 
     print_lock(cl);
 
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
-        if(cl->clients[i].socket != 0){
+        if(cl->clients[i].socket != 0 && cl->clients[i].socket != socket){
             sockets[number_of_sockets] = cl->clients[i].socket;
             number_of_sockets++;
         }
@@ -71,7 +70,7 @@ void disconnect_client_from_client_list(client_list *cl, int socket) {
     if(clint.identity != NULL){
         pdu_pleave* pleave = pdu_pleave_create(clint.identity);
         if(socket_write_pdu_to((PDU *) pleave, sockets, number_of_sockets) == -1){
-            fprintf(stderr, "Failed to write to socket.\n");
+            fprintf(stderr, "Socket is disconnected. Could not write to it. DW :)\n");
         }
         free(pleave->client_identity);
         free(pleave);

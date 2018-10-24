@@ -19,6 +19,8 @@ void print_s_list(s_list *s);
 char *format_to_ip(uint32_t *adress);
 void handle_participants(pdu_participants *pdu);
 void handle_quit(pdu_quit *pParticipants);
+void print_num_chars(char* string, int num_chars);
+void free_response(PDU *responses);
 
 void handle_message(pdu_mess *pParticipants);
 
