@@ -34,7 +34,7 @@ void init_client(char* username, char *server_option, char* server_adress, int s
         s_list *server_list = get_server_list_from_names_server(server_adress, server_port);
         server_info* server_to_connect_to = let_user_choose_server(server_list);
         server_socket = socket_tcp_client_create(server_to_connect_to->port, server_to_connect_to->address);
-        s_list_free(server_list);
+        //s_list_free(server_list);
         server_info_free(server_to_connect_to);
     } else {
         char *ip = calloc(256, sizeof(char));
@@ -86,6 +86,10 @@ void* read_from_client_stdin(void* data){
             if(strcmp(buffer, "\n") == 0){
                 continue;
             }
+
+            buffer[strcspn(buffer, "\n")] = '\0';
+
+
             pdu_mess *mess = pdu_mess_create(client->identity, buffer);
             if (socket_write_pdu_to((PDU *) mess, &client->socket, 1) == -1) {
 
@@ -165,6 +169,7 @@ void print_user_message(pdu_mess *pdu){
     } else{
         fprintf(stdout, "\n[%s] %s : %s", from_unix_to_human_time(pdu->timestamp), (char *) pdu->client_identity,
                 (char *) pdu->message);
+        //fflush(stdout);
     }
 }
 
@@ -193,7 +198,7 @@ void handle_quit(pdu_quit *pdu) {
 
 server_info *let_user_choose_server(s_list *pList) {
     fprintf(stdout, "Please choose a server to connect to.\n");
-    for (int i = 0; i < pList->number_of_servers; ++i) {
+    for (int i = 0; i < pList->number_of_servers; i++) {
         fprintf(stdout, "%d. ", i);
         for (int j = 0; j < pList->server_name_length[i]; ++j) {
             fprintf(stdout, "%c", ((char*)pList->server_name[i])[j]);
@@ -255,7 +260,14 @@ s_list* get_server_list_from_names_server(char *name_server_adress, int name_ser
     get_list* get_list = pdu_create_get_list();
     while(-1 == socket_write_pdu_to((PDU *) get_list, &server_name_socket, 1));
     PDU** response = NULL;
-    while(NULL == (response = socket_read_pdu_from(&server_name_socket, 1, NULL)));
+
+
+    while(1){
+        response = socket_read_pdu_from(&server_name_socket, 1, NULL);
+        if(response != NULL && response[0] != NULL)
+            break;
+    }
+
     return (s_list *) response[0];
 }
 
