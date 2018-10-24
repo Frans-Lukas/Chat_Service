@@ -108,11 +108,11 @@ client client_list_get_client_from_identity(char *identity, client_list *cl) {
     print_lock(cl);
     for (int i = 0; i < CLIENT_LIST_MAX_SIZE; ++i) {
         if (strcmp(cl->clients[i].identity, identity) == 0) {
-            print_unlock(&cl->mutex);
+            print_unlock(cl);
             return cl->clients[i];
         }
     }
-    print_unlock(&cl->mutex);
+    print_unlock(cl);
     client empty_client;
     perror("Could not find client from identity");
     return empty_client;

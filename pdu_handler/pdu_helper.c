@@ -26,6 +26,7 @@ uint16_t add_padding(void *start_pos, int num_bytes_to_pad) {
     }
 }
 
+
 int pdu_serialize(PDU *pdu, char **data_ptr) {
     int length = 0;
     switch (pdu->op) {

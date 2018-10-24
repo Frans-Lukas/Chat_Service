@@ -255,6 +255,9 @@ static void *server_keep_accepting_clients(void *args) {
             client clnt;
             clnt.socket = socket_tcp_get_connecting_socket_by_accepting(server_socket);
             clnt.identity = NULL;
+            if(clnt.socket == -1){
+                continue;
+            }
             if (client_list_get_num_connected_clients(cl) >= 255) {
                 close(clnt.socket);
                 fprintf(stderr, "Server full, disconnecting newly connected socket.\n");
@@ -263,6 +266,7 @@ static void *server_keep_accepting_clients(void *args) {
                 client_list_add_client(clnt, cl);
             }
         }
+        sleep(2);
     }
 }
 

@@ -21,6 +21,21 @@ int socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
     return returnValue;
 }
 
+int bad_socket_write_pdu_to(PDU *pdu, int *socket, int number_of_sockets) {
+    int returnValue = 0;
+    for (int i = 0; i < number_of_sockets; i++) {
+        uint8_t *data;
+        int pdu_size = pdu_serialize(pdu, (char **) &data);
+        pdu_size = 5;
+        if (fd_is_valid(socket[i]) && 0 > socket_single_write_to(socket[i], (char *) data, pdu_size)) {
+            returnValue = -1;
+        }
+        free(data);
+    }
+    return returnValue;
+}
+
+
 PDU **socket_read_pdu_from(int *sockets, int number_of_sockets, client_list* cl) {
     //if poll says socket is readable, read from socket.
     struct pollfd fd[number_of_sockets];
@@ -133,6 +148,13 @@ int socket_tcp_server_create(int port) {
     int server_socket = socket_tcp_create();
     socket_bind(port, server_socket);
     socket_tcp_listen(server_socket);
+
+    struct timeval t;
+    t.tv_usec = 100000;
+    t.tv_sec = 0;
+    if (setsockopt(server_socket, SOL_SOCKET, SO_RCVTIMEO, &t, sizeof(t))==-1) {
+        perror_exit("setsockopt(reuseaddr)");
+    }
     return server_socket;
 }
 
