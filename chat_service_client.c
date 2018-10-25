@@ -101,6 +101,8 @@ void *read_from_client_stdin(void *data) {
             free(mess->message);
             free(mess);
         }
+
+
     }
 }
 

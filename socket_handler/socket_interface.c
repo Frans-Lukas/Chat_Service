@@ -148,13 +148,7 @@ int socket_tcp_server_create(int port) {
     int server_socket = socket_tcp_create();
     socket_bind(port, server_socket);
     socket_tcp_listen(server_socket);
-
-    struct timeval t;
-    t.tv_usec = 100000;
-    t.tv_sec = 0;
-    if (setsockopt(server_socket, SOL_SOCKET, SO_RCVTIMEO, &t, sizeof(t))==-1) {
-        perror_exit("setsockopt(reuseaddr)");
-    }
+    socket_make_timeout(server_socket);
     return server_socket;
 }
 
@@ -163,6 +157,7 @@ int socket_tcp_client_create(int port, char *address) {
     if (-1 == socket_connect(port, address, client_socket)) {
         return -1;
     }
+    socket_make_timeout(client_socket);
     return client_socket;
 }
 
@@ -172,6 +167,7 @@ int socket_udp_name_server_socket(int port, char *server_name) {
     network_hostname_to_ip(server_name, ip);
     socket_connect(port, ip, client_socket);
     free(ip);
+    socket_make_timeout(client_socket);
     return client_socket;
 }
 
@@ -184,5 +180,6 @@ int create_tcp_name_server_socket(int port, char *server_name) {
         perror_exit("Could not connect to name_server");
     }
     free(ip);
+    socket_make_timeout(tcp_socket); 
     return tcp_socket;
 }

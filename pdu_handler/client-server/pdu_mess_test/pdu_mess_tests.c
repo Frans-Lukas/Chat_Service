@@ -18,12 +18,10 @@ void assert_serialize_pdu_mess_works(){
     pdu_mess_serialize((PDU *) pdu, &serialized_pdu);
 
     assert(serialized_pdu[0] == OP_MESS);
-    assert(serialized_pdu[2] == strlen(identity));
     uint16_t test = ((uint16_t*) serialized_pdu)[2];
     test = ntohs(test);
     assert(test == strlen(message));
     assert(strcmp(&serialized_pdu[12], message) == 0);
-    assert(strncmp(&serialized_pdu[12 + strlen(message) + 1], identity, strlen(identity)) == 0);
 }
 
 void assert_deserialize_pdu_mess_works() {
@@ -45,12 +43,9 @@ void assert_deserialize_pdu_mess_works() {
 }
 
 void assert_pdu_mess_create_works() {
-    char* identity = "Tester";
     char* message = "Hello, world!";
-    pdu_mess* pdu = pdu_mess_create(identity, message);
+    pdu_mess* pdu = pdu_mess_create("", message);
     assert(pdu->pdu.op == OP_MESS);
-    assert(pdu->identity_length == strlen(identity));
     assert(pdu->message_length == strlen(message));
     assert(strncmp((char*)pdu->message, message, pdu->message_length) == 0);
-    assert(strncmp((char*)pdu->client_identity, identity, pdu->identity_length) == 0);
 }

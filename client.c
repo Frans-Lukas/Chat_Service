@@ -15,16 +15,13 @@
 
 // ./Client Kuba ns itchy.cs.umu.se 1337
 int main(int argc, char *argv[]) {
-
     if(argc != 5){
-        perror_exit("Wrong amount of parameters");
+        perror_exit("Usage : [Name] [ns / cs] [address] [port]\n");
     }
 
     if(strcmp(argv[2] , "ns")  != 0 && strcmp(argv[2], "cs") != 0){
-        perror_exit("Should be ns or cs");
+        perror_exit("Usage : [Name] [ns / cs] [address] [port]\n");
     }
-
-    //run_all_tests();
 
     init_client(argv[1], argv[2], argv[3], atoi(argv[4]));
     return 0;

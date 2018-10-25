@@ -31,7 +31,7 @@ void assert_serialize_pdu_join_works(){
     char* real_serialized_pdu;
     int size = pdu_join_serialize((PDU *) pdu_join_create(string), &real_serialized_pdu);
     //add same padding as mock pdu to make sure string compare works
-    assert(size == 16);
+    assert(size == 12);
     assert(real_serialized_pdu[0] == OP_JOIN);
     assert(real_serialized_pdu[1] == 5);
     assert(strncmp(&real_serialized_pdu[4], string, sizeof(string)) == 0);

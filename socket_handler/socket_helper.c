@@ -67,17 +67,12 @@ void socket_make_reusable(int socket) {
 
 void socket_make_timeout(int sockfd){
     struct timeval timeout;
-    timeout.tv_sec = 15;
-    timeout.tv_usec = 0;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 100000;
 
     if (setsockopt (sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
                     sizeof(timeout)) < 0)
         perror_exit("setsockopt failed\n");
-
-    if (setsockopt (sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout,
-                    sizeof(timeout)) < 0)
-        perror_exit("setsockopt failed\n");
-
 }
 
 int socket_connect(int port, char *ip_address, int socket) {
